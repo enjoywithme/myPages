@@ -11,7 +11,19 @@ namespace MyPageViewer
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
+
+            if (myPageDoc != null)
+            {
+                Application.Run(new FormPageViewer(myPageDoc));
+                return;
+            }
+
             Application.Run(new FormMain());
         }
+
+
+
     }
 }

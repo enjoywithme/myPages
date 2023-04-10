@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MyPageViewer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"X:\\temp\\weixinbao_ReverseTool_ 逆向工具集合 (2023_4_10 14_01_21).piz\""
+    }
+  }
+}

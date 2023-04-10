@@ -3,9 +3,26 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net6.0-windows</TargetFramework>
-    <Nullable>enable</Nullable>
+    <Nullable>disable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>browser.ico</ApplicationIcon>
+    <PackageIcon>browser.png</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="browser.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="X:\temp\browser.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1661.34" />
+  </ItemGroup>
 
 </Project>
