@@ -11,9 +11,19 @@ namespace MyPageViewer
         public string FilePath { get; set; }
         public string GuiId { get; set; }
         public string Title { get; set; }
+        
+        public bool IsModified { get; private set; }
 
+        /// <summary>
+        /// 解压后的临时根目录
+        /// </summary>
         public string DocTempPath { get; private set; }
+        /// <summary>
+        /// 解压后的临时index.html
+        /// </summary>
         public string TempIndexPath { get; private set; }
+
+        public string TempAttachmentsPath => Path.Combine(DocTempPath, "Attachments");
 
         private static string _tempPath;
         private static string _homePath;
@@ -85,6 +95,34 @@ namespace MyPageViewer
             message = string.Empty;
             return true;
         }
+
+        public bool RepackFromTemp(out string message)
+        {
+
+            try
+            {
+                var tempZip = Path.Combine(TempPath, $"{GuiId}.zip");
+                if(File.Exists(tempZip))
+                    File.Delete(tempZip); 
+                System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);
+                File.Move(tempZip,FilePath,true);
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+            message = string.Empty;
+
+            return true;
+        }
+
+        public void SetModified()
+        {
+            IsModified = true;
+        }
+
+
 
         public void Dispose()
         {

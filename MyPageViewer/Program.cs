@@ -1,6 +1,8 @@
+using System.Runtime.InteropServices;
+
 namespace MyPageViewer
 {
-    internal static class Program
+    internal static partial class Program
     {
         /// <summary>
         ///  The main entry point for the application.
@@ -12,6 +14,8 @@ namespace MyPageViewer
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
+            FileAssociations.EnsureAssociationsSet();
+
             var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
 
             if (myPageDoc != null)
@@ -22,7 +26,6 @@ namespace MyPageViewer
 
             Application.Run(new FormMain());
         }
-
 
 
     }

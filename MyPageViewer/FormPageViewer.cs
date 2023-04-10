@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MessageBoxButtons = System.Windows.Forms.MessageBoxButtons;
 
 namespace MyPageViewer
 {
@@ -39,14 +40,14 @@ namespace MyPageViewer
         private void FormPageViewer_Load(object sender, EventArgs e)
         {
             FormClosed += FormPageViewer_FormClosed;
+            FormClosing += FormPageViewer_FormClosing;
+            btAttachment.Click += BtAttachment_Click;
+
+            panelAttachments.Document = PagedDocument;
+
             InitializeAsync();
 
 
-        }
-
-        private void FormPageViewer_FormClosed(object sender, FormClosedEventArgs e)
-        {
-            PagedDocument?.Dispose();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -56,6 +57,33 @@ namespace MyPageViewer
                 webView.CoreWebView2.Navigate(textBox1.Text);
             }
         }
+
+        private void BtAttachment_Click(object sender, EventArgs e)
+        {
+            panelAttachments.Visible = !panelAttachments.Visible;
+            if (panelAttachments.Visible)
+            {
+                panelAttachments.LoadAttachments();
+            }
+        }
+
+        private void FormPageViewer_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (PagedDocument == null || !PagedDocument.IsModified) return;
+
+            if (MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
+
+            if (PagedDocument.RepackFromTemp(out var message)) return;
+            MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+            e.Cancel = true;
+
+        }
+        private void FormPageViewer_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            PagedDocument?.Dispose();
+        }
+
+
 
         async void InitializeAsync()
         {
@@ -68,7 +96,7 @@ namespace MyPageViewer
             if (PagedDocument != null && webView.CoreWebView2 != null)
             {
                 Text = PagedDocument.FilePath;
-                textBox1.Text = PagedDocument.TempIndexPath;
+                tsAddresss.Text = PagedDocument.TempIndexPath;
                 webView.CoreWebView2.Navigate(PagedDocument.TempIndexPath);
             }
         }
@@ -76,7 +104,7 @@ namespace MyPageViewer
         void UpdateAddressBar(object sender, CoreWebView2WebMessageReceivedEventArgs args)
         {
             var uri = args.TryGetWebMessageAsString();
-            textBox1.Text = uri;
+            tsAddresss.Text = uri;
             webView.CoreWebView2.PostWebMessageAsString(uri);
         }
     }
