@@ -35,9 +35,11 @@ namespace MyPageViewer
             statusStrip1 = new StatusStrip();
             tsAddresss = new ToolStripStatusLabel();
             textBox1 = new TextBox();
-            button1 = new Button();
             btAttachment = new Button();
             panel1 = new Panel();
+            btReloadFromTemp = new Button();
+            btCleanHmtl = new Button();
+            btZip = new Button();
             panelAttachments = new AttachmentsControl();
             splitter1 = new Splitter();
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
@@ -67,20 +69,11 @@ namespace MyPageViewer
             // 
             // textBox1
             // 
-            textBox1.Location = new Point(12, 12);
+            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            textBox1.Location = new Point(12, 20);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(381, 23);
+            textBox1.Size = new Size(668, 23);
             textBox1.TabIndex = 0;
-            // 
-            // button1
-            // 
-            button1.Location = new Point(442, 13);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 1;
-            button1.Text = "button1";
-            button1.UseVisualStyleBackColor = true;
-            button1.Click += button1_Click;
             // 
             // btAttachment
             // 
@@ -95,14 +88,49 @@ namespace MyPageViewer
             // 
             // panel1
             // 
+            panel1.Controls.Add(btReloadFromTemp);
+            panel1.Controls.Add(btCleanHmtl);
+            panel1.Controls.Add(btZip);
             panel1.Controls.Add(btAttachment);
-            panel1.Controls.Add(button1);
             panel1.Controls.Add(textBox1);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
             panel1.Size = new Size(1023, 62);
             panel1.TabIndex = 0;
+            // 
+            // btReloadFromTemp
+            // 
+            btReloadFromTemp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btReloadFromTemp.Image = Properties.Resources.Sync24;
+            btReloadFromTemp.Location = new Point(841, 10);
+            btReloadFromTemp.Name = "btReloadFromTemp";
+            btReloadFromTemp.Size = new Size(38, 43);
+            btReloadFromTemp.TabIndex = 2;
+            toolTip1.SetToolTip(btReloadFromTemp, "从临时目录刷新");
+            btReloadFromTemp.UseVisualStyleBackColor = true;
+            // 
+            // btCleanHmtl
+            // 
+            btCleanHmtl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btCleanHmtl.Image = Properties.Resources.Broom24;
+            btCleanHmtl.Location = new Point(885, 10);
+            btCleanHmtl.Name = "btCleanHmtl";
+            btCleanHmtl.Size = new Size(38, 43);
+            btCleanHmtl.TabIndex = 2;
+            toolTip1.SetToolTip(btCleanHmtl, "净化HTML");
+            btCleanHmtl.UseVisualStyleBackColor = true;
+            // 
+            // btZip
+            // 
+            btZip.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btZip.Image = Properties.Resources.ZipFolder24;
+            btZip.Location = new Point(929, 10);
+            btZip.Name = "btZip";
+            btZip.Size = new Size(38, 43);
+            btZip.TabIndex = 2;
+            toolTip1.SetToolTip(btZip, "重新压制");
+            btZip.UseVisualStyleBackColor = true;
             // 
             // panelAttachments
             // 
@@ -163,7 +191,6 @@ namespace MyPageViewer
         #endregion
         private StatusStrip statusStrip1;
         private TextBox textBox1;
-        private Button button1;
         private Button btAttachment;
         private Panel panel1;
         private AttachmentsControl panelAttachments;
@@ -171,5 +198,8 @@ namespace MyPageViewer
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private ToolStripStatusLabel tsAddresss;
         private ToolTip toolTip1;
+        private Button btZip;
+        private Button btCleanHmtl;
+        private Button btReloadFromTemp;
     }
 }

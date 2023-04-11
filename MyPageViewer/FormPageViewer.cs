@@ -42,6 +42,9 @@ namespace MyPageViewer
             FormClosed += FormPageViewer_FormClosed;
             FormClosing += FormPageViewer_FormClosing;
             btAttachment.Click += BtAttachment_Click;
+            btZip.Click += BtZip_Click;
+            btReloadFromTemp.Click += BtReloadFromTemp_Click;
+            btCleanHmtl.Click += BtCleanHtml_Click;
 
             panelAttachments.Document = PagedDocument;
 
@@ -50,12 +53,47 @@ namespace MyPageViewer
 
         }
 
+        /// <summary>
+        /// 净化HTML页面
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void BtCleanHtml_Click(object sender, EventArgs e)
+        {
+            if (!PagedDocument.CleanHtml(out var message))
+            {
+                if (!string.IsNullOrEmpty(message))
+                    MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+            webView.CoreWebView2.Reload();
+        }
+
+        private void BtReloadFromTemp_Click(object sender, EventArgs e)
+        {
+            webView.Reload();
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             if (webView != null && webView.CoreWebView2 != null)
             {
                 webView.CoreWebView2.Navigate(textBox1.Text);
             }
+        }
+
+        /// <summary>
+        /// 重新从临时文件夹压制文档
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void BtZip_Click(object sender, EventArgs e)
+        {
+            var ret = PagedDocument.RepackFromTemp(out var message);
+            MessageBox.Show(ret ? "成功重新压制源文件。" : message, Properties.Resources.Text_Error, MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
         }
 
         private void BtAttachment_Click(object sender, EventArgs e)

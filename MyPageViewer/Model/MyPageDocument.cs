@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HtmlAgilityPack;
 
 namespace MyPageViewer
 {
@@ -116,6 +118,44 @@ namespace MyPageViewer
 
             return true;
         }
+
+        /// <summary>
+        /// 清洗HTML
+        /// </summary>
+        /// <returns></returns>
+        public bool CleanHtml(out string message)
+        {
+            message = string.Empty;
+            if(string.IsNullOrEmpty(TempIndexPath)) return false;
+            try
+            {
+                var doc = new HtmlAgilityPack.HtmlDocument();
+                doc.Load(TempIndexPath);
+
+                var imageNodes = doc.DocumentNode.SelectNodes("//img").Where(t => t.Attributes["data-src"] != null)
+                    .ToList();
+                foreach (var node in imageNodes)
+                {
+                    var imgSrc = node.Attributes["src"];
+                    if (imgSrc == null) continue;
+                    Debug.WriteLine(imgSrc.Value);
+                    node.Attributes.RemoveAll();
+                    node.Attributes.Add("src", imgSrc.Value);
+                }
+
+                doc.Save(TempIndexPath);
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+            
+            
+
+            return true;
+        }
+
 
         public void SetModified()
         {

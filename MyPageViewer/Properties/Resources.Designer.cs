@@ -73,6 +73,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Broom24 {
+            get {
+                object obj = ResourceManager.GetObject("Broom24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Link24 {
             get {
                 object obj = ResourceManager.GetObject("Link24", resourceCulture);
@@ -86,6 +96,16 @@ namespace MyPageViewer.Properties {
         internal static System.Drawing.Bitmap Sub_blue_rotate_cw24 {
             get {
                 object obj = ResourceManager.GetObject("Sub_blue_rotate_cw24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Sync24 {
+            get {
+                object obj = ResourceManager.GetObject("Sync24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -105,6 +125,16 @@ namespace MyPageViewer.Properties {
         internal static string Text_Hint {
             get {
                 return ResourceManager.GetString("Text_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap ZipFolder24 {
+            get {
+                object obj = ResourceManager.GetObject("ZipFolder24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
             }
         }
     }
