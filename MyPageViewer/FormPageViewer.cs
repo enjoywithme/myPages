@@ -68,6 +68,7 @@ namespace MyPageViewer
 
                 return;
             }
+            PagedDocument?.SetModified();
             webView.CoreWebView2.Reload();
         }
 
