@@ -1,4 +1,6 @@
-﻿namespace MyPageViewer.Controls
+﻿using MyPageViewer.Model;
+
+namespace MyPageViewer.Controls
 {
     public partial class AttachmentsControl : UserControl
     {

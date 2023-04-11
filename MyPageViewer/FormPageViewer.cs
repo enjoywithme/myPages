@@ -8,7 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MyPageViewer.Model;
 using MessageBoxButtons = System.Windows.Forms.MessageBoxButtons;
+using System.Diagnostics;
 
 namespace MyPageViewer
 {
@@ -45,6 +47,27 @@ namespace MyPageViewer
             btZip.Click += BtZip_Click;
             btReloadFromTemp.Click += BtReloadFromTemp_Click;
             btCleanHmtl.Click += BtCleanHtml_Click;
+            tbTitle.LostFocus += (o, _) =>
+            {
+                PagedDocument.Title = tbTitle.Text;
+            };
+            tsAddresss.DoubleClick += (o, _) =>
+            {
+                try
+                {
+                    var url = ((ToolStripStatusLabel)o)?.Text;
+                    if (string.IsNullOrEmpty(url)) return;
+                    Process.Start(new ProcessStartInfo(url)
+                    {
+                        UseShellExecute = true,
+                        Verb = "open"
+                    });
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
+            };
 
             panelAttachments.Document = PagedDocument;
 
@@ -81,7 +104,7 @@ namespace MyPageViewer
         {
             if (webView != null && webView.CoreWebView2 != null)
             {
-                webView.CoreWebView2.Navigate(textBox1.Text);
+                webView.CoreWebView2.Navigate(tbTitle.Text);
             }
         }
 
@@ -108,7 +131,7 @@ namespace MyPageViewer
 
         private void FormPageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (PagedDocument == null || !PagedDocument.IsModified) return;
+            if (PagedDocument is not { IsModified: true }) return;
 
             if (MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
 
@@ -135,7 +158,8 @@ namespace MyPageViewer
             if (PagedDocument != null && webView.CoreWebView2 != null)
             {
                 Text = PagedDocument.FilePath;
-                tsAddresss.Text = PagedDocument.TempIndexPath;
+                tsAddresss.Text = PagedDocument.OriginalUrl;
+                tbTitle.Text = PagedDocument.Title;
                 webView.CoreWebView2.Navigate(PagedDocument.TempIndexPath);
             }
         }
@@ -143,7 +167,7 @@ namespace MyPageViewer
         void UpdateAddressBar(object sender, CoreWebView2WebMessageReceivedEventArgs args)
         {
             var uri = args.TryGetWebMessageAsString();
-            tsAddresss.Text = uri;
+            //tsAddresss.Text = uri;
             webView.CoreWebView2.PostWebMessageAsString(uri);
         }
     }

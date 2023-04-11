@@ -1,19 +1,27 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HtmlAgilityPack;
+﻿using System.Diagnostics;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
-namespace MyPageViewer
+namespace MyPageViewer.Model
 {
     public class MyPageDocument:IDisposable
     {
         public string FilePath { get; set; }
         public string GuiId { get; set; }
-        public string Title { get; set; }
-        
+        private string _title;
+        public string Title
+        {
+            get => _title;
+            set
+            {
+                if(_title==value) return;
+                _title = value;
+                SetModified(true);
+            }
+        }
+        public string OriginalUrl { get; set; }
+
+        private bool _manifestChanged;
         public bool IsModified { get; private set; }
 
         /// <summary>
@@ -86,7 +94,17 @@ namespace MyPageViewer
 
                 System.IO.Compression.ZipFile.ExtractToDirectory(FilePath, DocTempPath);
 
-                TempIndexPath = Path.Combine(DocTempPath, "index.html");
+                var fileName = Path.Combine(DocTempPath, "index.html");
+                if(File.Exists(fileName))
+                    TempIndexPath = fileName;
+
+                fileName = Path.Combine(DocTempPath, "manifest.json");
+                if (File.Exists(fileName))
+                {
+                    dynamic jo = JObject.Parse(File.ReadAllText(fileName));
+                    _title = jo.title;
+                    OriginalUrl =jo.originalUrl;
+                }
             }
             catch (Exception e)
             {
@@ -98,16 +116,38 @@ namespace MyPageViewer
             return true;
         }
 
+        private static readonly JsonSerializerSettings JsonSerializerSettings
+            = new()
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+                Formatting = Formatting.Indented
+            };
         public bool RepackFromTemp(out string message)
         {
-
             try
             {
+                //Save manifest
+                if (_manifestChanged)
+                {
+                    var fileName = Path.Combine(DocTempPath, "manifest.json");
+                    var jo = File.Exists(fileName) ? JObject.Parse(File.ReadAllText(fileName)) : new JObject("{}");
+
+                    dynamic jd = jo;
+                    jd.title = _title;
+                    jd.originalUrl = OriginalUrl;
+
+                    File.WriteAllText(fileName, JsonConvert.SerializeObject(jd, JsonSerializerSettings));
+                }
+
+
                 var tempZip = Path.Combine(TempPath, $"{GuiId}.zip");
                 if(File.Exists(tempZip))
                     File.Delete(tempZip); 
                 System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);
                 File.Move(tempZip,FilePath,true);
+
+                _manifestChanged = false;
+                IsModified = false;
             }
             catch (Exception e)
             {
@@ -157,8 +197,9 @@ namespace MyPageViewer
         }
 
 
-        public void SetModified()
+        public void SetModified(bool manifest=false)
         {
+            if (manifest) _manifestChanged = true;
             IsModified = true;
         }
 

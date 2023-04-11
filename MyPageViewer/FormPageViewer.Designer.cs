@@ -34,7 +34,7 @@ namespace MyPageViewer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPageViewer));
             statusStrip1 = new StatusStrip();
             tsAddresss = new ToolStripStatusLabel();
-            textBox1 = new TextBox();
+            tbTitle = new TextBox();
             btAttachment = new Button();
             panel1 = new Panel();
             btReloadFromTemp = new Button();
@@ -52,7 +52,7 @@ namespace MyPageViewer
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { tsAddresss });
-            statusStrip1.Location = new Point(0, 688);
+            statusStrip1.Location = new Point(0, 511);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1023, 22);
             statusStrip1.TabIndex = 2;
@@ -60,20 +60,22 @@ namespace MyPageViewer
             // 
             // tsAddresss
             // 
+            tsAddresss.DoubleClickEnabled = true;
             tsAddresss.Image = Properties.Resources.Link24;
             tsAddresss.ImageAlign = ContentAlignment.MiddleLeft;
             tsAddresss.Name = "tsAddresss";
-            tsAddresss.Size = new Size(1008, 17);
+            tsAddresss.Size = new Size(977, 17);
             tsAddresss.Spring = true;
             tsAddresss.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // textBox1
+            // tbTitle
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(12, 20);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(668, 23);
-            textBox1.TabIndex = 0;
+            tbTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbTitle.BackColor = SystemColors.InactiveBorder;
+            tbTitle.Location = new Point(12, 20);
+            tbTitle.Name = "tbTitle";
+            tbTitle.Size = new Size(793, 23);
+            tbTitle.TabIndex = 0;
             // 
             // btAttachment
             // 
@@ -92,7 +94,7 @@ namespace MyPageViewer
             panel1.Controls.Add(btCleanHmtl);
             panel1.Controls.Add(btZip);
             panel1.Controls.Add(btAttachment);
-            panel1.Controls.Add(textBox1);
+            panel1.Controls.Add(tbTitle);
             panel1.Dock = DockStyle.Top;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
@@ -139,7 +141,7 @@ namespace MyPageViewer
             panelAttachments.Document = null;
             panelAttachments.Location = new Point(792, 62);
             panelAttachments.Name = "panelAttachments";
-            panelAttachments.Size = new Size(231, 626);
+            panelAttachments.Size = new Size(231, 449);
             panelAttachments.TabIndex = 6;
             panelAttachments.Visible = false;
             // 
@@ -148,7 +150,7 @@ namespace MyPageViewer
             splitter1.Dock = DockStyle.Right;
             splitter1.Location = new Point(789, 62);
             splitter1.Name = "splitter1";
-            splitter1.Size = new Size(3, 626);
+            splitter1.Size = new Size(3, 449);
             splitter1.TabIndex = 7;
             splitter1.TabStop = false;
             // 
@@ -160,7 +162,7 @@ namespace MyPageViewer
             webView.Dock = DockStyle.Fill;
             webView.Location = new Point(0, 62);
             webView.Name = "webView";
-            webView.Size = new Size(789, 626);
+            webView.Size = new Size(789, 449);
             webView.TabIndex = 8;
             webView.ZoomFactor = 1D;
             // 
@@ -168,7 +170,7 @@ namespace MyPageViewer
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1023, 710);
+            ClientSize = new Size(1023, 533);
             Controls.Add(webView);
             Controls.Add(splitter1);
             Controls.Add(panelAttachments);
@@ -190,7 +192,7 @@ namespace MyPageViewer
 
         #endregion
         private StatusStrip statusStrip1;
-        private TextBox textBox1;
+        private TextBox tbTitle;
         private Button btAttachment;
         private Panel panel1;
         private AttachmentsControl panelAttachments;
