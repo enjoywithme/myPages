@@ -28,70 +28,86 @@
         /// </summary>
         private void InitializeComponent()
         {
+            listAttachments = new CheckedListBox();
+            btDelete = new Button();
             btAdd = new Button();
-            button1 = new Button();
-            flowLayoutPanel1 = new FlowLayoutPanel();
             btRefresh = new Button();
+            btSaveAll = new Button();
             SuspendLayout();
+            // 
+            // listAttachments
+            // 
+            listAttachments.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            listAttachments.FormattingEnabled = true;
+            listAttachments.Location = new Point(20, 14);
+            listAttachments.Name = "listAttachments";
+            listAttachments.Size = new Size(256, 418);
+            listAttachments.TabIndex = 3;
+            // 
+            // btDelete
+            // 
+            btDelete.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btDelete.Image = Properties.Resources.delete24;
+            btDelete.Location = new Point(240, 440);
+            btDelete.Name = "btDelete";
+            btDelete.Size = new Size(35, 36);
+            btDelete.TabIndex = 4;
+            btDelete.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btDelete.UseVisualStyleBackColor = true;
             // 
             // btAdd
             // 
-            btAdd.BackColor = SystemColors.ButtonHighlight;
-            btAdd.Location = new Point(34, 39);
+            btAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btAdd.Image = Properties.Resources.plus24;
+            btAdd.Location = new Point(199, 440);
             btAdd.Name = "btAdd";
-            btAdd.Size = new Size(75, 23);
-            btAdd.TabIndex = 0;
-            btAdd.Text = "添加附件";
-            btAdd.UseVisualStyleBackColor = false;
-            // 
-            // button1
-            // 
-            button1.BackColor = Color.CornflowerBlue;
-            button1.Location = new Point(139, 39);
-            button1.Name = "button1";
-            button1.Size = new Size(75, 23);
-            button1.TabIndex = 0;
-            button1.Text = "下载全部";
-            button1.UseVisualStyleBackColor = false;
-            // 
-            // flowLayoutPanel1
-            // 
-            flowLayoutPanel1.Location = new Point(12, 85);
-            flowLayoutPanel1.Name = "flowLayoutPanel1";
-            flowLayoutPanel1.Size = new Size(267, 390);
-            flowLayoutPanel1.TabIndex = 1;
+            btAdd.Size = new Size(35, 36);
+            btAdd.TabIndex = 5;
+            btAdd.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btAdd.UseVisualStyleBackColor = true;
             // 
             // btRefresh
             // 
-            btRefresh.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btRefresh.Image = Properties.Resources.Sub_blue_rotate_cw24;
-            btRefresh.Location = new Point(241, 3);
+            btRefresh.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btRefresh.Image = Properties.Resources.refresh24;
+            btRefresh.Location = new Point(20, 438);
             btRefresh.Name = "btRefresh";
-            btRefresh.Size = new Size(38, 33);
-            btRefresh.TabIndex = 2;
+            btRefresh.Size = new Size(35, 36);
+            btRefresh.TabIndex = 5;
+            btRefresh.TextImageRelation = TextImageRelation.ImageBeforeText;
             btRefresh.UseVisualStyleBackColor = true;
-            btRefresh.Click += btRefresh_Click;
+            // 
+            // btSaveAll
+            // 
+            btSaveAll.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btSaveAll.Image = Properties.Resources.saveall24;
+            btSaveAll.Location = new Point(61, 438);
+            btSaveAll.Name = "btSaveAll";
+            btSaveAll.Size = new Size(35, 36);
+            btSaveAll.TabIndex = 5;
+            btSaveAll.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btSaveAll.UseVisualStyleBackColor = true;
             // 
             // AttachmentsControl
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            BorderStyle = BorderStyle.FixedSingle;
+            Controls.Add(btDelete);
+            Controls.Add(btSaveAll);
             Controls.Add(btRefresh);
-            Controls.Add(flowLayoutPanel1);
-            Controls.Add(button1);
             Controls.Add(btAdd);
+            Controls.Add(listAttachments);
             Name = "AttachmentsControl";
-            Size = new Size(290, 484);
+            Size = new Size(292, 486);
             Load += AttachmentsControl_Load;
             ResumeLayout(false);
         }
 
         #endregion
-
+        private CheckedListBox listAttachments;
+        private Button btDelete;
         private Button btAdd;
-        private Button button1;
-        private FlowLayoutPanel flowLayoutPanel1;
         private Button btRefresh;
+        private Button btSaveAll;
     }
 }

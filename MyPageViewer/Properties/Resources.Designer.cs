@@ -83,9 +83,59 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap delete24 {
+            get {
+                object obj = ResourceManager.GetObject("delete24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap label24 {
+            get {
+                object obj = ResourceManager.GetObject("label24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Link24 {
             get {
                 object obj = ResourceManager.GetObject("Link24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap plus24 {
+            get {
+                object obj = ResourceManager.GetObject("plus24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap refresh24 {
+            get {
+                object obj = ResourceManager.GetObject("refresh24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap saveall24 {
+            get {
+                object obj = ResourceManager.GetObject("saveall24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -167,6 +217,15 @@ namespace MyPageViewer.Properties {
             get {
                 object obj = ResourceManager.GetObject("Sync24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 确定删除选择的附件?.
+        /// </summary>
+        internal static string Text_ConfirmAttachmentsDelete {
+            get {
+                return ResourceManager.GetString("Text_ConfirmAttachmentsDelete", resourceCulture);
             }
         }
         

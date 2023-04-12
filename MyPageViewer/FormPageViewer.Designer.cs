@@ -48,12 +48,16 @@ namespace MyPageViewer
             btReloadFromTemp = new Button();
             btCleanHmtl = new Button();
             btZip = new Button();
+            btTags = new Button();
             panelAttachments = new AttachmentsControl();
+            toolTip1 = new ToolTip(components);
+            panelRight = new Panel();
+            tagsControl = new TagsControl();
             splitter1 = new Splitter();
             webView = new Microsoft.Web.WebView2.WinForms.WebView2();
-            toolTip1 = new ToolTip(components);
             statusStrip1.SuspendLayout();
             panel1.SuspendLayout();
+            panelRight.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)webView).BeginInit();
             SuspendLayout();
             // 
@@ -81,7 +85,7 @@ namespace MyPageViewer
             tsAddresss.DoubleClickEnabled = true;
             tsAddresss.ImageAlign = ContentAlignment.MiddleLeft;
             tsAddresss.Name = "tsAddresss";
-            tsAddresss.Size = new Size(858, 17);
+            tsAddresss.Size = new Size(889, 17);
             tsAddresss.Spring = true;
             tsAddresss.TextAlign = ContentAlignment.MiddleLeft;
             tsAddresss.ToolTipText = "双击打开URL";
@@ -103,7 +107,7 @@ namespace MyPageViewer
             tsbRate5.Image = Properties.Resources.star5;
             tsbRate5.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate5.Name = "tsbRate5";
-            tsbRate5.Size = new Size(254, 22);
+            tsbRate5.Size = new Size(162, 22);
             tsbRate5.Tag = "5";
             tsbRate5.Text = "r5";
             // 
@@ -113,7 +117,7 @@ namespace MyPageViewer
             tsbRate4.Image = Properties.Resources.star4;
             tsbRate4.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate4.Name = "tsbRate4";
-            tsbRate4.Size = new Size(254, 22);
+            tsbRate4.Size = new Size(162, 22);
             tsbRate4.Tag = "4";
             tsbRate4.Text = "r4";
             // 
@@ -123,7 +127,7 @@ namespace MyPageViewer
             tsbRate3.Image = Properties.Resources.star3;
             tsbRate3.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate3.Name = "tsbRate3";
-            tsbRate3.Size = new Size(254, 22);
+            tsbRate3.Size = new Size(162, 22);
             tsbRate3.Tag = "3";
             tsbRate3.Text = "r3";
             // 
@@ -133,7 +137,7 @@ namespace MyPageViewer
             tsbRate2.Image = Properties.Resources.star2;
             tsbRate2.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate2.Name = "tsbRate2";
-            tsbRate2.Size = new Size(254, 22);
+            tsbRate2.Size = new Size(162, 22);
             tsbRate2.Tag = "2";
             tsbRate2.Text = "r2";
             // 
@@ -143,7 +147,7 @@ namespace MyPageViewer
             tsbRate1.Image = Properties.Resources.star1;
             tsbRate1.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate1.Name = "tsbRate1";
-            tsbRate1.Size = new Size(254, 22);
+            tsbRate1.Size = new Size(162, 22);
             tsbRate1.Tag = "1";
             tsbRate1.Text = "r1";
             // 
@@ -153,7 +157,7 @@ namespace MyPageViewer
             tsbRate0.Image = Properties.Resources.star0;
             tsbRate0.ImageScaling = ToolStripItemImageScaling.None;
             tsbRate0.Name = "tsbRate0";
-            tsbRate0.Size = new Size(254, 22);
+            tsbRate0.Size = new Size(162, 22);
             tsbRate0.Tag = "0";
             tsbRate0.Text = "r0";
             // 
@@ -163,14 +167,14 @@ namespace MyPageViewer
             tbTitle.BackColor = SystemColors.InactiveBorder;
             tbTitle.Location = new Point(12, 20);
             tbTitle.Name = "tbTitle";
-            tbTitle.Size = new Size(793, 23);
+            tbTitle.Size = new Size(762, 23);
             tbTitle.TabIndex = 0;
             // 
             // btAttachment
             // 
             btAttachment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btAttachment.Image = Properties.Resources.Attach24;
-            btAttachment.Location = new Point(973, 10);
+            btAttachment.Location = new Point(971, 10);
             btAttachment.Name = "btAttachment";
             btAttachment.Size = new Size(38, 43);
             btAttachment.TabIndex = 2;
@@ -182,6 +186,7 @@ namespace MyPageViewer
             panel1.Controls.Add(btReloadFromTemp);
             panel1.Controls.Add(btCleanHmtl);
             panel1.Controls.Add(btZip);
+            panel1.Controls.Add(btTags);
             panel1.Controls.Add(btAttachment);
             panel1.Controls.Add(tbTitle);
             panel1.Dock = DockStyle.Top;
@@ -194,7 +199,7 @@ namespace MyPageViewer
             // 
             btReloadFromTemp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btReloadFromTemp.Image = Properties.Resources.Sync24;
-            btReloadFromTemp.Location = new Point(841, 10);
+            btReloadFromTemp.Location = new Point(791, 10);
             btReloadFromTemp.Name = "btReloadFromTemp";
             btReloadFromTemp.Size = new Size(38, 43);
             btReloadFromTemp.TabIndex = 2;
@@ -205,7 +210,7 @@ namespace MyPageViewer
             // 
             btCleanHmtl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btCleanHmtl.Image = Properties.Resources.Broom24;
-            btCleanHmtl.Location = new Point(885, 10);
+            btCleanHmtl.Location = new Point(836, 10);
             btCleanHmtl.Name = "btCleanHmtl";
             btCleanHmtl.Size = new Size(38, 43);
             btCleanHmtl.TabIndex = 2;
@@ -216,31 +221,58 @@ namespace MyPageViewer
             // 
             btZip.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btZip.Image = Properties.Resources.ZipFolder24;
-            btZip.Location = new Point(929, 10);
+            btZip.Location = new Point(881, 10);
             btZip.Name = "btZip";
             btZip.Size = new Size(38, 43);
             btZip.TabIndex = 2;
             toolTip1.SetToolTip(btZip, "重新压制");
             btZip.UseVisualStyleBackColor = true;
             // 
+            // btTags
+            // 
+            btTags.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btTags.Image = Properties.Resources.label24;
+            btTags.Location = new Point(926, 10);
+            btTags.Name = "btTags";
+            btTags.Size = new Size(38, 43);
+            btTags.TabIndex = 2;
+            btTags.UseVisualStyleBackColor = true;
+            // 
             // panelAttachments
             // 
             panelAttachments.BorderStyle = BorderStyle.FixedSingle;
-            panelAttachments.Dock = DockStyle.Right;
             panelAttachments.Document = null;
-            panelAttachments.Location = new Point(792, 62);
+            panelAttachments.Location = new Point(28, 15);
             panelAttachments.Name = "panelAttachments";
-            panelAttachments.Size = new Size(231, 449);
+            panelAttachments.Size = new Size(181, 232);
             panelAttachments.TabIndex = 6;
             panelAttachments.Visible = false;
+            // 
+            // panelRight
+            // 
+            panelRight.Controls.Add(tagsControl);
+            panelRight.Controls.Add(panelAttachments);
+            panelRight.Dock = DockStyle.Right;
+            panelRight.Location = new Point(788, 62);
+            panelRight.Name = "panelRight";
+            panelRight.Size = new Size(235, 449);
+            panelRight.TabIndex = 9;
+            panelRight.Visible = false;
+            // 
+            // tagsControl
+            // 
+            tagsControl.Location = new Point(41, 253);
+            tagsControl.Name = "tagsControl";
+            tagsControl.Size = new Size(112, 168);
+            tagsControl.TabIndex = 7;
             // 
             // splitter1
             // 
             splitter1.Dock = DockStyle.Right;
-            splitter1.Location = new Point(789, 62);
+            splitter1.Location = new Point(785, 62);
             splitter1.Name = "splitter1";
             splitter1.Size = new Size(3, 449);
-            splitter1.TabIndex = 7;
+            splitter1.TabIndex = 10;
             splitter1.TabStop = false;
             // 
             // webView
@@ -251,8 +283,8 @@ namespace MyPageViewer
             webView.Dock = DockStyle.Fill;
             webView.Location = new Point(0, 62);
             webView.Name = "webView";
-            webView.Size = new Size(789, 449);
-            webView.TabIndex = 8;
+            webView.Size = new Size(785, 449);
+            webView.TabIndex = 11;
             webView.ZoomFactor = 1D;
             // 
             // FormPageViewer
@@ -262,7 +294,7 @@ namespace MyPageViewer
             ClientSize = new Size(1023, 533);
             Controls.Add(webView);
             Controls.Add(splitter1);
-            Controls.Add(panelAttachments);
+            Controls.Add(panelRight);
             Controls.Add(statusStrip1);
             Controls.Add(panel1);
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -274,6 +306,7 @@ namespace MyPageViewer
             statusStrip1.PerformLayout();
             panel1.ResumeLayout(false);
             panel1.PerformLayout();
+            panelRight.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)webView).EndInit();
             ResumeLayout(false);
             PerformLayout();
@@ -285,8 +318,6 @@ namespace MyPageViewer
         private Button btAttachment;
         private Panel panel1;
         private AttachmentsControl panelAttachments;
-        private Splitter splitter1;
-        private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private ToolStripStatusLabel tsAddresss;
         private ToolTip toolTip1;
         private Button btZip;
@@ -300,5 +331,10 @@ namespace MyPageViewer
         private ToolStripMenuItem tsbRate4;
         private ToolStripMenuItem tsbRate3;
         private ToolStripMenuItem tsbRate2;
+        private Panel panelRight;
+        private Splitter splitter1;
+        private Microsoft.Web.WebView2.WinForms.WebView2 webView;
+        private TagsControl tagsControl;
+        private Button btTags;
     }
 }

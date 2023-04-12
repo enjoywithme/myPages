@@ -1,4 +1,6 @@
 ﻿using System.Diagnostics;
+using System.Globalization;
+using System.Text;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -48,6 +50,7 @@ namespace MyPageViewer.Model
 
         private bool _manifestChanged;
         public bool IsModified { get; private set; }
+        public IList<string> Tags { get; set; }
 
         /// <summary>
         /// 解压后的临时根目录
@@ -137,6 +140,9 @@ namespace MyPageViewer.Model
                     var rate = (string)jo["rate"];
                     if (int.TryParse(rate, out var d))
                         _rate = d;
+                    var tags = jo.Value<JArray>("tags");
+                    if(tags!= null)
+                        Tags = tags.ToObject<List<string>>();
                 }
             }
             catch (Exception e)
@@ -174,8 +180,10 @@ namespace MyPageViewer.Model
                     jo["title"] = _title;
                     jo["originalUrl"] = OriginalUrl;
                     jo["rate"] = Rate;
+                    if (Tags != null)
+                        jo["tags"] = JToken.FromObject(Tags);
 
-                    File.WriteAllText(fileName, JsonConvert.SerializeObject(jo, JsonSerializerSettings));
+                    File.WriteAllText(fileName, JsonConvert.SerializeObject(jo, JsonSerializerSettings),Encoding.UTF8);
                 }
 
 
@@ -235,6 +243,23 @@ namespace MyPageViewer.Model
             return true;
         }
 
+
+        public bool AddTag(string tag)
+        {
+            Tags ??= new List<string>();
+            if (Tags.Any(x=>string.Compare(x,tag,CultureInfo.InvariantCulture, CompareOptions.IgnoreCase)==0)) return false;
+
+            Tags.Add(tag);
+            SetModified(true);
+
+            return true;
+        }
+
+        public void RemoveTag(string tag)
+        {
+            Tags?.Remove(tag);
+            SetModified(true);
+        }
 
         public void SetModified(bool manifest=false)
         {

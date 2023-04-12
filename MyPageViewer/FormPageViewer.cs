@@ -46,6 +46,7 @@ namespace MyPageViewer
             FormClosed += FormPageViewer_FormClosed;
             FormClosing += FormPageViewer_FormClosing;
             btAttachment.Click += BtAttachment_Click;
+            btTags.Click += BtTags_Click;
             btZip.Click += BtZip_Click;
             btReloadFromTemp.Click += BtReloadFromTemp_Click;
             btCleanHmtl.Click += BtCleanHtml_Click;
@@ -72,7 +73,7 @@ namespace MyPageViewer
                 }
             };
             tssIconLink.DoubleClick += TssIconLink_DoubleClick;
-            panelAttachments.Document = PageDocument;
+            tagsControl.Document = panelAttachments.Document = PageDocument;
 
             tsbRate0.Click += TsbRate_Click;
             tsbRate1.Click += TsbRate_Click;
@@ -86,6 +87,8 @@ namespace MyPageViewer
 
 
         }
+
+
 
         /// <summary>
         /// 五星评分
@@ -113,7 +116,8 @@ namespace MyPageViewer
                     break;
                 case 3:
                     img = Properties.Resources.star3;
-                    b41:
+                    break;
+                case 4:
                     img = Properties.Resources.star4;
                     break;
                 case 5:
@@ -136,6 +140,8 @@ namespace MyPageViewer
             PageDocument.OriginalUrl = dlgUrl.Url;
             tsAddresss.Text = dlgUrl.Url;
         }
+
+        #region 工具按钮
 
         /// <summary>
         /// 净化HTML页面
@@ -161,13 +167,6 @@ namespace MyPageViewer
             webView.Reload();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            if (webView != null && webView.CoreWebView2 != null)
-            {
-                webView.CoreWebView2.Navigate(tbTitle.Text);
-            }
-        }
 
         /// <summary>
         /// 重新从临时文件夹压制文档
@@ -181,14 +180,46 @@ namespace MyPageViewer
             MessageBox.Show(ret ? "成功重新压制源文件。" : message, Properties.Resources.Text_Error, MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
         }
 
+        private void BtTags_Click(object sender, EventArgs e)
+        {
+            if (panelRight.Visible && tagsControl.Visible)
+            {
+                panelRight.Visible = false;
+                tagsControl.Dock = DockStyle.None;
+                return;
+            }
+
+            panelRight.Visible = true;
+            tagsControl.Visible = true;
+            panelAttachments.Visible = false;
+
+            tagsControl.Dock = DockStyle.Fill;
+            tagsControl.LoadTags();
+        }
+
         private void BtAttachment_Click(object sender, EventArgs e)
         {
-            panelAttachments.Visible = !panelAttachments.Visible;
-            if (panelAttachments.Visible)
+            if (panelRight.Visible && panelAttachments.Visible)
             {
-                panelAttachments.LoadAttachments();
+                panelRight.Visible = false;
+                panelAttachments.Dock = DockStyle.None;
+                return;
             }
+
+            panelRight.Visible = true;
+            tagsControl.Visible = false;
+            panelAttachments.Visible = true;
+
+            panelAttachments.Dock = DockStyle.Fill;
+            panelAttachments.LoadAttachments();
+
+
         }
+
+        #endregion
+
+
+        #region form事件
 
         /// <summary>
         /// 关闭时提示保存
@@ -199,7 +230,7 @@ namespace MyPageViewer
         {
             if (PageDocument is not { IsModified: true }) return;
 
-            var ret =MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            var ret = MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             switch (ret)
             {
                 case DialogResult.No:
@@ -218,6 +249,10 @@ namespace MyPageViewer
         {
             PageDocument?.Dispose();
         }
+
+        #endregion
+
+
 
 
 
