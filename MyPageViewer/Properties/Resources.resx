@@ -124,8 +124,11 @@
   <data name="Sub_blue_rotate_cw24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Sub_blue_rotate_cw24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ZipFolder24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ZipFolder24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Broom24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Broom24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Text_Error" xml:space="preserve">
+    <value>错误</value>
   </data>
   <data name="Link24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Link24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -133,13 +136,28 @@
   <data name="Attach24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Attach24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Text_Error" xml:space="preserve">
-    <value>错误</value>
+  <data name="ZipFolder24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ZipFolder24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Text_Hint" xml:space="preserve">
     <value>提示</value>
   </data>
-  <data name="Broom24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Broom24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="star0" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star1.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star2" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star4" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

@@ -11,19 +11,21 @@ using System.Windows.Forms;
 using MyPageViewer.Model;
 using MessageBoxButtons = System.Windows.Forms.MessageBoxButtons;
 using System.Diagnostics;
+using MyPageViewer.Dlg;
+using ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem;
 
 namespace MyPageViewer
 {
     public partial class FormPageViewer : Form
     {
-        public MyPageDocument PagedDocument { get; }
-        public FormPageViewer(MyPageDocument pagedDocument)
+        public MyPageDocument PageDocument { get; }
+        public FormPageViewer(MyPageDocument pageDocument)
         {
-            PagedDocument = pagedDocument;
+            PageDocument = pageDocument;
 
-            if (PagedDocument != null)
+            if (PageDocument != null)
             {
-                if (!PagedDocument.ExtractToTemp(out var message))
+                if (!PageDocument.ExtractToTemp(out var message))
                 {
                     MessageBox.Show(message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
@@ -49,7 +51,7 @@ namespace MyPageViewer
             btCleanHmtl.Click += BtCleanHtml_Click;
             tbTitle.LostFocus += (o, _) =>
             {
-                PagedDocument.Title = tbTitle.Text;
+                PageDocument.Title = tbTitle.Text;
             };
             tsAddresss.DoubleClick += (o, _) =>
             {
@@ -63,17 +65,76 @@ namespace MyPageViewer
                         Verb = "open"
                     });
                 }
-                catch (Exception)
+                catch (Exception exception)
                 {
-                    // ignored
+                    MessageBox.Show(exception.Message, Properties.Resources.Text_Error, MessageBoxButtons.OK,
+                        MessageBoxIcon.Error);
                 }
             };
+            tssIconLink.DoubleClick += TssIconLink_DoubleClick;
+            panelAttachments.Document = PageDocument;
 
-            panelAttachments.Document = PagedDocument;
+            tsbRate0.Click += TsbRate_Click;
+            tsbRate1.Click += TsbRate_Click;
+            tsbRate2.Click += TsbRate_Click;
+            tsbRate3.Click += TsbRate_Click;
+            tsbRate4.Click += TsbRate_Click;
+            tsbRate5.Click += TsbRate_Click;
+
 
             InitializeAsync();
 
 
+        }
+
+        /// <summary>
+        /// 五星评分
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsbRate_Click(object sender, EventArgs e)
+        {
+            var rate = Convert.ToInt32(((ToolStripMenuItem)sender).Tag);
+
+            tsbRate.Image = RateBitmap(rate);
+            PageDocument.Rate = rate;
+        }
+
+        private Bitmap RateBitmap(int rate)
+        {
+            var img = Properties.Resources.star0;
+            switch (rate)
+            {
+                case 1:
+                    img = Properties.Resources.star1;
+                    break;
+                case 2:
+                    img = Properties.Resources.star2;
+                    break;
+                case 3:
+                    img = Properties.Resources.star3;
+                    b41:
+                    img = Properties.Resources.star4;
+                    break;
+                case 5:
+                    img = Properties.Resources.star5;
+                    break;
+            }
+            return img;
+        }
+
+        /// <summary>
+        /// 修改文章源链接地址
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void TssIconLink_DoubleClick(object sender, EventArgs e)
+        {
+            var dlgUrl = new DlgUrlEdit(PageDocument.OriginalUrl);
+            if (dlgUrl.ShowDialog(this) == DialogResult.Cancel) return;
+            PageDocument.OriginalUrl = dlgUrl.Url;
+            tsAddresss.Text = dlgUrl.Url;
         }
 
         /// <summary>
@@ -84,14 +145,14 @@ namespace MyPageViewer
         /// <exception cref="NotImplementedException"></exception>
         private void BtCleanHtml_Click(object sender, EventArgs e)
         {
-            if (!PagedDocument.CleanHtml(out var message))
+            if (!PageDocument.CleanHtml(out var message))
             {
                 if (!string.IsNullOrEmpty(message))
                     MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 return;
             }
-            PagedDocument?.SetModified();
+            PageDocument?.SetModified();
             webView.CoreWebView2.Reload();
         }
 
@@ -116,7 +177,7 @@ namespace MyPageViewer
         /// <exception cref="NotImplementedException"></exception>
         private void BtZip_Click(object sender, EventArgs e)
         {
-            var ret = PagedDocument.RepackFromTemp(out var message);
+            var ret = PageDocument.RepackFromTemp(out var message);
             MessageBox.Show(ret ? "成功重新压制源文件。" : message, Properties.Resources.Text_Error, MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
         }
 
@@ -129,20 +190,33 @@ namespace MyPageViewer
             }
         }
 
+        /// <summary>
+        /// 关闭时提示保存
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void FormPageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (PagedDocument is not { IsModified: true }) return;
+            if (PageDocument is not { IsModified: true }) return;
 
-            if (MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.Cancel) return;
+            var ret =MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            switch (ret)
+            {
+                case DialogResult.No:
+                    return;
+                case DialogResult.Cancel:
+                    e.Cancel = true;
+                    return;
+            }
 
-            if (PagedDocument.RepackFromTemp(out var message)) return;
+            if (PageDocument.RepackFromTemp(out var message)) return;
             MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
             e.Cancel = true;
 
         }
         private void FormPageViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
-            PagedDocument?.Dispose();
+            PageDocument?.Dispose();
         }
 
 
@@ -155,12 +229,13 @@ namespace MyPageViewer
             //await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.chrome.webview.postMessage(window.document.URL);");
             //await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.chrome.webview.addEventListener(\'message\', event => alert(event.data));");
 
-            if (PagedDocument != null && webView.CoreWebView2 != null)
+            if (PageDocument != null && webView.CoreWebView2 != null)
             {
-                Text = PagedDocument.FilePath;
-                tsAddresss.Text = PagedDocument.OriginalUrl;
-                tbTitle.Text = PagedDocument.Title;
-                webView.CoreWebView2.Navigate(PagedDocument.TempIndexPath);
+                Text = PageDocument.FilePath;
+                tsAddresss.Text = PageDocument.OriginalUrl;
+                tbTitle.Text = PageDocument.Title;
+                webView.CoreWebView2.Navigate(PageDocument.TempIndexPath);
+                tsbRate.Image = RateBitmap(PageDocument.Rate);
             }
         }
 

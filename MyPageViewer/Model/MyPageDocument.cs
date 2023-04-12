@@ -19,7 +19,32 @@ namespace MyPageViewer.Model
                 SetModified(true);
             }
         }
-        public string OriginalUrl { get; set; }
+
+        private string _originUrl;
+
+        public string OriginalUrl
+        {
+            get => _originUrl;
+            set
+            {
+                if(_originUrl==value) return;
+                _originUrl = value;
+                SetModified(true);
+            }
+        }
+
+        private int _rate;
+
+        public int Rate
+        {
+            get => _rate;
+            set
+            {
+                if(_rate==value) return;
+                _rate = value;
+                SetModified(true);
+            }
+        }
 
         private bool _manifestChanged;
         public bool IsModified { get; private set; }
@@ -77,6 +102,11 @@ namespace MyPageViewer.Model
             return null;
         }
 
+        /// <summary>
+        /// 解压到临时目录
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool ExtractToTemp(out string message)
         {
             try
@@ -101,9 +131,12 @@ namespace MyPageViewer.Model
                 fileName = Path.Combine(DocTempPath, "manifest.json");
                 if (File.Exists(fileName))
                 {
-                    dynamic jo = JObject.Parse(File.ReadAllText(fileName));
-                    _title = jo.title;
-                    OriginalUrl =jo.originalUrl;
+                    var jo = JObject.Parse(File.ReadAllText(fileName));
+                    _title = (string) jo["title"];
+                    _originUrl = (string)jo["originalUrl"];
+                    var rate = (string)jo["rate"];
+                    if (int.TryParse(rate, out var d))
+                        _rate = d;
                 }
             }
             catch (Exception e)
@@ -122,6 +155,12 @@ namespace MyPageViewer.Model
                 NullValueHandling = NullValueHandling.Ignore,
                 Formatting = Formatting.Indented
             };
+
+        /// <summary>
+        /// 从临时目录重新打包
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
         public bool RepackFromTemp(out string message)
         {
             try
@@ -130,13 +169,13 @@ namespace MyPageViewer.Model
                 if (_manifestChanged)
                 {
                     var fileName = Path.Combine(DocTempPath, "manifest.json");
-                    var jo = File.Exists(fileName) ? JObject.Parse(File.ReadAllText(fileName)) : new JObject("{}");
+                    var jo = File.Exists(fileName) ? JObject.Parse(File.ReadAllText(fileName)) : new JObject();
 
-                    dynamic jd = jo;
-                    jd.title = _title;
-                    jd.originalUrl = OriginalUrl;
+                    jo["title"] = _title;
+                    jo["originalUrl"] = OriginalUrl;
+                    jo["rate"] = Rate;
 
-                    File.WriteAllText(fileName, JsonConvert.SerializeObject(jd, JsonSerializerSettings));
+                    File.WriteAllText(fileName, JsonConvert.SerializeObject(jo, JsonSerializerSettings));
                 }
 
 

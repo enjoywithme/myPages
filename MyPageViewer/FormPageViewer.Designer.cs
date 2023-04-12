@@ -33,7 +33,15 @@ namespace MyPageViewer
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormPageViewer));
             statusStrip1 = new StatusStrip();
+            tssIconLink = new ToolStripStatusLabel();
             tsAddresss = new ToolStripStatusLabel();
+            tsbRate = new ToolStripDropDownButton();
+            tsbRate5 = new ToolStripMenuItem();
+            tsbRate4 = new ToolStripMenuItem();
+            tsbRate3 = new ToolStripMenuItem();
+            tsbRate2 = new ToolStripMenuItem();
+            tsbRate1 = new ToolStripMenuItem();
+            tsbRate0 = new ToolStripMenuItem();
             tbTitle = new TextBox();
             btAttachment = new Button();
             panel1 = new Panel();
@@ -51,22 +59,103 @@ namespace MyPageViewer
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { tsAddresss });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tssIconLink, tsAddresss, tsbRate });
             statusStrip1.Location = new Point(0, 511);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(1023, 22);
             statusStrip1.TabIndex = 2;
             statusStrip1.Text = "statusStrip1";
             // 
+            // tssIconLink
+            // 
+            tssIconLink.AutoToolTip = true;
+            tssIconLink.DoubleClickEnabled = true;
+            tssIconLink.Image = Properties.Resources.Link24;
+            tssIconLink.Name = "tssIconLink";
+            tssIconLink.Size = new Size(16, 17);
+            tssIconLink.ToolTipText = "双击修改URL";
+            // 
             // tsAddresss
             // 
+            tsAddresss.AutoToolTip = true;
             tsAddresss.DoubleClickEnabled = true;
-            tsAddresss.Image = Properties.Resources.Link24;
             tsAddresss.ImageAlign = ContentAlignment.MiddleLeft;
             tsAddresss.Name = "tsAddresss";
-            tsAddresss.Size = new Size(977, 17);
+            tsAddresss.Size = new Size(858, 17);
             tsAddresss.Spring = true;
             tsAddresss.TextAlign = ContentAlignment.MiddleLeft;
+            tsAddresss.ToolTipText = "双击打开URL";
+            // 
+            // tsbRate
+            // 
+            tsbRate.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate.DropDownItems.AddRange(new ToolStripItem[] { tsbRate5, tsbRate4, tsbRate3, tsbRate2, tsbRate1, tsbRate0 });
+            tsbRate.Image = Properties.Resources.star0;
+            tsbRate.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate.ImageTransparentColor = Color.Magenta;
+            tsbRate.Name = "tsbRate";
+            tsbRate.Size = new Size(103, 20);
+            tsbRate.Text = "tsbRate";
+            // 
+            // tsbRate5
+            // 
+            tsbRate5.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate5.Image = Properties.Resources.star5;
+            tsbRate5.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate5.Name = "tsbRate5";
+            tsbRate5.Size = new Size(254, 22);
+            tsbRate5.Tag = "5";
+            tsbRate5.Text = "r5";
+            // 
+            // tsbRate4
+            // 
+            tsbRate4.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate4.Image = Properties.Resources.star4;
+            tsbRate4.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate4.Name = "tsbRate4";
+            tsbRate4.Size = new Size(254, 22);
+            tsbRate4.Tag = "4";
+            tsbRate4.Text = "r4";
+            // 
+            // tsbRate3
+            // 
+            tsbRate3.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate3.Image = Properties.Resources.star3;
+            tsbRate3.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate3.Name = "tsbRate3";
+            tsbRate3.Size = new Size(254, 22);
+            tsbRate3.Tag = "3";
+            tsbRate3.Text = "r3";
+            // 
+            // tsbRate2
+            // 
+            tsbRate2.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate2.Image = Properties.Resources.star2;
+            tsbRate2.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate2.Name = "tsbRate2";
+            tsbRate2.Size = new Size(254, 22);
+            tsbRate2.Tag = "2";
+            tsbRate2.Text = "r2";
+            // 
+            // tsbRate1
+            // 
+            tsbRate1.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate1.Image = Properties.Resources.star1;
+            tsbRate1.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate1.Name = "tsbRate1";
+            tsbRate1.Size = new Size(254, 22);
+            tsbRate1.Tag = "1";
+            tsbRate1.Text = "r1";
+            // 
+            // tsbRate0
+            // 
+            tsbRate0.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbRate0.Image = Properties.Resources.star0;
+            tsbRate0.ImageScaling = ToolStripItemImageScaling.None;
+            tsbRate0.Name = "tsbRate0";
+            tsbRate0.Size = new Size(254, 22);
+            tsbRate0.Tag = "0";
+            tsbRate0.Text = "r0";
             // 
             // tbTitle
             // 
@@ -203,5 +292,13 @@ namespace MyPageViewer
         private Button btZip;
         private Button btCleanHmtl;
         private Button btReloadFromTemp;
+        private ToolStripStatusLabel tssIconLink;
+        private ToolStripDropDownButton tsbRate;
+        private ToolStripMenuItem tsbRate1;
+        private ToolStripMenuItem tsbRate0;
+        private ToolStripMenuItem tsbRate5;
+        private ToolStripMenuItem tsbRate4;
+        private ToolStripMenuItem tsbRate3;
+        private ToolStripMenuItem tsbRate2;
     }
 }
