@@ -63,25 +63,6 @@ namespace MyPageViewer.Model
 
         public string TempAttachmentsPath => Path.Combine(DocTempPath, "Attachments");
 
-        private static string _tempPath;
-        private static string _homePath;
-        public static string TempPath
-        {
-            get
-            {
-                if (!string.IsNullOrEmpty(_tempPath)&&Directory.Exists(_tempPath)) return _tempPath;
-                var path = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-                _homePath = Path.Combine(path, "My pages");
-                if(!Directory.Exists(_homePath))
-                    Directory.CreateDirectory(_homePath);
-                _tempPath = Path.Combine(_homePath, "temp");
-                if(!Directory.Exists(_tempPath))
-                    Directory.CreateDirectory(_tempPath);
-
-                return _tempPath;
-            }
-        }
-
 
         public static MyPageDocument NewFromArgs(string[] args)
         {
@@ -120,7 +101,7 @@ namespace MyPageViewer.Model
                 if (string.IsNullOrEmpty(GuiId))
                     GuiId = Guid.NewGuid().ToString();
 
-                DocTempPath = Path.Combine(TempPath, GuiId);
+                DocTempPath = Path.Combine(MyPageSettings.Instance.TempPath, GuiId);
                 if (Directory.Exists(DocTempPath))
                     Directory.Delete(DocTempPath,true);
                 Directory.CreateDirectory(DocTempPath);
@@ -187,7 +168,7 @@ namespace MyPageViewer.Model
                 }
 
 
-                var tempZip = Path.Combine(TempPath, $"{GuiId}.zip");
+                var tempZip = Path.Combine(MyPageSettings.Instance.TempPath, $"{GuiId}.zip");
                 if(File.Exists(tempZip))
                     File.Delete(tempZip); 
                 System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);

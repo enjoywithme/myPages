@@ -27,7 +27,7 @@ namespace MyPageViewer
             {
                 if (!PageDocument.ExtractToTemp(out var message))
                 {
-                    MessageBox.Show(message, "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
@@ -50,7 +50,7 @@ namespace MyPageViewer
             btZip.Click += BtZip_Click;
             btReloadFromTemp.Click += BtReloadFromTemp_Click;
             btCleanHmtl.Click += BtCleanHtml_Click;
-            tbTitle.LostFocus += (o, _) =>
+            tbTitle.TextChanged += (o, _) =>
             {
                 PageDocument.Title = tbTitle.Text;
             };
@@ -87,9 +87,7 @@ namespace MyPageViewer
 
 
         }
-
-
-
+        
         /// <summary>
         /// 五星评分
         /// </summary>
@@ -248,14 +246,13 @@ namespace MyPageViewer
         private void FormPageViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
             PageDocument?.Dispose();
+            FormMain.Instance.Show();
         }
 
         #endregion
 
 
-
-
-
+        
         async void InitializeAsync()
         {
             await webView.EnsureCoreWebView2Async(null);

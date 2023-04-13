@@ -2,7 +2,7 @@
   "profiles": {
     "MyPageViewer": {
       "commandName": "Project",
-      "commandLineArgs": "\"\""
+      "commandLineArgs": "-\"D:\\temp\\CPFD Barracuda Virtual Reactor 17.3.piz\""
     }
   }
 }

@@ -30,7 +30,7 @@
         {
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
-            退出XToolStripMenuItem = new ToolStripMenuItem();
+            tsmiExit = new ToolStripMenuItem();
             视图VToolStripMenuItem = new ToolStripMenuItem();
             tsmiViewTree = new ToolStripMenuItem();
             tsmiViewPreviewPane = new ToolStripMenuItem();
@@ -44,6 +44,8 @@
             splitter2 = new Splitter();
             panelMiddle = new Panel();
             listView1 = new ListView();
+            tsmiOptions = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripSeparator();
             menuStrip1.SuspendLayout();
             panelTop.SuspendLayout();
             panelMiddle.SuspendLayout();
@@ -60,16 +62,16 @@
             // 
             // 文件FToolStripMenuItem
             // 
-            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { 退出XToolStripMenuItem });
+            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiOptions, toolStripMenuItem2, tsmiExit });
             文件FToolStripMenuItem.Name = "文件FToolStripMenuItem";
             文件FToolStripMenuItem.Size = new Size(58, 21);
             文件FToolStripMenuItem.Text = "文件(&F)";
             // 
-            // 退出XToolStripMenuItem
+            // tsmiExit
             // 
-            退出XToolStripMenuItem.Name = "退出XToolStripMenuItem";
-            退出XToolStripMenuItem.Size = new Size(116, 22);
-            退出XToolStripMenuItem.Text = "退出(&X)";
+            tsmiExit.Name = "tsmiExit";
+            tsmiExit.Size = new Size(180, 22);
+            tsmiExit.Text = "退出(&X)";
             // 
             // 视图VToolStripMenuItem
             // 
@@ -176,6 +178,17 @@
             listView1.TabIndex = 0;
             listView1.UseCompatibleStateImageBehavior = false;
             // 
+            // tsmiOptions
+            // 
+            tsmiOptions.Name = "tsmiOptions";
+            tsmiOptions.Size = new Size(180, 22);
+            tsmiOptions.Text = "选项(&O)";
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(177, 6);
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -206,7 +219,7 @@
 
         private MenuStrip menuStrip1;
         private ToolStripMenuItem 文件FToolStripMenuItem;
-        private ToolStripMenuItem 退出XToolStripMenuItem;
+        private ToolStripMenuItem tsmiExit;
         private Panel panelTop;
         private TextBox tbSearch;
         private StatusStrip statusStrip1;
@@ -220,5 +233,7 @@
         private ToolStripMenuItem tsmiViewTree;
         private ToolStripMenuItem tsmiViewPreviewPane;
         private ToolStripMenuItem tsmiViewStatus;
+        private ToolStripMenuItem tsmiOptions;
+        private ToolStripSeparator toolStripMenuItem2;
     }
 }
