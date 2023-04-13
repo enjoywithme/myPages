@@ -17,10 +17,11 @@ namespace MyPageViewer
 
             #region 主菜单
 
+            tsmiStartIndex.Click += (_, _) => { PageIndexer.Instance.Start(); };
             tsmiExit.Click += (_, _) => { Close(); };
             tsmiOptions.Click += (_, _) => { (new DlgOptions()).ShowDialog(this); };
 
-
+            //Menu items view
             panelTree.Visible = tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
 
             tsmiViewTree.Click += (_, _) =>
@@ -40,11 +41,13 @@ namespace MyPageViewer
                 statusStrip1.Visible = !statusStrip1.Visible;
                 tsmiViewStatus.Checked = statusStrip1.Visible;
             };
-            
+
 
             #endregion
 
-            //Menu items view
+
+            //查询
+            tbSearch.TextChanged += TbSearch_TextChanged;
 
 
             //处理命令行
@@ -58,9 +61,23 @@ namespace MyPageViewer
 
         }
 
-        private void TsmiOptions_Click(object sender, EventArgs e)
+        private CancellationTokenSource _searchCancellationTokenSource;
+        private async void TbSearch_TextChanged(object sender, EventArgs e)
         {
-            throw new NotImplementedException();
+            _searchCancellationTokenSource?.Cancel();
+
+            _searchCancellationTokenSource = new CancellationTokenSource();
+            var items = await MyPageDb.Instance.Search(tbSearch.Text,_searchCancellationTokenSource.Token);
+            if (items == null) {return;}
+            listView.Items.Clear();
+            foreach (var poCo in items)
+            {
+                var listViewItem = new ListViewItem(poCo.Title, 0);
+                listViewItem.SubItems.Add(poCo.FilePath);
+                listView.Items.Add(listViewItem);
+            }
         }
+
+
     }
 }

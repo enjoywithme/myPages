@@ -30,6 +30,9 @@
         {
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
+            tsmiStartIndex = new ToolStripMenuItem();
+            tsmiOptions = new ToolStripMenuItem();
+            toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             视图VToolStripMenuItem = new ToolStripMenuItem();
             tsmiViewTree = new ToolStripMenuItem();
@@ -43,9 +46,9 @@
             panelTree = new Panel();
             splitter2 = new Splitter();
             panelMiddle = new Panel();
-            listView1 = new ListView();
-            tsmiOptions = new ToolStripMenuItem();
-            toolStripMenuItem2 = new ToolStripSeparator();
+            listView = new ListView();
+            colTitle = new ColumnHeader();
+            colFilePath = new ColumnHeader();
             menuStrip1.SuspendLayout();
             panelTop.SuspendLayout();
             panelMiddle.SuspendLayout();
@@ -62,15 +65,32 @@
             // 
             // 文件FToolStripMenuItem
             // 
-            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiOptions, toolStripMenuItem2, tsmiExit });
+            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, tsmiOptions, toolStripMenuItem2, tsmiExit });
             文件FToolStripMenuItem.Name = "文件FToolStripMenuItem";
             文件FToolStripMenuItem.Size = new Size(58, 21);
             文件FToolStripMenuItem.Text = "文件(&F)";
             // 
+            // tsmiStartIndex
+            // 
+            tsmiStartIndex.Name = "tsmiStartIndex";
+            tsmiStartIndex.Size = new Size(124, 22);
+            tsmiStartIndex.Text = "开始索引";
+            // 
+            // tsmiOptions
+            // 
+            tsmiOptions.Name = "tsmiOptions";
+            tsmiOptions.Size = new Size(124, 22);
+            tsmiOptions.Text = "选项(&O)";
+            // 
+            // toolStripMenuItem2
+            // 
+            toolStripMenuItem2.Name = "toolStripMenuItem2";
+            toolStripMenuItem2.Size = new Size(121, 6);
+            // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(180, 22);
+            tsmiExit.Size = new Size(124, 22);
             tsmiExit.Text = "退出(&X)";
             // 
             // 视图VToolStripMenuItem
@@ -83,13 +103,13 @@
             // tsmiViewTree
             // 
             tsmiViewTree.Name = "tsmiViewTree";
-            tsmiViewTree.Size = new Size(180, 22);
+            tsmiViewTree.Size = new Size(127, 22);
             tsmiViewTree.Text = "浏览树(&T)";
             // 
             // tsmiViewPreviewPane
             // 
             tsmiViewPreviewPane.Name = "tsmiViewPreviewPane";
-            tsmiViewPreviewPane.Size = new Size(180, 22);
+            tsmiViewPreviewPane.Size = new Size(127, 22);
             tsmiViewPreviewPane.Text = "预览(&P)";
             // 
             // tsmiViewStatus
@@ -97,7 +117,7 @@
             tsmiViewStatus.Checked = true;
             tsmiViewStatus.CheckState = CheckState.Checked;
             tsmiViewStatus.Name = "tsmiViewStatus";
-            tsmiViewStatus.Size = new Size(180, 22);
+            tsmiViewStatus.Size = new Size(127, 22);
             tsmiViewStatus.Text = "状态栏(&S)";
             // 
             // panelTop
@@ -162,32 +182,34 @@
             // 
             // panelMiddle
             // 
-            panelMiddle.Controls.Add(listView1);
+            panelMiddle.Controls.Add(listView);
             panelMiddle.Dock = DockStyle.Fill;
             panelMiddle.Location = new Point(224, 53);
             panelMiddle.Name = "panelMiddle";
             panelMiddle.Size = new Size(538, 527);
             panelMiddle.TabIndex = 9;
             // 
-            // listView1
+            // listView
             // 
-            listView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            listView1.Location = new Point(3, 4);
-            listView1.Name = "listView1";
-            listView1.Size = new Size(535, 520);
-            listView1.TabIndex = 0;
-            listView1.UseCompatibleStateImageBehavior = false;
+            listView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            listView.Columns.AddRange(new ColumnHeader[] { colTitle, colFilePath });
+            listView.FullRowSelect = true;
+            listView.Location = new Point(3, 4);
+            listView.Name = "listView";
+            listView.Size = new Size(535, 520);
+            listView.TabIndex = 0;
+            listView.UseCompatibleStateImageBehavior = false;
+            listView.View = View.Details;
             // 
-            // tsmiOptions
+            // colTitle
             // 
-            tsmiOptions.Name = "tsmiOptions";
-            tsmiOptions.Size = new Size(180, 22);
-            tsmiOptions.Text = "选项(&O)";
+            colTitle.Text = "名称";
+            colTitle.Width = 300;
             // 
-            // toolStripMenuItem2
+            // colFilePath
             // 
-            toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(177, 6);
+            colFilePath.Text = "路径";
+            colFilePath.Width = 300;
             // 
             // FormMain
             // 
@@ -228,12 +250,15 @@
         private Panel panelTree;
         private Splitter splitter2;
         private Panel panelMiddle;
-        private ListView listView1;
+        private ListView listView;
         private ToolStripMenuItem 视图VToolStripMenuItem;
         private ToolStripMenuItem tsmiViewTree;
         private ToolStripMenuItem tsmiViewPreviewPane;
         private ToolStripMenuItem tsmiViewStatus;
         private ToolStripMenuItem tsmiOptions;
         private ToolStripSeparator toolStripMenuItem2;
+        private ToolStripMenuItem tsmiStartIndex;
+        private ColumnHeader colTitle;
+        private ColumnHeader colFilePath;
     }
 }

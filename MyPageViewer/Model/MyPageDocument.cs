@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
 using System.Text;
+using MyPageViewer.PoCo;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -9,7 +10,7 @@ namespace MyPageViewer.Model
     public class MyPageDocument:IDisposable
     {
         public string FilePath { get; set; }
-        public string GuiId { get; set; }
+        public string GuId { get; set; }
         private string _title;
         public string Title
         {
@@ -98,10 +99,10 @@ namespace MyPageViewer.Model
                 if (string.IsNullOrEmpty(FilePath) || !File.Exists(FilePath))
                     throw new Exception("页文件不存在！");
 
-                if (string.IsNullOrEmpty(GuiId))
-                    GuiId = Guid.NewGuid().ToString();
+                if (string.IsNullOrEmpty(GuId))
+                    GuId = Guid.NewGuid().ToString();
 
-                DocTempPath = Path.Combine(MyPageSettings.Instance.TempPath, GuiId);
+                DocTempPath = Path.Combine(MyPageSettings.Instance.TempPath, GuId);
                 if (Directory.Exists(DocTempPath))
                     Directory.Delete(DocTempPath,true);
                 Directory.CreateDirectory(DocTempPath);
@@ -168,7 +169,7 @@ namespace MyPageViewer.Model
                 }
 
 
-                var tempZip = Path.Combine(MyPageSettings.Instance.TempPath, $"{GuiId}.zip");
+                var tempZip = Path.Combine(MyPageSettings.Instance.TempPath, $"{GuId}.zip");
                 if(File.Exists(tempZip))
                     File.Delete(tempZip); 
                 System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);
@@ -249,6 +250,17 @@ namespace MyPageViewer.Model
         }
 
 
+        public PageDocumentPoCo ToPoCo()
+        {
+            return new PageDocumentPoCo()
+            {
+                Guid = GuId,
+                Title = _title,
+                FilePath = FilePath,
+                Rate = _rate,
+                OriginUrl = _originUrl
+            };
+        }
 
         public void Dispose()
         {
