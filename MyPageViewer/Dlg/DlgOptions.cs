@@ -50,7 +50,7 @@ namespace MyPageViewer.Dlg
 
             MyPageSettings.Instance.WorkingDirectory = tbWorkingDir.Text;
             MyPageSettings.Instance.ScanFolders = listScanFolders.Items.Cast<string>().ToList();
-            MyPageSettings.Instance.Save();
+            MyPageSettings.Instance.Save(true);
             Close();
         }
 

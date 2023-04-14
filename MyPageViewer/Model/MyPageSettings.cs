@@ -131,9 +131,9 @@ namespace MyPageViewer.Model
                 writer.Close();
                 _modified = false;
             }
-            catch (Exception)
+            catch (Exception exception)
             {
-                // ignored
+                Program.ShowError(exception.Message);
             }
         }
     }

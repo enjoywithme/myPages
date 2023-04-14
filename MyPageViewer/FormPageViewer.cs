@@ -246,7 +246,6 @@ namespace MyPageViewer
         private void FormPageViewer_FormClosed(object sender, FormClosedEventArgs e)
         {
             PageDocument?.Dispose();
-            FormMain.Instance.Show();
         }
 
         #endregion

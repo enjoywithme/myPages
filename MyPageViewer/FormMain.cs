@@ -34,7 +34,8 @@ namespace MyPageViewer
             tsmiViewTree.Click += (_, _) =>
             {
                 MyPageSettings.Instance.ViewTree = !MyPageSettings.Instance.ViewTree;
-                panelTree.Visible = tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
+                tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
+                panelTree.Visible = MyPageSettings.Instance.ViewTree;
             };
             panelPreview.Visible = tsmiViewPreviewPane.Checked = MyPageSettings.Instance.ViewPreview;
             tsmiViewPreviewPane.Click += (_, _) =>
@@ -55,21 +56,41 @@ namespace MyPageViewer
 
             //查询
             tbSearch.TextChanged += TbSearch_TextChanged;
-
             listView.MouseDoubleClick += ListView_MouseDoubleClick;
 
-            //处理命令行
-            if (_startDocument != null)
-            {
-                (new FormPageViewer(_startDocument)).Show(this);
-                Hide();
-            }
+            //Tree
+            naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
+
+            Resize += FormMain_Resize;
+            notifyIcon1.MouseClick += (_, _) => ShowWindow();
+            notifyIcon1.MouseDoubleClick += (_, _) => ShowWindow();
+
+            //处理命令行
+            if (_startDocument == null) return;
+            (new FormPageViewer(_startDocument)).Show(this);
+            Hide();
+        }
+
+        private void NaviTreeControl1_NodeChanged(object sender, string e)
+        {
+            listView.Items.Clear();
+
+            if (Directory.Exists(e))
+            {
+                var files = Directory.EnumerateFiles(e, "*.piz");
+                foreach (var file in files)
+                {
+                    var listViewItem = new ListViewItem(Path.GetFileNameWithoutExtension(file), 0);
+                    listViewItem.SubItems.Add(file);
+                    listView.Items.Add(listViewItem);
+                }
+            }
         }
 
         private void OpenFilePath(string filePath)
         {
-            if(string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
+            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
             var doc = new MyPageDocument { FilePath = filePath };
             var form = new FormPageViewer(doc);
             form.Show();
@@ -82,7 +103,7 @@ namespace MyPageViewer
         private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var info = ((ListView)sender).HitTest(e.X, e.Y);
-            if(info.Item==null) return;
+            if (info.Item == null) return;
 
             var filePath = info.Item.SubItems[1].Text;
             OpenFilePath(filePath);
@@ -94,8 +115,8 @@ namespace MyPageViewer
             _searchCancellationTokenSource?.Cancel();
 
             _searchCancellationTokenSource = new CancellationTokenSource();
-            var items = await MyPageDb.Instance.Search(tbSearch.Text,_searchCancellationTokenSource.Token);
-            if (items == null) {return;}
+            var items = await MyPageDb.Instance.Search(tbSearch.Text, _searchCancellationTokenSource.Token);
+            if (items == null) { return; }
             listView.Items.Clear();
             foreach (var poCo in items)
             {
@@ -138,11 +159,30 @@ namespace MyPageViewer
             base.WndProc(ref message);
         }
 
+        #region 窗口控制
+
         public void ShowWindow()
         {
             // Insert code here to make your form show itself.
             WinApi.ShowToFront(this.Handle);
         }
+
+        void MinimizeToTray()
+        {
+            notifyIcon1.Visible = true;
+            //WindowState = FormWindowState.Minimized;
+            Hide();
+        }
+
+        private void FormMain_Resize(object sender, EventArgs e)
+        {
+            if (WindowState == FormWindowState.Minimized)
+            {
+                MinimizeToTray();
+            }
+        }
+
+        #endregion
 
 
     }

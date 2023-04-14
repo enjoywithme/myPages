@@ -28,6 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormMain));
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
             tsmiStartIndex = new ToolStripMenuItem();
@@ -44,13 +46,16 @@
             panelPreview = new Panel();
             splitter1 = new Splitter();
             panelTree = new Panel();
+            naviTreeControl1 = new Controls.ExploreTreeControl();
             splitter2 = new Splitter();
             panelMiddle = new Panel();
             listView = new ListView();
             colTitle = new ColumnHeader();
             colFilePath = new ColumnHeader();
+            notifyIcon1 = new NotifyIcon(components);
             menuStrip1.SuspendLayout();
             panelTop.SuspendLayout();
+            panelTree.SuspendLayout();
             panelMiddle.SuspendLayout();
             SuspendLayout();
             // 
@@ -165,12 +170,21 @@
             // 
             // panelTree
             // 
+            panelTree.Controls.Add(naviTreeControl1);
             panelTree.Dock = DockStyle.Left;
             panelTree.Location = new Point(0, 53);
             panelTree.Name = "panelTree";
             panelTree.Size = new Size(221, 527);
             panelTree.TabIndex = 7;
             panelTree.Visible = false;
+            // 
+            // naviTreeControl1
+            // 
+            naviTreeControl1.Dock = DockStyle.Fill;
+            naviTreeControl1.Location = new Point(0, 0);
+            naviTreeControl1.Name = "naviTreeControl1";
+            naviTreeControl1.Size = new Size(221, 527);
+            naviTreeControl1.TabIndex = 0;
             // 
             // splitter2
             // 
@@ -211,6 +225,12 @@
             colFilePath.Text = "路径";
             colFilePath.Width = 300;
             // 
+            // notifyIcon1
+            // 
+            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
+            notifyIcon1.Text = "My pages";
+            notifyIcon1.Visible = true;
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -224,6 +244,7 @@
             Controls.Add(statusStrip1);
             Controls.Add(panelTop);
             Controls.Add(menuStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
             Name = "FormMain";
             Text = "My pages";
@@ -232,6 +253,7 @@
             menuStrip1.PerformLayout();
             panelTop.ResumeLayout(false);
             panelTop.PerformLayout();
+            panelTree.ResumeLayout(false);
             panelMiddle.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
@@ -260,5 +282,7 @@
         private ToolStripMenuItem tsmiStartIndex;
         private ColumnHeader colTitle;
         private ColumnHeader colFilePath;
+        private NotifyIcon notifyIcon1;
+        private Controls.ExploreTreeControl naviTreeControl1;
     }
 }
