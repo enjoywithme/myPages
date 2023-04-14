@@ -30,6 +30,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\mySharedLib\mySharedLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Dlg\DlgTagAdd.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -45,6 +49,12 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="myPage.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

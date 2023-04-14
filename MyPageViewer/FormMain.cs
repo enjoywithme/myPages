@@ -1,15 +1,22 @@
 using MyPageViewer.Dlg;
 using MyPageViewer.Model;
+using mySharedLib;
+using System.IO.MemoryMappedFiles;
+using System.Diagnostics;
 
 namespace MyPageViewer
 {
     public partial class FormMain : Form
     {
-        public static FormMain Instance { get; } = new FormMain();
 
-        public FormMain()
+        public static FormMain Instance { get; set; }
+        private readonly MyPageDocument _startDocument;
+
+
+        public FormMain(MyPageDocument startDocument)
         {
             InitializeComponent();
+            _startDocument = startDocument;
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -49,16 +56,36 @@ namespace MyPageViewer
             //查询
             tbSearch.TextChanged += TbSearch_TextChanged;
 
+            listView.MouseDoubleClick += ListView_MouseDoubleClick;
 
             //处理命令行
-            var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
-
-            if (myPageDoc != null)
+            if (_startDocument != null)
             {
-                (new FormPageViewer(myPageDoc)).Show(this);
+                (new FormPageViewer(_startDocument)).Show(this);
                 Hide();
             }
 
+        }
+
+        private void OpenFilePath(string filePath)
+        {
+            if(string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
+            var doc = new MyPageDocument { FilePath = filePath };
+            var form = new FormPageViewer(doc);
+            form.Show();
+            WinApi.ShowToFront(form.Handle);
+
+            form.WindowState = FormWindowState.Maximized;
+
+        }
+
+        private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            var info = ((ListView)sender).HitTest(e.X, e.Y);
+            if(info.Item==null) return;
+
+            var filePath = info.Item.SubItems[1].Text;
+            OpenFilePath(filePath);
         }
 
         private CancellationTokenSource _searchCancellationTokenSource;
@@ -76,6 +103,45 @@ namespace MyPageViewer
                 listViewItem.SubItems.Add(poCo.FilePath);
                 listView.Items.Add(listViewItem);
             }
+        }
+
+
+        protected override void WndProc(ref Message message)
+        {
+            if (message.Msg == SingleInstance.WM_SHOWFIRSTINSTANCE)
+            {
+                if (message.LParam != IntPtr.Zero)
+                {
+                    try
+                    {
+                        var mmf = MemoryMappedFile.CreateOrOpen(SingleInstance.Instance.MmfName, SingleInstance.MmfLength, MemoryMappedFileAccess.ReadWrite);
+                        var n = (int)message.LParam;
+                        var accessor = mmf.CreateViewAccessor(0, SingleInstance.MmfLength);
+                        var bytes = new byte[n];
+                        var c = accessor.ReadArray(0, bytes, 0, n);
+                        var s = System.Text.Encoding.Default.GetString(bytes, 0, c);
+
+                        OpenFilePath(s);
+
+                    }
+                    catch (Exception e)
+                    {
+                        Debug.WriteLine(e.Message);
+                    }
+                }
+                else
+                    ShowWindow();
+
+
+            }
+
+            base.WndProc(ref message);
+        }
+
+        public void ShowWindow()
+        {
+            // Insert code here to make your form show itself.
+            WinApi.ShowToFront(this.Handle);
         }
 
 

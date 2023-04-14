@@ -64,7 +64,7 @@ namespace MyPageViewer.Model
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(searchString)||searchString.Length<3)
+                if (string.IsNullOrWhiteSpace(searchString)||searchString.Length<2)
                     return null;
 
                 return await _db.Queryable<PageDocumentPoCo>().Where(it => it.Title.Contains(searchString)

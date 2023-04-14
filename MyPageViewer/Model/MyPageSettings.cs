@@ -12,8 +12,13 @@ namespace MyPageViewer.Model
     [Serializable]
     public class MyPageSettings
     {
-        public static MyPageSettings Instance { get; set; }
+        public static MyPageSettings Instance
+        {
+            get => _instance;
+            set => _instance = value;
+        }
 
+        private bool _modified;
         private string _workingDirectory;
         /// <summary>
         /// 工作目录，存放数据库、临时文件
@@ -36,6 +41,11 @@ namespace MyPageViewer.Model
         }
 
         private string _tempPath;
+        private List<string> _scanFolders;
+        private bool _viewTree;
+        private bool _viewPreview;
+        private static MyPageSettings _instance;
+
         /// <summary>
         /// 临时文件目录
         /// </summary>
@@ -55,9 +65,33 @@ namespace MyPageViewer.Model
             }
         }
 
-        public List<string> ScanFolders { get; set; }
-        public bool ViewTree { get; set; }
-        public bool ViewPreview { get; set; }
+        public List<string> ScanFolders
+        {
+            get => _scanFolders;
+            set => _scanFolders = value;
+        }
+
+        public bool ViewTree
+        {
+            get => _viewTree;
+            set
+            {
+                if (_viewTree == value) return;
+                _viewTree = value;
+                _modified = true;
+            }
+        }
+
+        public bool ViewPreview
+        {
+            get => _viewPreview;
+            set
+            {
+                if (_viewPreview == value) return;
+                _viewPreview = value;
+                _modified = true;
+            }
+        }
 
         public static string ExecutePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private const string SettingFileName = "mypages.xml";
@@ -83,8 +117,9 @@ namespace MyPageViewer.Model
             }
         }
 
-        public void Save()
+        public void Save(bool force=false)
         {
+            if (!_modified && !force) return;
             try
             {
                 var serializer = new XmlSerializer(typeof(MyPageSettings));
@@ -94,6 +129,7 @@ namespace MyPageViewer.Model
                 XmlWriter writer = new XmlTextWriter(fs, Encoding.UTF8);
                 serializer.Serialize(writer, this);
                 writer.Close();
+                _modified = false;
             }
             catch (Exception)
             {
