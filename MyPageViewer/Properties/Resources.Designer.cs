@@ -73,6 +73,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Bin24 {
+            get {
+                object obj = ResourceManager.GetObject("Bin24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Broom24 {
             get {
                 object obj = ResourceManager.GetObject("Broom24", resourceCulture);
@@ -230,6 +240,15 @@ namespace MyPageViewer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 确定删除该文档？.
+        /// </summary>
+        internal static string Text_ConfirmDelete {
+            get {
+                return ResourceManager.GetString("Text_ConfirmDelete", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 错误.
         /// </summary>
         internal static string Text_Error {
@@ -244,6 +263,15 @@ namespace MyPageViewer.Properties {
         internal static string Text_Hint {
             get {
                 return ResourceManager.GetString("Text_Hint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 文档已经修改，要保存吗？.
+        /// </summary>
+        internal static string Text_SaveModified {
+            get {
+                return ResourceManager.GetString("Text_SaveModified", resourceCulture);
             }
         }
         

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using MyPageViewer.Model;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using TreeView = System.Windows.Forms.TreeView;
 
 namespace MyPageViewer.Controls
 {
@@ -23,6 +25,7 @@ namespace MyPageViewer.Controls
         public ExploreTreeType TreeType => cbTreeType.SelectedIndex == 0 ? ExploreTreeType.Folder : (ExploreTreeType)Tag;
 
         public event EventHandler<string> NodeChanged;
+        private readonly TreeView _cacheTree = new TreeView();
 
         public ExploreTreeControl()
         {
@@ -39,6 +42,7 @@ namespace MyPageViewer.Controls
             cbTreeType.SelectedIndexChanged += CbTreeType_SelectedIndexChanged;
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
+            cbFilter.TextUpdate += ((_, _) => DisplayTree());
         }
 
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
@@ -54,19 +58,55 @@ namespace MyPageViewer.Controls
 
         public void LoadDirectory(string dir)
         {
+            _cacheTree.Nodes.Clear();
             var di = new DirectoryInfo(dir);
-            var tds = treeView1.Nodes.Add(di.Name);
+            var tds = _cacheTree.Nodes.Add(di.Name);
             tds.Tag = di.FullName;
             tds.ImageIndex = 0;
             tds.StateImageIndex = 0;
             //LoadFiles(dir, tds);
             LoadSubDirectories(dir, tds);
 
+            DisplayTree();
         }
+
+        private void DisplayTree()
+        {
+            //blocks repainting tree till all objects loaded
+            treeView1.BeginUpdate();
+            treeView1.Nodes.Clear();
+            if (cbFilter.Text != string.Empty)
+            {
+                foreach (TreeNode parentNode in _cacheTree.Nodes)
+                {
+                    LoadFilterNode(parentNode);
+                }
+            }
+            else
+            {
+                foreach (TreeNode node in this._cacheTree.Nodes)
+                {
+                    treeView1.Nodes.Add((TreeNode)node.Clone());
+                }
+            }
+            //enables redrawing tree after all objects have been added
+            this.treeView1.EndUpdate();
+        }
+
+
+        private void LoadFilterNode(TreeNode node)
+        {
+            if (node.Text.Contains(cbFilter.Text))
+                treeView1.Nodes.Add((TreeNode)node.Clone());
+            foreach (TreeNode treeNode in node.Nodes)
+            {
+                LoadFilterNode(treeNode);
+            }
+        }
+
 
         private void LoadSubDirectories(string dir, TreeNode td)
         {
-            // Get all subdirectories
             var subdirectories = Directory.GetDirectories(dir);
             foreach (var s in subdirectories)
             {
@@ -75,22 +115,10 @@ namespace MyPageViewer.Controls
                 tds.StateImageIndex = 0;
                 tds.Tag = di.FullName;
                 //LoadFiles(subdirectory, tds);
-                LoadSubDirectories(s, tds);
+                LoadSubDirectories(s, tds); td.EnsureVisible();
             }
         }
 
-        private void LoadFiles(string dir, TreeNode td)
-        {
-            var files = Directory.GetFiles(dir, "*.*");
-            // Loop through them to see files
-            foreach (var file in files)
-            {
-                var fi = new FileInfo(file);
-                var tds = td.Nodes.Add(fi.Name);
-                tds.Tag = fi.FullName;
-                tds.StateImageIndex = 1;
-            }
-        }
 
 
     }

@@ -50,6 +50,7 @@ namespace MyPageViewer
             btZip.Click += BtZip_Click;
             btReloadFromTemp.Click += BtReloadFromTemp_Click;
             btCleanHmtl.Click += BtCleanHtml_Click;
+            btDelete.Click += BtDelete_Click;
             tbTitle.TextChanged += (o, _) =>
             {
                 PageDocument.Title = tbTitle.Text;
@@ -87,7 +88,19 @@ namespace MyPageViewer
 
 
         }
-        
+
+        private void BtDelete_Click(object sender, EventArgs e)
+        {
+            if (MessageBox.Show(Properties.Resources.Text_ConfirmDelete, Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No) return;
+            if (!PageDocument.Delete(out var message))
+            {
+                Program.ShowError(message);
+                return;
+            }
+
+            Close();
+        }
+
         /// <summary>
         /// 五星评分
         /// </summary>
@@ -226,9 +239,9 @@ namespace MyPageViewer
         /// <param name="e"></param>
         private void FormPageViewer_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (PageDocument is not { IsModified: true }) return;
+            if (PageDocument is not { IsModified: true } || PageDocument.Deleted) return;
 
-            var ret = MessageBox.Show("文档已经修改，要保存吗？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+            var ret = MessageBox.Show(Properties.Resources.Text_SaveModified, Properties.Resources.Text_Hint, MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
             switch (ret)
             {
                 case DialogResult.No:
@@ -251,7 +264,7 @@ namespace MyPageViewer
         #endregion
 
 
-        
+
         async void InitializeAsync()
         {
             await webView.EnsureCoreWebView2Async(null);

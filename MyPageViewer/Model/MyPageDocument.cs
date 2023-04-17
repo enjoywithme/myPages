@@ -10,6 +10,7 @@ namespace MyPageViewer.Model
     public class MyPageDocument:IDisposable
     {
         public string FilePath { get; set; }
+        public long FileSize { get; set; }
         public string GuId { get; set; }
         private string _title;
         public string Title
@@ -49,6 +50,14 @@ namespace MyPageViewer.Model
             }
         }
 
+        public DateTime ModifiedDate { get; set; }
+        public DateTime CreatedDate { get; set; }
+
+        /// <summary>
+        /// 文件已经被删除
+        /// </summary>
+        public bool Deleted { get; private set; }
+
         private bool _manifestChanged;
         public bool IsModified { get; private set; }
         public IList<string> Tags { get; set; }
@@ -74,9 +83,8 @@ namespace MyPageViewer.Model
                 if (File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".piz")
                 {
 
-                    return new MyPageDocument()
+                    return new MyPageDocument(arg)
                     {
-                        FilePath = arg
                     };
 
                 }
@@ -85,6 +93,27 @@ namespace MyPageViewer.Model
             
 
             return null;
+        }
+
+        public MyPageDocument(string filePath)
+        {
+            var poCo = MyPageDb.Instance.FindFilePath(filePath);
+            FilePath = filePath;
+            if (poCo != null)
+            {
+                Title = poCo.Title;
+                FileSize = poCo.FileSize;
+                CreatedDate = poCo.DtCreated;
+                ModifiedDate = poCo.DtModified;
+                return;
+            }
+
+            if(!File.Exists(filePath)) return;
+            var fi = new FileInfo(filePath);
+            FileSize = fi.Length;
+            CreatedDate = fi.CreationTime;
+            ModifiedDate = fi.LastWriteTime;
+
         }
 
         /// <summary>
@@ -258,7 +287,8 @@ namespace MyPageViewer.Model
                 Title = _title,
                 FilePath = FilePath,
                 Rate = _rate,
-                OriginUrl = _originUrl
+                OriginUrl = _originUrl,
+                FileSize = FileSize
             };
         }
 
@@ -269,6 +299,29 @@ namespace MyPageViewer.Model
         }
         ~MyPageDocument(){
             Dispose();
+        }
+
+        public bool Delete(out string message)
+        {
+            message = null;
+            if (!File.Exists(FilePath))
+            {
+                Deleted = true;
+                return true;
+            }
+            try
+            {
+                File.Delete(FilePath);
+                MyPageDb.Instance.DeleteDocument(ToPoCo());
+                Deleted = true;
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+
+            return true;
         }
     }
 }

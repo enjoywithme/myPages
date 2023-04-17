@@ -60,6 +60,18 @@ namespace MyPageViewer.Model
             
         }
 
+        public async void DeleteDocument(PageDocumentPoCo documentPoCo)
+        {
+
+            var list = new List<PageDocumentPoCo> { documentPoCo };
+            await _db.Deleteable<PageDocumentPoCo>().WhereColumns(list, it => new { it.FilePath }).ExecuteCommandAsync();
+        }
+
+        public PageDocumentPoCo FindFilePath(string filePath)
+        {
+            return _db.Queryable<PageDocumentPoCo>().First(it => it.FilePath == filePath);
+        }
+
         public async Task<IList<PageDocumentPoCo>> Search(string searchString, CancellationToken cancellationToken)
         {
             try

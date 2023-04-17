@@ -45,6 +45,7 @@ namespace MyPageViewer
             tbTitle = new TextBox();
             btAttachment = new Button();
             panel1 = new Panel();
+            btDelete = new Button();
             btReloadFromTemp = new Button();
             btCleanHmtl = new Button();
             btZip = new Button();
@@ -167,14 +168,14 @@ namespace MyPageViewer
             tbTitle.BackColor = SystemColors.InactiveBorder;
             tbTitle.Location = new Point(12, 20);
             tbTitle.Name = "tbTitle";
-            tbTitle.Size = new Size(762, 23);
+            tbTitle.Size = new Size(712, 23);
             tbTitle.TabIndex = 0;
             // 
             // btAttachment
             // 
             btAttachment.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btAttachment.Image = Properties.Resources.Attach24;
-            btAttachment.Location = new Point(971, 10);
+            btAttachment.Location = new Point(969, 10);
             btAttachment.Name = "btAttachment";
             btAttachment.Size = new Size(38, 43);
             btAttachment.TabIndex = 2;
@@ -183,6 +184,7 @@ namespace MyPageViewer
             // 
             // panel1
             // 
+            panel1.Controls.Add(btDelete);
             panel1.Controls.Add(btReloadFromTemp);
             panel1.Controls.Add(btCleanHmtl);
             panel1.Controls.Add(btZip);
@@ -195,11 +197,22 @@ namespace MyPageViewer
             panel1.Size = new Size(1023, 62);
             panel1.TabIndex = 0;
             // 
+            // btDelete
+            // 
+            btDelete.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            btDelete.Image = Properties.Resources.Bin24;
+            btDelete.Location = new Point(789, 10);
+            btDelete.Name = "btDelete";
+            btDelete.Size = new Size(38, 43);
+            btDelete.TabIndex = 2;
+            toolTip1.SetToolTip(btDelete, "删除文档");
+            btDelete.UseVisualStyleBackColor = true;
+            // 
             // btReloadFromTemp
             // 
             btReloadFromTemp.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btReloadFromTemp.Image = Properties.Resources.Sync24;
-            btReloadFromTemp.Location = new Point(791, 10);
+            btReloadFromTemp.Location = new Point(744, 10);
             btReloadFromTemp.Name = "btReloadFromTemp";
             btReloadFromTemp.Size = new Size(38, 43);
             btReloadFromTemp.TabIndex = 2;
@@ -210,7 +223,7 @@ namespace MyPageViewer
             // 
             btCleanHmtl.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btCleanHmtl.Image = Properties.Resources.Broom24;
-            btCleanHmtl.Location = new Point(836, 10);
+            btCleanHmtl.Location = new Point(834, 10);
             btCleanHmtl.Name = "btCleanHmtl";
             btCleanHmtl.Size = new Size(38, 43);
             btCleanHmtl.TabIndex = 2;
@@ -221,7 +234,7 @@ namespace MyPageViewer
             // 
             btZip.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btZip.Image = Properties.Resources.ZipFolder24;
-            btZip.Location = new Point(881, 10);
+            btZip.Location = new Point(879, 10);
             btZip.Name = "btZip";
             btZip.Size = new Size(38, 43);
             btZip.TabIndex = 2;
@@ -232,10 +245,11 @@ namespace MyPageViewer
             // 
             btTags.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             btTags.Image = Properties.Resources.label24;
-            btTags.Location = new Point(926, 10);
+            btTags.Location = new Point(924, 10);
             btTags.Name = "btTags";
             btTags.Size = new Size(38, 43);
             btTags.TabIndex = 2;
+            toolTip1.SetToolTip(btTags, "编辑标签");
             btTags.UseVisualStyleBackColor = true;
             // 
             // panelAttachments
@@ -261,6 +275,8 @@ namespace MyPageViewer
             // 
             // tagsControl
             // 
+            tagsControl.BorderStyle = BorderStyle.FixedSingle;
+            tagsControl.Document = null;
             tagsControl.Location = new Point(41, 253);
             tagsControl.Name = "tagsControl";
             tagsControl.Size = new Size(112, 168);
@@ -336,5 +352,6 @@ namespace MyPageViewer
         private Microsoft.Web.WebView2.WinForms.WebView2 webView;
         private TagsControl tagsControl;
         private Button btTags;
+        private Button btDelete;
     }
 }

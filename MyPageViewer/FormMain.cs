@@ -61,6 +61,8 @@ namespace MyPageViewer
             //Tree
             naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
+            //list view
+            listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
 
             Resize += FormMain_Resize;
             notifyIcon1.MouseClick += (_, _) => ShowWindow();
@@ -70,6 +72,20 @@ namespace MyPageViewer
             if (_startDocument == null) return;
             (new FormPageViewer(_startDocument)).Show(this);
             Hide();
+        }
+
+        private void ListView_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            RefreshStatusInfo();
+        }
+
+        private void RefreshStatusInfo()
+        {
+            if (listView.SelectedIndices.Count == 0)
+            {
+                tsslInfo.Text = $"共 {listView.Items.Count} 个对象。";
+                return;
+            }
         }
 
         private void NaviTreeControl1_NodeChanged(object sender, string e)
@@ -85,13 +101,15 @@ namespace MyPageViewer
                     listViewItem.SubItems.Add(file);
                     listView.Items.Add(listViewItem);
                 }
+                RefreshStatusInfo();
+
             }
         }
 
         private void OpenFilePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
-            var doc = new MyPageDocument { FilePath = filePath };
+            var doc = new MyPageDocument( filePath);
             var form = new FormPageViewer(doc);
             form.Show();
             WinApi.ShowToFront(form.Handle);
@@ -124,6 +142,7 @@ namespace MyPageViewer
                 listViewItem.SubItems.Add(poCo.FilePath);
                 listView.Items.Add(listViewItem);
             }
+            RefreshStatusInfo();
         }
 
 

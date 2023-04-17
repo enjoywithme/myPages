@@ -15,6 +15,9 @@ namespace MyPageViewer.PoCo
         public string Guid { get; set; }
         public string Title { get; set; }
         public string FilePath { get; set; }
+        public long FileSize { get; set; }
+        public DateTime DtCreated { get; set; }
+        public DateTime DtModified { get; set; }
         public int Rate { get; set; }
         public string OriginUrl { get; set; }
         public int Indexed { get; set; }

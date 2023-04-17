@@ -34,7 +34,7 @@
             label1 = new Label();
             label2 = new Label();
             cbTreeType = new ComboBox();
-            comboBox2 = new ComboBox();
+            cbFilter = new ComboBox();
             treeView1 = new TreeView();
             imageList1 = new ImageList(components);
             tableLayoutPanel1.SuspendLayout();
@@ -48,7 +48,7 @@
             tableLayoutPanel1.Controls.Add(label1, 0, 0);
             tableLayoutPanel1.Controls.Add(label2, 0, 1);
             tableLayoutPanel1.Controls.Add(cbTreeType, 1, 0);
-            tableLayoutPanel1.Controls.Add(comboBox2, 1, 1);
+            tableLayoutPanel1.Controls.Add(cbFilter, 1, 1);
             tableLayoutPanel1.Controls.Add(treeView1, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
@@ -94,14 +94,14 @@
             cbTreeType.Size = new Size(239, 25);
             cbTreeType.TabIndex = 2;
             // 
-            // comboBox2
+            // cbFilter
             // 
-            comboBox2.Dock = DockStyle.Fill;
-            comboBox2.FormattingEnabled = true;
-            comboBox2.Location = new Point(66, 33);
-            comboBox2.Name = "comboBox2";
-            comboBox2.Size = new Size(239, 25);
-            comboBox2.TabIndex = 2;
+            cbFilter.Dock = DockStyle.Fill;
+            cbFilter.FormattingEnabled = true;
+            cbFilter.Location = new Point(66, 33);
+            cbFilter.Name = "cbFilter";
+            cbFilter.Size = new Size(239, 25);
+            cbFilter.TabIndex = 2;
             // 
             // treeView1
             // 
@@ -141,7 +141,7 @@
         private Label label1;
         private Label label2;
         private ComboBox cbTreeType;
-        private ComboBox comboBox2;
+        private ComboBox cbFilter;
         private TreeView treeView1;
         private ImageList imageList1;
     }

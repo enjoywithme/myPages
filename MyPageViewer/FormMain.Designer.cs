@@ -43,6 +43,7 @@
             panelTop = new Panel();
             tbSearch = new TextBox();
             statusStrip1 = new StatusStrip();
+            tsslInfo = new ToolStripStatusLabel();
             panelPreview = new Panel();
             splitter1 = new Splitter();
             panelTree = new Panel();
@@ -55,6 +56,7 @@
             notifyIcon1 = new NotifyIcon(components);
             menuStrip1.SuspendLayout();
             panelTop.SuspendLayout();
+            statusStrip1.SuspendLayout();
             panelTree.SuspendLayout();
             panelMiddle.SuspendLayout();
             SuspendLayout();
@@ -144,11 +146,19 @@
             // 
             // statusStrip1
             // 
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tsslInfo });
             statusStrip1.Location = new Point(0, 580);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(939, 22);
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
+            // 
+            // tsslInfo
+            // 
+            tsslInfo.Name = "tsslInfo";
+            tsslInfo.Size = new Size(893, 17);
+            tsslInfo.Spring = true;
+            tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // panelPreview
             // 
@@ -253,6 +263,8 @@
             menuStrip1.PerformLayout();
             panelTop.ResumeLayout(false);
             panelTop.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             panelTree.ResumeLayout(false);
             panelMiddle.ResumeLayout(false);
             ResumeLayout(false);
@@ -284,5 +296,6 @@
         private ColumnHeader colFilePath;
         private NotifyIcon notifyIcon1;
         private Controls.ExploreTreeControl naviTreeControl1;
+        private ToolStripStatusLabel tsslInfo;
     }
 }
