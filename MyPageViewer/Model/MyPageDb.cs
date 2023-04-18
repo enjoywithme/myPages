@@ -72,6 +72,39 @@ namespace MyPageViewer.Model
             return _db.Queryable<PageDocumentPoCo>().First(it => it.FilePath == filePath);
         }
 
+
+        private ConditionalCollections BuildConditionalCollections(string field, string[] values)
+        {
+            var list = new List<KeyValuePair<WhereType, ConditionalModel>>();
+
+            var first =true;
+            foreach (var split in values)
+            {
+                list.Add(new KeyValuePair<WhereType, ConditionalModel>(first? WhereType.Or : WhereType.And, 
+                    new ConditionalModel()
+                {
+
+                    FieldName =field,
+                    ConditionalType = ConditionalType.InLike,
+                    FieldValue = split
+                }));
+                first = false;
+            }
+
+            var c = new ConditionalCollections
+            {
+                ConditionalList = list
+            };
+            return c;
+
+        }
+
+        /// <summary>
+        /// https://www.donet5.com/home/Doc?typeId=2314
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IList<PageDocumentPoCo>> Search(string searchString, CancellationToken cancellationToken)
         {
             try
@@ -79,9 +112,22 @@ namespace MyPageViewer.Model
                 if (string.IsNullOrWhiteSpace(searchString)||searchString.Length<2)
                     return null;
 
-                return await _db.Queryable<PageDocumentPoCo>().Where(it => it.Title.Contains(searchString)
-                                                                     || it.FilePath.Contains(searchString))
-                    .ToListAsync(cancellationToken);
+                var splits = searchString.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
+                
+                var conModels = new List<IConditionalModel>();
+                
+                conModels.Add(BuildConditionalCollections("Title",splits));
+                conModels.Add(BuildConditionalCollections("FilePath", splits));
+
+                return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
+                
+
+                //return await _db.Queryable<PageDocumentPoCo>().Where(it => 
+                //        splits.All(s=> it.Title.Contains(s)) 
+                //        || splits.All(s=>it.FilePath.Contains(s))
+                //        )
+                //    .ToListAsync(cancellationToken);
+
 
             }
             catch (Exception e)

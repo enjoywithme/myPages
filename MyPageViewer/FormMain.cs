@@ -56,6 +56,7 @@ namespace MyPageViewer
 
             //²éÑ¯
             tbSearch.TextChanged += TbSearch_TextChanged;
+            tbSearch.KeyDown += TbSearch_KeyDown;
             listView.MouseDoubleClick += ListView_MouseDoubleClick;
 
             //Tree
@@ -63,6 +64,7 @@ namespace MyPageViewer
 
             //list view
             listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
+            listView.ItemDrag += ListView_ItemDrag;
 
             Resize += FormMain_Resize;
             notifyIcon1.MouseClick += (_, _) => ShowWindow();
@@ -73,6 +75,8 @@ namespace MyPageViewer
             (new FormPageViewer(_startDocument)).Show(this);
             Hide();
         }
+
+        
 
         private void ListView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -97,7 +101,10 @@ namespace MyPageViewer
                 var files = Directory.EnumerateFiles(e, "*.piz");
                 foreach (var file in files)
                 {
-                    var listViewItem = new ListViewItem(Path.GetFileNameWithoutExtension(file), 0);
+                    var listViewItem = new ListViewItem(Path.GetFileNameWithoutExtension(file), 0)
+                    {
+                        Tag = file
+                    };
                     listViewItem.SubItems.Add(file);
                     listView.Items.Add(listViewItem);
                 }
@@ -118,6 +125,7 @@ namespace MyPageViewer
 
         }
 
+        #region List view¶¯×÷
         private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var info = ((ListView)sender).HitTest(e.X, e.Y);
@@ -126,9 +134,24 @@ namespace MyPageViewer
             var filePath = info.Item.SubItems[1].Text;
             OpenFilePath(filePath);
         }
+        private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            if(listView.SelectedIndices.Count == 0) return;
 
-        private CancellationTokenSource _searchCancellationTokenSource;
-        private async void TbSearch_TextChanged(object sender, EventArgs e)
+            listView.DoDragDrop(new DataObject(DataFormats.FileDrop, 
+                (from ListViewItem item in listView.SelectedItems where item.Tag != null select (string)item.Tag).ToArray()),
+                DragDropEffects.Move);
+        }
+        #endregion
+
+        #region ËÑË÷
+        private void TbSearch_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Return)
+                DoSearch();
+        }
+
+        private async void DoSearch()
         {
             _searchCancellationTokenSource?.Cancel();
 
@@ -138,12 +161,32 @@ namespace MyPageViewer
             listView.Items.Clear();
             foreach (var poCo in items)
             {
-                var listViewItem = new ListViewItem(poCo.Title, 0);
+                var listViewItem = new ListViewItem(poCo.Title, 0)
+                {
+                    Tag = poCo.FilePath
+                };
                 listViewItem.SubItems.Add(poCo.FilePath);
                 listView.Items.Add(listViewItem);
             }
             RefreshStatusInfo();
         }
+
+
+        private CancellationTokenSource _searchCancellationTokenSource;
+        private async void TbSearch_TextChanged(object sender, EventArgs e)
+        {
+
+            async Task<bool> UserKeepsTyping()
+            {
+                var txt = tbSearch.Text;   // remember text
+                await Task.Delay(500);        // wait some
+                return txt != tbSearch.Text;  // return that text changed or not
+            }
+            if (await UserKeepsTyping()) return;
+
+            DoSearch();
+        }
+        #endregion
 
 
         protected override void WndProc(ref Message message)

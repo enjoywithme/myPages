@@ -78,21 +78,9 @@ namespace MyPageViewer.Model
         {
             if (args == null || args.Length == 0) return null;
 
-            foreach (var arg in args)
-            {
-                if (File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".piz")
-                {
-
-                    return new MyPageDocument(arg)
-                    {
-                    };
-
-                }
-            }
-
-            
-
-            return null;
+            return (from arg in args 
+                where File.Exists(arg) && Path.GetExtension(arg).ToLower() == ".piz" 
+                select new MyPageDocument(arg)).FirstOrDefault();
         }
 
         public MyPageDocument(string filePath)
@@ -101,7 +89,7 @@ namespace MyPageViewer.Model
             FilePath = filePath;
             if (poCo != null)
             {
-                Title = poCo.Title;
+                _title = poCo.Title;
                 FileSize = poCo.FileSize;
                 CreatedDate = poCo.DtCreated;
                 ModifiedDate = poCo.DtModified;

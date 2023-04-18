@@ -25,7 +25,7 @@ namespace MyPageViewer.Controls
         public ExploreTreeType TreeType => cbTreeType.SelectedIndex == 0 ? ExploreTreeType.Folder : (ExploreTreeType)Tag;
 
         public event EventHandler<string> NodeChanged;
-        private readonly TreeView _cacheTree = new TreeView();
+        private readonly TreeView _cacheTree = new();
 
         public ExploreTreeControl()
         {
@@ -42,8 +42,77 @@ namespace MyPageViewer.Controls
             cbTreeType.SelectedIndexChanged += CbTreeType_SelectedIndexChanged;
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
+            treeView1.DragEnter += TreeView1_DragEnter;
+            treeView1.DragOver += TreeView1_DragOver;
+            treeView1.DragDrop += TreeView1_DragDrop;
+            treeView1.AllowDrop = true;
             cbFilter.TextUpdate += ((_, _) => DisplayTree());
         }
+
+
+        #region piz文件拖放
+
+        private void TreeView1_DragDrop(object sender, DragEventArgs e)
+        {
+            var targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
+
+            var targetNode = treeView1.GetNodeAt(targetPoint);
+            if (targetNode == null || e.Data == null || targetNode.Tag == null) return;
+
+            var destPath = (string)targetNode.Tag;
+            if (!Directory.Exists(destPath)) return;
+
+            var fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+            if (fileList == null) return;
+            var pizFiles = fileList.Where(x => Path.GetExtension(x).ToLower() == ".piz").ToList();
+
+
+            var sb = new StringBuilder();
+
+            foreach (var pizFile in pizFiles)
+            {
+                try
+                {
+                    File.Move(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)));
+
+                }
+                catch (Exception exception)
+                {
+                    sb.AppendLine($"移动文件{pizFile}错误:\r\n{exception.Message}");
+                }
+            }
+
+            var msg = sb.ToString();
+            if (!string.IsNullOrEmpty(msg)) { Program.ShowError(msg); }
+
+            NodeChanged?.Invoke(this, destPath);
+
+
+        }
+
+        private void TreeView1_DragOver(object sender, DragEventArgs e)
+        {
+            var targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
+            treeView1.SelectedNode = treeView1.GetNodeAt(targetPoint);
+        }
+
+        private void TreeView1_DragEnter(object sender, DragEventArgs e)
+        {
+            if (e.Data != null && e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                var fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
+                if (fileList != null && fileList.Any(x => Path.GetExtension(x).ToLower() == ".piz"))
+                {
+                    e.Effect = DragDropEffects.Move;
+                    return;
+                }
+            }
+
+            e.Effect = DragDropEffects.None;
+        }
+
+
+        #endregion
 
         private void TreeView1_AfterSelect(object sender, TreeViewEventArgs e)
         {
@@ -56,6 +125,7 @@ namespace MyPageViewer.Controls
 
         }
 
+        #region 装载文件夹
         public void LoadDirectory(string dir)
         {
             _cacheTree.Nodes.Clear();
@@ -96,7 +166,7 @@ namespace MyPageViewer.Controls
 
         private void LoadFilterNode(TreeNode node)
         {
-            if (node.Text.Contains(cbFilter.Text))
+            if (node.Text.IndexOf(cbFilter.Text,StringComparison.InvariantCultureIgnoreCase)>=0)
                 treeView1.Nodes.Add((TreeNode)node.Clone());
             foreach (TreeNode treeNode in node.Nodes)
             {
@@ -118,6 +188,7 @@ namespace MyPageViewer.Controls
                 LoadSubDirectories(s, tds); td.EnsureVisible();
             }
         }
+        #endregion
 
 
 
