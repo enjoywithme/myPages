@@ -62,6 +62,10 @@ namespace MyPageViewer
             //Tree
             naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
+            //Toolbar
+            tsbPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
+            tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
+
             //list view
             listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
             listView.ItemDrag += ListView_ItemDrag;
@@ -76,7 +80,7 @@ namespace MyPageViewer
             Hide();
         }
 
-        
+
 
         private void ListView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -116,7 +120,7 @@ namespace MyPageViewer
         private void OpenFilePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
-            var doc = new MyPageDocument( filePath);
+            var doc = new MyPageDocument(filePath);
             var form = new FormPageViewer(doc);
             form.Show();
             WinApi.ShowToFront(form.Handle);
@@ -136,9 +140,9 @@ namespace MyPageViewer
         }
         private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
         {
-            if(listView.SelectedIndices.Count == 0) return;
+            if (listView.SelectedIndices.Count == 0) return;
 
-            listView.DoDragDrop(new DataObject(DataFormats.FileDrop, 
+            listView.DoDragDrop(new DataObject(DataFormats.FileDrop,
                 (from ListViewItem item in listView.SelectedItems where item.Tag != null select (string)item.Tag).ToArray()),
                 DragDropEffects.Move);
         }
@@ -190,6 +194,16 @@ namespace MyPageViewer
         }
         #endregion
 
+        #region ²Ù×÷
+
+        private void PasteFromClipboard()
+        {
+            if (!Clipboard.ContainsText(TextDataFormat.Html)) return;
+            var dlg = new DlgSaveClipboard();
+            dlg.ShowDialog(this);
+        }
+
+        #endregion
 
         protected override void WndProc(ref Message message)
         {

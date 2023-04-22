@@ -36,34 +36,41 @@
             tsmiOptions = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
+            工具TToolStripMenuItem = new ToolStripMenuItem();
+            tsmiPasteFromClipboard = new ToolStripMenuItem();
             视图VToolStripMenuItem = new ToolStripMenuItem();
             tsmiViewTree = new ToolStripMenuItem();
             tsmiViewPreviewPane = new ToolStripMenuItem();
             tsmiViewStatus = new ToolStripMenuItem();
-            panelTop = new Panel();
-            tbSearch = new TextBox();
             statusStrip1 = new StatusStrip();
             tsslInfo = new ToolStripStatusLabel();
-            panelPreview = new Panel();
-            splitter1 = new Splitter();
-            panelTree = new Panel();
-            naviTreeControl1 = new Controls.ExploreTreeControl();
-            splitter2 = new Splitter();
+            notifyIcon1 = new NotifyIcon(components);
+            toolStrip1 = new ToolStrip();
+            tsbPasteFromClipboard = new ToolStripButton();
+            panelTop = new Panel();
+            tbSearch = new TextBox();
+            panelMain = new Panel();
             panelMiddle = new Panel();
             listView = new ListView();
             colTitle = new ColumnHeader();
             colFilePath = new ColumnHeader();
-            notifyIcon1 = new NotifyIcon(components);
+            splitterRight = new Splitter();
+            panelPreview = new Panel();
+            splitterLeft = new Splitter();
+            panelTree = new Panel();
+            naviTreeControl1 = new Controls.ExploreTreeControl();
             menuStrip1.SuspendLayout();
-            panelTop.SuspendLayout();
             statusStrip1.SuspendLayout();
-            panelTree.SuspendLayout();
+            toolStrip1.SuspendLayout();
+            panelTop.SuspendLayout();
+            panelMain.SuspendLayout();
             panelMiddle.SuspendLayout();
+            panelTree.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { 文件FToolStripMenuItem, 视图VToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { 文件FToolStripMenuItem, 工具TToolStripMenuItem, 视图VToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(939, 25);
@@ -100,6 +107,19 @@
             tsmiExit.Size = new Size(124, 22);
             tsmiExit.Text = "退出(&X)";
             // 
+            // 工具TToolStripMenuItem
+            // 
+            工具TToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPasteFromClipboard });
+            工具TToolStripMenuItem.Name = "工具TToolStripMenuItem";
+            工具TToolStripMenuItem.Size = new Size(59, 21);
+            工具TToolStripMenuItem.Text = "工具(&T)";
+            // 
+            // tsmiPasteFromClipboard
+            // 
+            tsmiPasteFromClipboard.Name = "tsmiPasteFromClipboard";
+            tsmiPasteFromClipboard.Size = new Size(148, 22);
+            tsmiPasteFromClipboard.Text = "从剪贴板粘贴";
+            // 
             // 视图VToolStripMenuItem
             // 
             视图VToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiViewTree, tsmiViewPreviewPane, tsmiViewStatus });
@@ -127,23 +147,6 @@
             tsmiViewStatus.Size = new Size(127, 22);
             tsmiViewStatus.Text = "状态栏(&S)";
             // 
-            // panelTop
-            // 
-            panelTop.Controls.Add(tbSearch);
-            panelTop.Dock = DockStyle.Top;
-            panelTop.Location = new Point(0, 25);
-            panelTop.Name = "panelTop";
-            panelTop.Size = new Size(939, 28);
-            panelTop.TabIndex = 2;
-            // 
-            // tbSearch
-            // 
-            tbSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tbSearch.Location = new Point(4, 3);
-            tbSearch.Name = "tbSearch";
-            tbSearch.Size = new Size(932, 23);
-            tbSearch.TabIndex = 2;
-            // 
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { tsslInfo });
@@ -156,72 +159,82 @@
             // tsslInfo
             // 
             tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(893, 17);
+            tsslInfo.Size = new Size(924, 17);
             tsslInfo.Spring = true;
             tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
-            // panelPreview
+            // notifyIcon1
             // 
-            panelPreview.Dock = DockStyle.Right;
-            panelPreview.Location = new Point(765, 53);
-            panelPreview.Name = "panelPreview";
-            panelPreview.Size = new Size(174, 527);
-            panelPreview.TabIndex = 4;
-            panelPreview.Visible = false;
+            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
+            notifyIcon1.Text = "My pages";
+            notifyIcon1.Visible = true;
             // 
-            // splitter1
+            // toolStrip1
             // 
-            splitter1.Dock = DockStyle.Right;
-            splitter1.Location = new Point(762, 53);
-            splitter1.Name = "splitter1";
-            splitter1.Size = new Size(3, 527);
-            splitter1.TabIndex = 5;
-            splitter1.TabStop = false;
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbPasteFromClipboard });
+            toolStrip1.Location = new Point(0, 25);
+            toolStrip1.Name = "toolStrip1";
+            toolStrip1.Size = new Size(939, 25);
+            toolStrip1.TabIndex = 4;
+            toolStrip1.Text = "toolStrip1";
             // 
-            // panelTree
+            // tsbPasteFromClipboard
             // 
-            panelTree.Controls.Add(naviTreeControl1);
-            panelTree.Dock = DockStyle.Left;
-            panelTree.Location = new Point(0, 53);
-            panelTree.Name = "panelTree";
-            panelTree.Size = new Size(221, 527);
-            panelTree.TabIndex = 7;
-            panelTree.Visible = false;
+            tsbPasteFromClipboard.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbPasteFromClipboard.Image = Properties.Resources.Editpaste16;
+            tsbPasteFromClipboard.ImageTransparentColor = Color.Magenta;
+            tsbPasteFromClipboard.Name = "tsbPasteFromClipboard";
+            tsbPasteFromClipboard.Size = new Size(23, 22);
+            tsbPasteFromClipboard.Text = "从剪贴板粘贴";
             // 
-            // naviTreeControl1
+            // panelTop
             // 
-            naviTreeControl1.Dock = DockStyle.Fill;
-            naviTreeControl1.Location = new Point(0, 0);
-            naviTreeControl1.Name = "naviTreeControl1";
-            naviTreeControl1.Size = new Size(221, 527);
-            naviTreeControl1.TabIndex = 0;
+            panelTop.Controls.Add(tbSearch);
+            panelTop.Dock = DockStyle.Top;
+            panelTop.Location = new Point(0, 50);
+            panelTop.Name = "panelTop";
+            panelTop.Size = new Size(939, 28);
+            panelTop.TabIndex = 5;
             // 
-            // splitter2
+            // tbSearch
             // 
-            splitter2.Location = new Point(221, 53);
-            splitter2.Name = "splitter2";
-            splitter2.Size = new Size(3, 527);
-            splitter2.TabIndex = 8;
-            splitter2.TabStop = false;
+            tbSearch.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tbSearch.Location = new Point(4, 3);
+            tbSearch.Name = "tbSearch";
+            tbSearch.Size = new Size(1671, 23);
+            tbSearch.TabIndex = 2;
+            // 
+            // panelMain
+            // 
+            panelMain.Controls.Add(panelMiddle);
+            panelMain.Controls.Add(splitterRight);
+            panelMain.Controls.Add(panelPreview);
+            panelMain.Controls.Add(splitterLeft);
+            panelMain.Controls.Add(panelTree);
+            panelMain.Dock = DockStyle.Fill;
+            panelMain.Location = new Point(0, 78);
+            panelMain.Name = "panelMain";
+            panelMain.Size = new Size(939, 502);
+            panelMain.TabIndex = 6;
             // 
             // panelMiddle
             // 
             panelMiddle.Controls.Add(listView);
             panelMiddle.Dock = DockStyle.Fill;
-            panelMiddle.Location = new Point(224, 53);
+            panelMiddle.Location = new Point(224, 0);
             panelMiddle.Name = "panelMiddle";
-            panelMiddle.Size = new Size(538, 527);
-            panelMiddle.TabIndex = 9;
+            panelMiddle.Size = new Size(538, 502);
+            panelMiddle.TabIndex = 12;
             // 
             // listView
             // 
             listView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             listView.Columns.AddRange(new ColumnHeader[] { colTitle, colFilePath });
             listView.FullRowSelect = true;
-            listView.Location = new Point(3, 4);
+            listView.Location = new Point(0, 4);
             listView.Name = "listView";
-            listView.Size = new Size(535, 520);
-            listView.TabIndex = 0;
+            listView.Size = new Size(538, 495);
+            listView.TabIndex = 3;
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
             // 
@@ -235,24 +248,59 @@
             colFilePath.Text = "路径";
             colFilePath.Width = 300;
             // 
-            // notifyIcon1
+            // splitterRight
             // 
-            notifyIcon1.Icon = (Icon)resources.GetObject("notifyIcon1.Icon");
-            notifyIcon1.Text = "My pages";
-            notifyIcon1.Visible = true;
+            splitterRight.Dock = DockStyle.Right;
+            splitterRight.Location = new Point(762, 0);
+            splitterRight.Name = "splitterRight";
+            splitterRight.Size = new Size(3, 502);
+            splitterRight.TabIndex = 11;
+            splitterRight.TabStop = false;
+            // 
+            // panelPreview
+            // 
+            panelPreview.Dock = DockStyle.Right;
+            panelPreview.Location = new Point(765, 0);
+            panelPreview.Name = "panelPreview";
+            panelPreview.Size = new Size(174, 502);
+            panelPreview.TabIndex = 10;
+            panelPreview.Visible = false;
+            // 
+            // splitterLeft
+            // 
+            splitterLeft.Location = new Point(221, 0);
+            splitterLeft.Name = "splitterLeft";
+            splitterLeft.Size = new Size(3, 502);
+            splitterLeft.TabIndex = 9;
+            splitterLeft.TabStop = false;
+            // 
+            // panelTree
+            // 
+            panelTree.Controls.Add(naviTreeControl1);
+            panelTree.Dock = DockStyle.Left;
+            panelTree.Location = new Point(0, 0);
+            panelTree.Name = "panelTree";
+            panelTree.Size = new Size(221, 502);
+            panelTree.TabIndex = 8;
+            panelTree.Visible = false;
+            // 
+            // naviTreeControl1
+            // 
+            naviTreeControl1.Dock = DockStyle.Fill;
+            naviTreeControl1.Location = new Point(0, 0);
+            naviTreeControl1.Name = "naviTreeControl1";
+            naviTreeControl1.Size = new Size(221, 502);
+            naviTreeControl1.TabIndex = 0;
             // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(939, 602);
-            Controls.Add(panelMiddle);
-            Controls.Add(splitter2);
-            Controls.Add(panelTree);
-            Controls.Add(splitter1);
-            Controls.Add(panelPreview);
-            Controls.Add(statusStrip1);
+            Controls.Add(panelMain);
             Controls.Add(panelTop);
+            Controls.Add(toolStrip1);
+            Controls.Add(statusStrip1);
             Controls.Add(menuStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MainMenuStrip = menuStrip1;
@@ -261,12 +309,15 @@
             Load += FormMain_Load;
             menuStrip1.ResumeLayout(false);
             menuStrip1.PerformLayout();
-            panelTop.ResumeLayout(false);
-            panelTop.PerformLayout();
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
-            panelTree.ResumeLayout(false);
+            toolStrip1.ResumeLayout(false);
+            toolStrip1.PerformLayout();
+            panelTop.ResumeLayout(false);
+            panelTop.PerformLayout();
+            panelMain.ResumeLayout(false);
             panelMiddle.ResumeLayout(false);
+            panelTree.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -276,15 +327,7 @@
         private MenuStrip menuStrip1;
         private ToolStripMenuItem 文件FToolStripMenuItem;
         private ToolStripMenuItem tsmiExit;
-        private Panel panelTop;
-        private TextBox tbSearch;
         private StatusStrip statusStrip1;
-        private Panel panelPreview;
-        private Splitter splitter1;
-        private Panel panelTree;
-        private Splitter splitter2;
-        private Panel panelMiddle;
-        private ListView listView;
         private ToolStripMenuItem 视图VToolStripMenuItem;
         private ToolStripMenuItem tsmiViewTree;
         private ToolStripMenuItem tsmiViewPreviewPane;
@@ -292,10 +335,23 @@
         private ToolStripMenuItem tsmiOptions;
         private ToolStripSeparator toolStripMenuItem2;
         private ToolStripMenuItem tsmiStartIndex;
+        private NotifyIcon notifyIcon1;
+        private ToolStripStatusLabel tsslInfo;
+        private ToolStripMenuItem 工具TToolStripMenuItem;
+        private ToolStripMenuItem tsmiPasteFromClipboard;
+        private ToolStrip toolStrip1;
+        private ToolStripButton tsbPasteFromClipboard;
+        private Panel panelTop;
+        private TextBox tbSearch;
+        private Panel panelMain;
+        private Panel panelMiddle;
+        private ListView listView;
         private ColumnHeader colTitle;
         private ColumnHeader colFilePath;
-        private NotifyIcon notifyIcon1;
+        private Splitter splitterRight;
+        private Panel panelPreview;
+        private Splitter splitterLeft;
+        private Panel panelTree;
         private Controls.ExploreTreeControl naviTreeControl1;
-        private ToolStripStatusLabel tsslInfo;
     }
 }

@@ -124,6 +124,9 @@
   <data name="star2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Text_ConfirmDelete" xml:space="preserve">
+    <value>确定删除该文档？</value>
+  </data>
   <data name="star0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -142,14 +145,14 @@
   <data name="Link24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Link24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="ZipFolder24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\ZipFolder24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Sub_blue_rotate_cw24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Sub_blue_rotate_cw24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="label24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\label24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Bin24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Bin24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="saveall24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\saveall24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -169,22 +172,22 @@
   <data name="plus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\plus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Sub_blue_rotate_cw24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Sub_blue_rotate_cw24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="ZipFolder24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ZipFolder24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star5" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="delete24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\delete24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="Bin24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Bin24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="label24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\label24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Text_SaveModified" xml:space="preserve">
     <value>文档已经修改，要保存吗？</value>
   </data>
-  <data name="Text_ConfirmDelete" xml:space="preserve">
-    <value>确定删除该文档？</value>
+  <data name="delete24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\delete24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Editpaste16" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Editpaste16.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
