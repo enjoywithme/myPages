@@ -158,6 +158,7 @@ namespace MyPageViewer
             _searchCancellationTokenSource = new CancellationTokenSource();
             var items = await MyPageDb.Instance.Search(tbSearch.Text, _searchCancellationTokenSource.Token);
             if (items == null) { return; }
+            listView.BeginUpdate();
             listView.Items.Clear();
             foreach (var poCo in items)
             {
@@ -168,6 +169,7 @@ namespace MyPageViewer
                 listViewItem.SubItems.Add(poCo.FilePath);
                 listView.Items.Add(listViewItem);
             }
+            listView.EndUpdate();
             RefreshStatusInfo();
         }
 

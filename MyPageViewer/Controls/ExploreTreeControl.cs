@@ -30,16 +30,15 @@ namespace MyPageViewer.Controls
         public ExploreTreeControl()
         {
             InitializeComponent();
+            treeView1.ShowNodeToolTips = true;
         }
         private void ExploreTreeControl_Load(object sender, EventArgs e)
         {
-            if (MyPageSettings.Instance.ScanFolders is { Count: > 0 })
-            {
-                LoadDirectory(MyPageSettings.Instance.ScanFolders[0]);
-            }
+            LoadFolderTree();
 
             cbTreeType.SelectedIndex = 0;
             cbTreeType.SelectedIndexChanged += CbTreeType_SelectedIndexChanged;
+            btRefresh.Click += BtRefresh_Click;
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
             treeView1.DragEnter += TreeView1_DragEnter;
@@ -47,6 +46,21 @@ namespace MyPageViewer.Controls
             treeView1.DragDrop += TreeView1_DragDrop;
             treeView1.AllowDrop = true;
             cbFilter.TextUpdate += ((_, _) => DisplayTree());
+        }
+
+        private void BtRefresh_Click(object sender, EventArgs e)
+        {
+            LoadFolderTree();
+        }
+
+        private void LoadFolderTree()
+        {
+            treeView1.Nodes.Clear();
+            if (MyPageSettings.Instance.ScanFolders is not { Count: > 0 }) return;
+            foreach (var scanFolder in MyPageSettings.Instance.ScanFolders)
+            {
+                LoadDirectory(scanFolder);
+            }
         }
 
 
@@ -134,14 +148,23 @@ namespace MyPageViewer.Controls
             tds.Tag = di.FullName;
             tds.ImageIndex = 0;
             tds.StateImageIndex = 0;
+            tds.ToolTipText = di.FullName;
             //LoadFiles(dir, tds);
             LoadSubDirectories(dir, tds);
 
             DisplayTree();
         }
 
-        private void DisplayTree()
+        private async void DisplayTree()
         {
+            async Task<bool> UserKeepsTyping()
+            {
+                var txt = cbFilter.Text;   // remember text
+                await Task.Delay(500);        // wait some
+                return txt != cbFilter.Text;  // return that text changed or not
+            }
+            if (await UserKeepsTyping()) return;
+
             //blocks repainting tree till all objects loaded
             treeView1.BeginUpdate();
             treeView1.Nodes.Clear();
@@ -160,13 +183,13 @@ namespace MyPageViewer.Controls
                 }
             }
             //enables redrawing tree after all objects have been added
-            this.treeView1.EndUpdate();
+            treeView1.EndUpdate();
         }
 
 
         private void LoadFilterNode(TreeNode node)
         {
-            if (node.Text.IndexOf(cbFilter.Text,StringComparison.InvariantCultureIgnoreCase)>=0)
+            if (node.Text.IndexOf(cbFilter.Text, StringComparison.InvariantCultureIgnoreCase) >= 0)
                 treeView1.Nodes.Add((TreeNode)node.Clone());
             foreach (TreeNode treeNode in node.Nodes)
             {
@@ -184,6 +207,7 @@ namespace MyPageViewer.Controls
                 var tds = td.Nodes.Add(di.Name);
                 tds.StateImageIndex = 0;
                 tds.Tag = di.FullName;
+                tds.ToolTipText = di.FullName;
                 //LoadFiles(subdirectory, tds);
                 LoadSubDirectories(s, tds); td.EnsureVisible();
             }

@@ -22,6 +22,9 @@ namespace MyPageViewer.PoCo
         public string OriginUrl { get; set; }
         public int Indexed { get; set; }
 
-        
+        public override string ToString()
+        {
+            return Title;
+        }
     }
 }
