@@ -219,24 +219,32 @@ namespace MyPageViewer.Model
                 doc.Load(TempIndexPath);
 
                 //清除延迟加载的图片
-                var imageNodes = doc.DocumentNode.SelectNodes("//img").Where(t => t.Attributes["data-src"] != null)
+                var imageNodes = doc.DocumentNode.SelectNodes("//img")?.Where(t => t.Attributes["data-src"] != null)
                     .ToList();
-                foreach (var node in imageNodes)
+                if (imageNodes != null)
                 {
-                    var imgSrc = node.Attributes["src"];
-                    if (imgSrc == null) continue;
-                    Debug.WriteLine(imgSrc.Value);
-                    node.Attributes.RemoveAll();
-                    node.Attributes.Add("src", imgSrc.Value);
+                    foreach (var node in imageNodes)
+                    {
+                        var imgSrc = node.Attributes["src"];
+                        if (imgSrc == null) continue;
+                        Debug.WriteLine(imgSrc.Value);
+                        node.Attributes.RemoveAll();
+                        node.Attributes.Add("src", imgSrc.Value);
+                    }
                 }
+                
 
                 //删除crossorigin=anonymous
-                var linkNodes = doc.DocumentNode.SelectNodes("//link").Where(t => t.Attributes["crossorigin"] != null)
+                var linkNodes = doc.DocumentNode.SelectNodes("//link")?.Where(t => t.Attributes["crossorigin"] != null)
                     .ToList();
-                foreach (var node in linkNodes)
+                if (linkNodes != null)
                 {
-                    node.Attributes.Remove("crossorigin");
+                    foreach (var node in linkNodes)
+                    {
+                        node.Attributes.Remove("crossorigin");
+                    }
                 }
+                
 
                 doc.Save(TempIndexPath);
             }
