@@ -22,6 +22,12 @@ namespace MyPageViewer.Dlg
         {
             tbWorkingDir.Text = MyPageSettings.Instance.WorkingDirectory;
 
+
+            rbNoAutoScan.Checked = !MyPageSettings.Instance.AutoIndex;
+            rbScanInterval.Checked = MyPageSettings.Instance.AutoIndex;
+            tbAutoIndexInterval.Text = MyPageSettings.Instance.AutoIndexInterval.ToString();
+            cbAutoIndexUnit.SelectedIndex = MyPageSettings.Instance.AutoIndexIntervalUnit;
+
             listScanFolders.Items.Clear();
             if (MyPageSettings.Instance.ScanFolders != null)
             {
@@ -30,6 +36,8 @@ namespace MyPageViewer.Dlg
                     listScanFolders.Items.Add(folder);
                 }
             }
+
+
 
             btSetWorkingDir.Click += BtSetWorkingDir_Click;
             btAddScanFolder.Click += BtAddScanFolder_Click;
@@ -48,10 +56,28 @@ namespace MyPageViewer.Dlg
                 return;
             }
 
+            MyPageSettings.Instance.AutoIndex = rbScanInterval.Checked;
+            if (MyPageSettings.Instance.AutoIndex)
+            {
+                if (!int.TryParse(tbAutoIndexInterval.Text, out var interval)||interval<=0)
+                {
+                    Program.ShowWarning("不正确的索引周期！");
+                    tabPageIndex.Select();
+
+                    tbAutoIndexInterval.SelectAll();
+                    tbAutoIndexInterval.Focus();
+                    return;
+
+                }
+                MyPageSettings.Instance.AutoIndexInterval = interval;
+                MyPageSettings.Instance.AutoIndexIntervalUnit = cbAutoIndexUnit.SelectedIndex;
+            }
+
             MyPageSettings.Instance.WorkingDirectory = tbWorkingDir.Text;
             MyPageSettings.Instance.ScanFolders = listScanFolders.Items.Cast<string>().ToList();
-            MyPageSettings.Instance.Save(out _,true);
-            Close();
+            MyPageSettings.Instance.Save(out _, true);
+
+            DialogResult = DialogResult.OK;
         }
 
         private void BtRemoveScanFolder_Click(object sender, EventArgs e)

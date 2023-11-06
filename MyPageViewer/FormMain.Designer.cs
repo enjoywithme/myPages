@@ -33,11 +33,11 @@
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
             tsmiStartIndex = new ToolStripMenuItem();
-            tsmiOptions = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             工具TToolStripMenuItem = new ToolStripMenuItem();
             tsmiPasteFromClipboard = new ToolStripMenuItem();
+            tsmiOptions = new ToolStripMenuItem();
             视图VToolStripMenuItem = new ToolStripMenuItem();
             tsmiViewTree = new ToolStripMenuItem();
             tsmiViewPreviewPane = new ToolStripMenuItem();
@@ -70,6 +70,8 @@
             splitterLeft = new Splitter();
             panelTree = new Panel();
             naviTreeControl1 = new Controls.ExploreTreeControl();
+            toolStripSeparator4 = new ToolStripSeparator();
+            tsbDelete = new ToolStripButton();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -90,7 +92,7 @@
             // 
             // 文件FToolStripMenuItem
             // 
-            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, tsmiOptions, toolStripMenuItem2, tsmiExit });
+            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, toolStripMenuItem2, tsmiExit });
             文件FToolStripMenuItem.Name = "文件FToolStripMenuItem";
             文件FToolStripMenuItem.Size = new Size(58, 21);
             文件FToolStripMenuItem.Text = "文件(&F)";
@@ -100,12 +102,6 @@
             tsmiStartIndex.Name = "tsmiStartIndex";
             tsmiStartIndex.Size = new Size(124, 22);
             tsmiStartIndex.Text = "开始索引";
-            // 
-            // tsmiOptions
-            // 
-            tsmiOptions.Name = "tsmiOptions";
-            tsmiOptions.Size = new Size(124, 22);
-            tsmiOptions.Text = "选项(&O)";
             // 
             // toolStripMenuItem2
             // 
@@ -120,7 +116,7 @@
             // 
             // 工具TToolStripMenuItem
             // 
-            工具TToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPasteFromClipboard });
+            工具TToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPasteFromClipboard, tsmiOptions });
             工具TToolStripMenuItem.Name = "工具TToolStripMenuItem";
             工具TToolStripMenuItem.Size = new Size(59, 21);
             工具TToolStripMenuItem.Text = "工具(&T)";
@@ -130,6 +126,12 @@
             tsmiPasteFromClipboard.Name = "tsmiPasteFromClipboard";
             tsmiPasteFromClipboard.Size = new Size(148, 22);
             tsmiPasteFromClipboard.Text = "从剪贴板粘贴";
+            // 
+            // tsmiOptions
+            // 
+            tsmiOptions.Name = "tsmiOptions";
+            tsmiOptions.Size = new Size(148, 22);
+            tsmiOptions.Text = "选项(&O)";
             // 
             // 视图VToolStripMenuItem
             // 
@@ -192,7 +194,7 @@
             // toolStrip1
             // 
             toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbGotoDocFolder, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days, toolStripSeparator4, tsbGotoDocFolder, tsbDelete });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(939, 31);
@@ -378,6 +380,20 @@
             naviTreeControl1.Size = new Size(221, 496);
             naviTreeControl1.TabIndex = 0;
             // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 31);
+            // 
+            // tsbDelete
+            // 
+            tsbDelete.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbDelete.Image = Properties.Resources.Cross24;
+            tsbDelete.ImageTransparentColor = Color.Magenta;
+            tsbDelete.Name = "tsbDelete";
+            tsbDelete.Size = new Size(28, 28);
+            tsbDelete.Text = "删除";
+            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -418,7 +434,6 @@
         private ToolStripMenuItem tsmiViewTree;
         private ToolStripMenuItem tsmiViewPreviewPane;
         private ToolStripMenuItem tsmiViewStatus;
-        private ToolStripMenuItem tsmiOptions;
         private ToolStripSeparator toolStripMenuItem2;
         private ToolStripMenuItem tsmiStartIndex;
         private NotifyIcon notifyIcon1;
@@ -450,5 +465,8 @@
         private ToolStripButton tsbLast100Items;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripSeparator toolStripSeparator3;
+        private ToolStripMenuItem tsmiOptions;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripButton tsbDelete;
     }
 }

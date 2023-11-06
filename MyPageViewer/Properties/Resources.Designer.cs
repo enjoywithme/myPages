@@ -93,6 +93,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Cross24 {
+            get {
+                object obj = ResourceManager.GetObject("Cross24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Database_lightning24 {
             get {
                 object obj = ResourceManager.GetObject("Database-lightning24", resourceCulture);

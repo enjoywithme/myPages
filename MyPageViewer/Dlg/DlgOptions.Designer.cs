@@ -30,6 +30,10 @@
         {
             tabControl1 = new TabControl();
             tabPageIndex = new TabPage();
+            cbAutoIndexUnit = new ComboBox();
+            tbAutoIndexInterval = new TextBox();
+            rbNoAutoScan = new RadioButton();
+            rbScanInterval = new RadioButton();
             btSetWorkingDir = new Button();
             tbWorkingDir = new TextBox();
             label1 = new Label();
@@ -58,6 +62,10 @@
             // 
             // tabPageIndex
             // 
+            tabPageIndex.Controls.Add(cbAutoIndexUnit);
+            tabPageIndex.Controls.Add(tbAutoIndexInterval);
+            tabPageIndex.Controls.Add(rbNoAutoScan);
+            tabPageIndex.Controls.Add(rbScanInterval);
             tabPageIndex.Controls.Add(btSetWorkingDir);
             tabPageIndex.Controls.Add(tbWorkingDir);
             tabPageIndex.Controls.Add(label1);
@@ -68,6 +76,45 @@
             tabPageIndex.TabIndex = 2;
             tabPageIndex.Text = "索引";
             tabPageIndex.UseVisualStyleBackColor = true;
+            // 
+            // cbAutoIndexUnit
+            // 
+            cbAutoIndexUnit.DropDownStyle = ComboBoxStyle.DropDownList;
+            cbAutoIndexUnit.FormattingEnabled = true;
+            cbAutoIndexUnit.Items.AddRange(new object[] { "小时", "分钟" });
+            cbAutoIndexUnit.Location = new Point(189, 83);
+            cbAutoIndexUnit.Name = "cbAutoIndexUnit";
+            cbAutoIndexUnit.Size = new Size(47, 25);
+            cbAutoIndexUnit.TabIndex = 7;
+            // 
+            // tbAutoIndexInterval
+            // 
+            tbAutoIndexInterval.Location = new Point(126, 84);
+            tbAutoIndexInterval.Name = "tbAutoIndexInterval";
+            tbAutoIndexInterval.Size = new Size(57, 23);
+            tbAutoIndexInterval.TabIndex = 6;
+            // 
+            // rbNoAutoScan
+            // 
+            rbNoAutoScan.AutoSize = true;
+            rbNoAutoScan.Location = new Point(22, 132);
+            rbNoAutoScan.Name = "rbNoAutoScan";
+            rbNoAutoScan.Size = new Size(86, 21);
+            rbNoAutoScan.TabIndex = 5;
+            rbNoAutoScan.TabStop = true;
+            rbNoAutoScan.Text = "不自动索引";
+            rbNoAutoScan.UseVisualStyleBackColor = true;
+            // 
+            // rbScanInterval
+            // 
+            rbScanInterval.AutoSize = true;
+            rbScanInterval.Location = new Point(22, 85);
+            rbScanInterval.Name = "rbScanInterval";
+            rbScanInterval.Size = new Size(98, 21);
+            rbScanInterval.TabIndex = 5;
+            rbScanInterval.TabStop = true;
+            rbScanInterval.Text = "重新索引周期";
+            rbScanInterval.UseVisualStyleBackColor = true;
             // 
             // btSetWorkingDir
             // 
@@ -202,5 +249,9 @@
         private Button btAddScanFolder;
         private ListBox listScanFolders;
         private Label label2;
+        private ComboBox cbAutoIndexUnit;
+        private TextBox tbAutoIndexInterval;
+        private RadioButton rbNoAutoScan;
+        private RadioButton rbScanInterval;
     }
 }

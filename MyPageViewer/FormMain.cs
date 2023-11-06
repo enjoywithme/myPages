@@ -3,7 +3,9 @@ using MyPageViewer.Dlg;
 using mySharedLib;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
+using System.Timers;
 using MyPageLib.PoCo;
+using System.Drawing.Printing;
 
 namespace MyPageViewer
 {
@@ -12,7 +14,7 @@ namespace MyPageViewer
 
         public static FormMain Instance { get; set; }
         private readonly MyPageDocument _startDocument;
-
+        private static System.Threading.Timer _autoIndexTimer;
 
         public FormMain(MyPageDocument startDocument)
         {
@@ -33,7 +35,12 @@ namespace MyPageViewer
                 StartIndex();
             };
             tsmiExit.Click += (_, _) => { Close(); };
-            tsmiOptions.Click += (_, _) => { (new DlgOptions()).ShowDialog(this); };
+            tsmiOptions.Click += (_, _) =>
+            {
+                var ret = (new DlgOptions()).ShowDialog(this);
+                if (ret != DialogResult.OK) return;
+                StartAutoIndexTimer();
+            };
 
             //Menu items view
             panelTree.Visible = tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
@@ -88,6 +95,15 @@ namespace MyPageViewer
                 FillListView(MyPageDb.Instance.FindLastDays(2));
                 RefreshStatusInfo();
             };
+            tsbDelete.Click += (_, _) =>
+            {
+                if(listView.SelectedItems.Count==0) return;
+                if(MessageBox.Show("确认删除选择的条目？",Properties.Resources.Text_Hint,MessageBoxButtons.YesNo,MessageBoxIcon.Warning) == DialogResult.No) return;
+                var list = (from ListViewItem item in listView.SelectedItems select (PageDocumentPoCo)item.Tag).ToList();
+                var ret = MyPageDb.Instance.BatchDelete(list,out var message);
+                MessageBox.Show(message, ret ? Properties.Resources.Text_Hint : Properties.Resources.Text_Error,
+                    MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+            };
 
             //list view
             listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
@@ -101,6 +117,36 @@ namespace MyPageViewer
             if (_startDocument == null) return;
             (new FormPageViewer(_startDocument)).Show(this);
             Hide();
+
+
+            //启动Timer
+        }
+
+
+        #region 索引
+
+        private void StartAutoIndexTimer()
+        {
+            if (!MyPageSettings.Instance.AutoIndex) return;
+            _autoIndexTimer ??= new System.Threading.Timer(_autoIndexTimer_Elapsed, null, Timeout.Infinite, Timeout.Infinite);
+
+            _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
+        }
+
+        private void _autoIndexTimer_Elapsed(object sender)
+        {
+
+            if (PageIndexer.Instance.IsRunning) return;
+            _autoIndexTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+            PageIndexer.Instance.Start();
+
+            Invoke(() =>
+            {
+                tslbIndexing.Visible = true;
+                tsbStartIndex.Checked = true;
+            });
+
         }
 
         private void TsbGotoDocFolder_Click(object sender, EventArgs e)
@@ -141,8 +187,13 @@ namespace MyPageViewer
                 tslbIndexing.Visible = false;
                 tsbStartIndex.Checked = false;
 
+
             });
+
+            StartAutoIndexTimer();
         }
+        #endregion
+
 
         private void ListView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -153,11 +204,13 @@ namespace MyPageViewer
         {
             if (listView.SelectedIndices.Count == 0)
             {
+                tsbDelete.Enabled = false;
                 tsslInfo.Text = $"共 {listView.Items.Count} 个对象。";
                 return;
             }
 
             tsslInfo.Text = ((PageDocumentPoCo)listView.SelectedItems[0].Tag).Description;
+            tsbDelete.Enabled = true;
         }
 
         private void NaviTreeControl1_NodeChanged(object sender, string e)

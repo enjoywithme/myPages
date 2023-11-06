@@ -42,8 +42,13 @@ namespace MyPageViewer
             }
 
             //初始化setting
-            //MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+#if DEBUG
             MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\");
+
+#else
+            MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            //MessageBox.Show(MyPageSettings.Instance.SettingFilePath);
+#endif
 
             //run main form
             FormMain.Instance = new FormMain(myPageDoc);
