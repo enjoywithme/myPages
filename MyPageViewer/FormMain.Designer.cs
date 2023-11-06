@@ -43,17 +43,21 @@
             tsmiViewPreviewPane = new ToolStripMenuItem();
             tsmiViewStatus = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
-            tsslInfo = new ToolStripStatusLabel();
             tslbIndexing = new ToolStripStatusLabel();
+            tsslInfo = new ToolStripStatusLabel();
             notifyIcon1 = new NotifyIcon(components);
             toolStrip1 = new ToolStrip();
             tsbStartIndex = new ToolStripButton();
+            tsbGotoDocFolder = new ToolStripButton();
             panelTop = new Panel();
             tbSearch = new TextBox();
             panelMain = new Panel();
             panelMiddle = new Panel();
             listView = new ListView();
             colTitle = new ColumnHeader();
+            colName = new ColumnHeader();
+            colSize = new ColumnHeader();
+            colDtModified = new ColumnHeader();
             colFilePath = new ColumnHeader();
             splitterRight = new Splitter();
             panelPreview = new Panel();
@@ -157,20 +161,21 @@
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
             // 
-            // tsslInfo
-            // 
-            tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(819, 17);
-            tsslInfo.Spring = true;
-            tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
-            // 
             // tslbIndexing
             // 
+            tslbIndexing.BorderStyle = Border3DStyle.Etched;
             tslbIndexing.Image = Properties.Resources.list24;
             tslbIndexing.Name = "tslbIndexing";
             tslbIndexing.Size = new Size(74, 17);
             tslbIndexing.Text = "Indexing";
             tslbIndexing.Visible = false;
+            // 
+            // tsslInfo
+            // 
+            tsslInfo.Name = "tsslInfo";
+            tsslInfo.Size = new Size(924, 17);
+            tsslInfo.Spring = true;
+            tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
             // notifyIcon1
             // 
@@ -180,27 +185,37 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex });
+            toolStrip1.ImageScalingSize = new Size(24, 24);
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbGotoDocFolder });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(939, 25);
+            toolStrip1.Size = new Size(939, 31);
             toolStrip1.TabIndex = 4;
             toolStrip1.Text = "toolStrip1";
             // 
             // tsbStartIndex
             // 
             tsbStartIndex.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbStartIndex.Image = Properties.Resources.Database_search24;
+            tsbStartIndex.Image = Properties.Resources.Database_lightning24;
             tsbStartIndex.ImageTransparentColor = Color.Magenta;
             tsbStartIndex.Name = "tsbStartIndex";
-            tsbStartIndex.Size = new Size(23, 22);
+            tsbStartIndex.Size = new Size(28, 28);
             tsbStartIndex.Text = "开始索引";
+            // 
+            // tsbGotoDocFolder
+            // 
+            tsbGotoDocFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbGotoDocFolder.Image = Properties.Resources.Folder_go24;
+            tsbGotoDocFolder.ImageTransparentColor = Color.Magenta;
+            tsbGotoDocFolder.Name = "tsbGotoDocFolder";
+            tsbGotoDocFolder.Size = new Size(28, 28);
+            tsbGotoDocFolder.Text = "定位目录";
             // 
             // panelTop
             // 
             panelTop.Controls.Add(tbSearch);
             panelTop.Dock = DockStyle.Top;
-            panelTop.Location = new Point(0, 50);
+            panelTop.Location = new Point(0, 56);
             panelTop.Name = "panelTop";
             panelTop.Size = new Size(939, 28);
             panelTop.TabIndex = 5;
@@ -221,9 +236,9 @@
             panelMain.Controls.Add(splitterLeft);
             panelMain.Controls.Add(panelTree);
             panelMain.Dock = DockStyle.Fill;
-            panelMain.Location = new Point(0, 78);
+            panelMain.Location = new Point(0, 84);
             panelMain.Name = "panelMain";
-            panelMain.Size = new Size(939, 502);
+            panelMain.Size = new Size(939, 496);
             panelMain.TabIndex = 6;
             // 
             // panelMiddle
@@ -232,25 +247,38 @@
             panelMiddle.Dock = DockStyle.Fill;
             panelMiddle.Location = new Point(224, 0);
             panelMiddle.Name = "panelMiddle";
-            panelMiddle.Size = new Size(538, 502);
+            panelMiddle.Size = new Size(538, 496);
             panelMiddle.TabIndex = 12;
             // 
             // listView
             // 
             listView.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            listView.Columns.AddRange(new ColumnHeader[] { colTitle, colFilePath });
+            listView.Columns.AddRange(new ColumnHeader[] { colTitle, colName, colSize, colDtModified, colFilePath });
             listView.FullRowSelect = true;
             listView.Location = new Point(0, 4);
             listView.Name = "listView";
-            listView.Size = new Size(538, 495);
+            listView.Size = new Size(538, 489);
             listView.TabIndex = 3;
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
             // 
             // colTitle
             // 
-            colTitle.Text = "名称";
+            colTitle.Text = "标题";
             colTitle.Width = 300;
+            // 
+            // colName
+            // 
+            colName.Text = "名称";
+            // 
+            // colSize
+            // 
+            colSize.Text = "大小";
+            // 
+            // colDtModified
+            // 
+            colDtModified.Text = "修改时间";
+            colDtModified.Width = 120;
             // 
             // colFilePath
             // 
@@ -262,7 +290,7 @@
             splitterRight.Dock = DockStyle.Right;
             splitterRight.Location = new Point(762, 0);
             splitterRight.Name = "splitterRight";
-            splitterRight.Size = new Size(3, 502);
+            splitterRight.Size = new Size(3, 496);
             splitterRight.TabIndex = 11;
             splitterRight.TabStop = false;
             // 
@@ -271,7 +299,7 @@
             panelPreview.Dock = DockStyle.Right;
             panelPreview.Location = new Point(765, 0);
             panelPreview.Name = "panelPreview";
-            panelPreview.Size = new Size(174, 502);
+            panelPreview.Size = new Size(174, 496);
             panelPreview.TabIndex = 10;
             panelPreview.Visible = false;
             // 
@@ -279,7 +307,7 @@
             // 
             splitterLeft.Location = new Point(221, 0);
             splitterLeft.Name = "splitterLeft";
-            splitterLeft.Size = new Size(3, 502);
+            splitterLeft.Size = new Size(3, 496);
             splitterLeft.TabIndex = 9;
             splitterLeft.TabStop = false;
             // 
@@ -289,7 +317,7 @@
             panelTree.Dock = DockStyle.Left;
             panelTree.Location = new Point(0, 0);
             panelTree.Name = "panelTree";
-            panelTree.Size = new Size(221, 502);
+            panelTree.Size = new Size(221, 496);
             panelTree.TabIndex = 8;
             panelTree.Visible = false;
             // 
@@ -298,7 +326,7 @@
             naviTreeControl1.Dock = DockStyle.Fill;
             naviTreeControl1.Location = new Point(0, 0);
             naviTreeControl1.Name = "naviTreeControl1";
-            naviTreeControl1.Size = new Size(221, 502);
+            naviTreeControl1.Size = new Size(221, 496);
             naviTreeControl1.TabIndex = 0;
             // 
             // FormMain
@@ -363,5 +391,9 @@
         private Panel panelTree;
         private Controls.ExploreTreeControl naviTreeControl1;
         private ToolStripStatusLabel tslbIndexing;
+        private ColumnHeader colName;
+        private ColumnHeader colSize;
+        private ColumnHeader colDtModified;
+        private ToolStripButton tsbGotoDocFolder;
     }
 }

@@ -63,6 +63,34 @@ namespace MyPageViewer.Controls
             }
         }
 
+        public void GotoPath(string folderPath)
+        {
+            TreeNode tn = null;
+            foreach (TreeNode node in treeView1.Nodes)
+            {
+                tn = FindNodeByPath(node, folderPath);
+                if (tn != null) break;
+
+            }
+
+            if (tn == null) return;
+
+            treeView1.SelectedNode = tn;
+        }
+
+        private TreeNode FindNodeByPath(TreeNode treeNode, string folderPath)
+        {
+            var tag = (string)treeNode.Tag;
+            if (folderPath.Equals(tag, StringComparison.InvariantCultureIgnoreCase)) return treeNode;
+            foreach (TreeNode tn in treeNode.Nodes)
+            {
+                var node = FindNodeByPath(tn, folderPath);
+                if (node != null) return node;
+            }
+
+            return null;
+        }
+
 
         #region piz文件拖放
 

@@ -11,6 +11,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Controls\ExploreTreeControl.resx~RF56289569.TMP" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Content Include="browser.ico" />
   </ItemGroup>
 

@@ -106,7 +106,7 @@
             treeView1.ImageList = imageList1;
             treeView1.Location = new Point(3, 64);
             treeView1.Name = "treeView1";
-            treeView1.SelectedImageIndex = 0;
+            treeView1.SelectedImageIndex = 1;
             treeView1.Size = new Size(302, 456);
             treeView1.TabIndex = 3;
             // 
@@ -116,6 +116,7 @@
             imageList1.ImageStream = (ImageListStreamer)resources.GetObject("imageList1.ImageStream");
             imageList1.TransparentColor = Color.Transparent;
             imageList1.Images.SetKeyName(0, "Folder16.png");
+            imageList1.Images.SetKeyName(1, "Folder-go16.png");
             // 
             // panel1
             // 

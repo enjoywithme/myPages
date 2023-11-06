@@ -3,6 +3,7 @@ using MyPageViewer.Dlg;
 using mySharedLib;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
+using MyPageLib.PoCo;
 
 namespace MyPageViewer
 {
@@ -68,8 +69,9 @@ namespace MyPageViewer
             //Tree
             naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
-            //Toolbar
+            //工具栏
             tsbStartIndex.Click += (_, _) => { StartIndex(); };
+            tsbGotoDocFolder.Click += TsbGotoDocFolder_Click;
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
 
             //list view
@@ -84,6 +86,15 @@ namespace MyPageViewer
             if (_startDocument == null) return;
             (new FormPageViewer(_startDocument)).Show(this);
             Hide();
+        }
+
+        private void TsbGotoDocFolder_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedIndices.Count == 0) return;
+
+            var poco = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
+            if (string.IsNullOrEmpty(poco.FolderPath)) return;
+            naviTreeControl1.GotoPath(poco.FolderPath);
         }
 
         private void Instance_IndexFileChanged(object sender, string e)
@@ -131,30 +142,22 @@ namespace MyPageViewer
                 tsslInfo.Text = $"共 {listView.Items.Count} 个对象。";
                 return;
             }
+
+            tsslInfo.Text = ((PageDocumentPoCo)listView.SelectedItems[0].Tag).Description;
         }
 
         private void NaviTreeControl1_NodeChanged(object sender, string e)
         {
             listView.Items.Clear();
 
-            if (Directory.Exists(e))
-            {
-                var files = Directory.EnumerateFiles(e, "*.piz");
-                foreach (var file in files)
-                {
-                    var listViewItem = new ListViewItem(Path.GetFileNameWithoutExtension(file), 0)
-                    {
-                        Tag = file
-                    };
-                    listViewItem.SubItems.Add(file);
-                    listView.Items.Add(listViewItem);
-                }
-                RefreshStatusInfo();
+            if (!Directory.Exists(e)) return;
 
-            }
+            var pocos = MyPageDb.Instance.FindFolderPath(e);
+            FillListView(pocos);
+            RefreshStatusInfo();
         }
 
-        private void OpenFilePath(string filePath)
+        private void OpenDocumentFromFilePath(string filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
             var doc = new MyPageDocument(filePath);
@@ -172,15 +175,15 @@ namespace MyPageViewer
             var info = ((ListView)sender).HitTest(e.X, e.Y);
             if (info.Item == null) return;
 
-            var filePath = info.Item.SubItems[1].Text;
-            OpenFilePath(filePath);
+            var poCo = (PageDocumentPoCo)info.Item.Tag;
+            OpenDocumentFromFilePath(poCo.FilePath);
         }
         private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (listView.SelectedIndices.Count == 0) return;
 
             listView.DoDragDrop(new DataObject(DataFormats.FileDrop,
-                (from ListViewItem item in listView.SelectedItems where item.Tag != null select (string)item.Tag).ToArray()),
+                (from ListViewItem item in listView.SelectedItems where item.Tag != null select ((PageDocumentPoCo)item.Tag).FilePath).ToArray()),
                 DragDropEffects.Move);
         }
         #endregion
@@ -198,20 +201,36 @@ namespace MyPageViewer
 
             _searchCancellationTokenSource = new CancellationTokenSource();
             var items = await MyPageDb.Instance.Search(tbSearch.Text, _searchCancellationTokenSource.Token);
-            if (items == null) { return; }
+            FillListView(items);
+            RefreshStatusInfo();
+        }
+
+        private void FillListView(IList<PageDocumentPoCo> poCos)
+        {
+            if (poCos == null || poCos.Count == 0)
+            {
+                listView.Items.Clear();
+                return;
+            }
+
             listView.BeginUpdate();
             listView.Items.Clear();
-            foreach (var poCo in items)
+            foreach (var poCo in poCos)
             {
                 var listViewItem = new ListViewItem(poCo.Title, 0)
                 {
-                    Tag = poCo.FilePath
+                    Tag = poCo
                 };
+                listViewItem.SubItems.Add(poCo.Name);
+                listViewItem.SubItems.Add(poCo.FileSize.FormatFileSize());
+                listViewItem.SubItems.Add(poCo.DtModified.FormatModifiedDateTime());
                 listViewItem.SubItems.Add(poCo.FilePath);
+
                 listView.Items.Add(listViewItem);
             }
+
+
             listView.EndUpdate();
-            RefreshStatusInfo();
         }
 
 
@@ -257,7 +276,7 @@ namespace MyPageViewer
                         var c = accessor.ReadArray(0, bytes, 0, n);
                         var s = System.Text.Encoding.Default.GetString(bytes, 0, c);
 
-                        OpenFilePath(s);
+                        OpenDocumentFromFilePath(s);
 
                     }
                     catch (Exception e)
