@@ -49,6 +49,12 @@
             toolStrip1 = new ToolStrip();
             tsbStartIndex = new ToolStripButton();
             tsbGotoDocFolder = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            tsbLast100Items = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
+            tsbLastDay1 = new ToolStripButton();
+            toolStripSeparator3 = new ToolStripSeparator();
+            tsbLast2Days = new ToolStripButton();
             panelTop = new Panel();
             tbSearch = new TextBox();
             panelMain = new Panel();
@@ -186,7 +192,7 @@
             // toolStrip1
             // 
             toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbGotoDocFolder });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbGotoDocFolder, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(939, 31);
@@ -210,6 +216,48 @@
             tsbGotoDocFolder.Name = "tsbGotoDocFolder";
             tsbGotoDocFolder.Size = new Size(28, 28);
             tsbGotoDocFolder.Text = "定位目录";
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 31);
+            // 
+            // tsbLast100Items
+            // 
+            tsbLast100Items.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbLast100Items.Image = (Image)resources.GetObject("tsbLast100Items.Image");
+            tsbLast100Items.ImageTransparentColor = Color.Magenta;
+            tsbLast100Items.Name = "tsbLast100Items";
+            tsbLast100Items.Size = new Size(69, 28);
+            tsbLast100Items.Text = "最新100条";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 31);
+            // 
+            // tsbLastDay1
+            // 
+            tsbLastDay1.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbLastDay1.Image = (Image)resources.GetObject("tsbLastDay1.Image");
+            tsbLastDay1.ImageTransparentColor = Color.Magenta;
+            tsbLastDay1.Name = "tsbLastDay1";
+            tsbLastDay1.Size = new Size(55, 28);
+            tsbLastDay1.Text = "最近1天";
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 31);
+            // 
+            // tsbLast2Days
+            // 
+            tsbLast2Days.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            tsbLast2Days.Image = (Image)resources.GetObject("tsbLast2Days.Image");
+            tsbLast2Days.ImageTransparentColor = Color.Magenta;
+            tsbLast2Days.Name = "tsbLast2Days";
+            tsbLast2Days.Size = new Size(55, 28);
+            tsbLast2Days.Text = "最近2天";
             // 
             // panelTop
             // 
@@ -265,7 +313,7 @@
             // colTitle
             // 
             colTitle.Text = "标题";
-            colTitle.Width = 300;
+            colTitle.Width = 330;
             // 
             // colName
             // 
@@ -274,11 +322,12 @@
             // colSize
             // 
             colSize.Text = "大小";
+            colSize.Width = 90;
             // 
             // colDtModified
             // 
             colDtModified.Text = "修改时间";
-            colDtModified.Width = 120;
+            colDtModified.Width = 140;
             // 
             // colFilePath
             // 
@@ -395,5 +444,11 @@
         private ColumnHeader colSize;
         private ColumnHeader colDtModified;
         private ToolStripButton tsbGotoDocFolder;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton tsbLastDay1;
+        private ToolStripButton tsbLast2Days;
+        private ToolStripButton tsbLast100Items;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

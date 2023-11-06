@@ -73,6 +73,21 @@ namespace MyPageViewer
             tsbStartIndex.Click += (_, _) => { StartIndex(); };
             tsbGotoDocFolder.Click += TsbGotoDocFolder_Click;
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
+            tsbLast100Items.Click += (_, _) =>
+            {
+                FillListView(MyPageDb.Instance.FindLastN(100));
+                RefreshStatusInfo();
+            };
+            tsbLastDay1.Click += (_, _) =>
+            {
+                FillListView(MyPageDb.Instance.FindLastDays(1));
+                RefreshStatusInfo();
+            };
+            tsbLast2Days.Click += (_, _) =>
+            {
+                FillListView(MyPageDb.Instance.FindLastDays(2));
+                RefreshStatusInfo();
+            };
 
             //list view
             listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
@@ -102,7 +117,6 @@ namespace MyPageViewer
             Invoke(() =>
             {
                 tslbIndexing.Text = e;
-
             });
         }
 
