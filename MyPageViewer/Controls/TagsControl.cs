@@ -7,8 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using MyPageLib;
 using MyPageViewer.Dlg;
-using MyPageViewer.Model;
 
 namespace MyPageViewer.Controls
 {

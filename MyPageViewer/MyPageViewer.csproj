@@ -22,14 +22,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="HtmlAgilityPack" Version="1.11.46" />
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1661.34" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="SQLite" Version="3.13.0" />
-    <PackageReference Include="SqlSugarCore" Version="5.1.4.66" />
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\MyPageLib\MyPageLib.csproj" />
     <ProjectReference Include="..\..\mySharedLib\mySharedLib.csproj" />
   </ItemGroup>
 
@@ -55,6 +53,10 @@
     <None Update="myPage.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Model\" />
   </ItemGroup>
 
 </Project>

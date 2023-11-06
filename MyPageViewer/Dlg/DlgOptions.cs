@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyPageViewer.Model;
+using MyPageLib;
 
 namespace MyPageViewer.Dlg
 {
@@ -50,7 +50,7 @@ namespace MyPageViewer.Dlg
 
             MyPageSettings.Instance.WorkingDirectory = tbWorkingDir.Text;
             MyPageSettings.Instance.ScanFolders = listScanFolders.Items.Cast<string>().ToList();
-            MyPageSettings.Instance.Save(true);
+            MyPageSettings.Instance.Save(out _,true);
             Close();
         }
 

@@ -1,8 +1,8 @@
+ï»¿using MyPageLib;
 using MyPageViewer.Dlg;
-using MyPageViewer.Model;
 using mySharedLib;
-using System.IO.MemoryMappedFiles;
 using System.Diagnostics;
+using System.IO.MemoryMappedFiles;
 
 namespace MyPageViewer
 {
@@ -22,9 +22,15 @@ namespace MyPageViewer
         private void FormMain_Load(object sender, EventArgs e)
         {
 
-            #region Ö÷²Ëµ¥
+            PageIndexer.Instance.IndexStopped += Instance_IndexStopped;
+            PageIndexer.Instance.IndexFileChanged += Instance_IndexFileChanged;
 
-            tsmiStartIndex.Click += (_, _) => { PageIndexer.Instance.Start(); };
+            #region ä¸»èœå•
+
+            tsmiStartIndex.Click += (_, _) =>
+            {
+                StartIndex();
+            };
             tsmiExit.Click += (_, _) => { Close(); };
             tsmiOptions.Click += (_, _) => { (new DlgOptions()).ShowDialog(this); };
 
@@ -54,7 +60,7 @@ namespace MyPageViewer
             #endregion
 
 
-            //²éÑ¯
+            //æŸ¥è¯¢
             tbSearch.TextChanged += TbSearch_TextChanged;
             tbSearch.KeyDown += TbSearch_KeyDown;
             listView.MouseDoubleClick += ListView_MouseDoubleClick;
@@ -63,7 +69,7 @@ namespace MyPageViewer
             naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
             //Toolbar
-            tsbPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
+            tsbStartIndex.Click += (_, _) => { StartIndex(); };
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
 
             //list view
@@ -74,13 +80,44 @@ namespace MyPageViewer
             notifyIcon1.MouseClick += (_, _) => ShowWindow();
             notifyIcon1.MouseDoubleClick += (_, _) => ShowWindow();
 
-            //´¦ÀíÃüÁîĞĞ
+            //å¤„ç†å‘½ä»¤è¡Œ
             if (_startDocument == null) return;
             (new FormPageViewer(_startDocument)).Show(this);
             Hide();
         }
 
+        private void Instance_IndexFileChanged(object sender, string e)
+        {
+            Invoke(() =>
+            {
+                tslbIndexing.Text = e;
 
+            });
+        }
+
+        private void StartIndex()
+        {
+            if (!PageIndexer.Instance.IsRunning)
+            {
+                PageIndexer.Instance.Start();
+                tslbIndexing.Visible = true;
+                tsbStartIndex.Checked = true;
+
+                return;
+            }
+
+            PageIndexer.Instance.Stop();
+        }
+
+        private void Instance_IndexStopped(object sender, EventArgs e)
+        {
+            Invoke(() =>
+            {
+                tslbIndexing.Visible = false;
+                tsbStartIndex.Checked = false;
+
+            });
+        }
 
         private void ListView_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -91,7 +128,7 @@ namespace MyPageViewer
         {
             if (listView.SelectedIndices.Count == 0)
             {
-                tsslInfo.Text = $"¹² {listView.Items.Count} ¸ö¶ÔÏó¡£";
+                tsslInfo.Text = $"å…± {listView.Items.Count} ä¸ªå¯¹è±¡ã€‚";
                 return;
             }
         }
@@ -129,7 +166,7 @@ namespace MyPageViewer
 
         }
 
-        #region List view¶¯×÷
+        #region List viewåŠ¨ä½œ
         private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var info = ((ListView)sender).HitTest(e.X, e.Y);
@@ -148,7 +185,7 @@ namespace MyPageViewer
         }
         #endregion
 
-        #region ËÑË÷
+        #region æœç´¢
         private void TbSearch_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Return)
@@ -194,7 +231,7 @@ namespace MyPageViewer
         }
         #endregion
 
-        #region ²Ù×÷
+        #region æ“ä½œ
 
         private void PasteFromClipboard()
         {
@@ -237,7 +274,7 @@ namespace MyPageViewer
             base.WndProc(ref message);
         }
 
-        #region ´°¿Ú¿ØÖÆ
+        #region çª—å£æ§åˆ¶
 
         public void ShowWindow()
         {

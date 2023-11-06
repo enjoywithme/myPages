@@ -93,6 +93,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Database_search24 {
+            get {
+                object obj = ResourceManager.GetObject("Database_search24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap delete24 {
             get {
                 object obj = ResourceManager.GetObject("delete24", resourceCulture);
@@ -126,6 +136,16 @@ namespace MyPageViewer.Properties {
         internal static System.Drawing.Bitmap Link24 {
             get {
                 object obj = ResourceManager.GetObject("Link24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap list24 {
+            get {
+                object obj = ResourceManager.GetObject("list24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -8,9 +8,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyPageViewer.Model;
 using MessageBoxButtons = System.Windows.Forms.MessageBoxButtons;
 using System.Diagnostics;
+using MyPageLib;
 using MyPageViewer.Dlg;
 using ToolStripMenuItem = System.Windows.Forms.ToolStripMenuItem;
 

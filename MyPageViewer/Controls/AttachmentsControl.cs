@@ -1,4 +1,4 @@
-﻿using MyPageViewer.Model;
+﻿using MyPageLib;
 
 namespace MyPageViewer.Controls
 {

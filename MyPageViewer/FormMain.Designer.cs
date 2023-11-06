@@ -44,9 +44,10 @@
             tsmiViewStatus = new ToolStripMenuItem();
             statusStrip1 = new StatusStrip();
             tsslInfo = new ToolStripStatusLabel();
+            tslbIndexing = new ToolStripStatusLabel();
             notifyIcon1 = new NotifyIcon(components);
             toolStrip1 = new ToolStrip();
-            tsbPasteFromClipboard = new ToolStripButton();
+            tsbStartIndex = new ToolStripButton();
             panelTop = new Panel();
             tbSearch = new TextBox();
             panelMain = new Panel();
@@ -149,7 +150,7 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { tsslInfo });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { tslbIndexing, tsslInfo });
             statusStrip1.Location = new Point(0, 580);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(939, 22);
@@ -159,9 +160,17 @@
             // tsslInfo
             // 
             tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(924, 17);
+            tsslInfo.Size = new Size(819, 17);
             tsslInfo.Spring = true;
             tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
+            // 
+            // tslbIndexing
+            // 
+            tslbIndexing.Image = Properties.Resources.list24;
+            tslbIndexing.Name = "tslbIndexing";
+            tslbIndexing.Size = new Size(74, 17);
+            tslbIndexing.Text = "Indexing";
+            tslbIndexing.Visible = false;
             // 
             // notifyIcon1
             // 
@@ -171,21 +180,21 @@
             // 
             // toolStrip1
             // 
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbPasteFromClipboard });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(939, 25);
             toolStrip1.TabIndex = 4;
             toolStrip1.Text = "toolStrip1";
             // 
-            // tsbPasteFromClipboard
+            // tsbStartIndex
             // 
-            tsbPasteFromClipboard.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbPasteFromClipboard.Image = Properties.Resources.Editpaste16;
-            tsbPasteFromClipboard.ImageTransparentColor = Color.Magenta;
-            tsbPasteFromClipboard.Name = "tsbPasteFromClipboard";
-            tsbPasteFromClipboard.Size = new Size(23, 22);
-            tsbPasteFromClipboard.Text = "从剪贴板粘贴";
+            tsbStartIndex.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbStartIndex.Image = Properties.Resources.Database_search24;
+            tsbStartIndex.ImageTransparentColor = Color.Magenta;
+            tsbStartIndex.Name = "tsbStartIndex";
+            tsbStartIndex.Size = new Size(23, 22);
+            tsbStartIndex.Text = "开始索引";
             // 
             // panelTop
             // 
@@ -340,7 +349,7 @@
         private ToolStripMenuItem 工具TToolStripMenuItem;
         private ToolStripMenuItem tsmiPasteFromClipboard;
         private ToolStrip toolStrip1;
-        private ToolStripButton tsbPasteFromClipboard;
+        private ToolStripButton tsbStartIndex;
         private Panel panelTop;
         private TextBox tbSearch;
         private Panel panelMain;
@@ -353,5 +362,6 @@
         private Splitter splitterLeft;
         private Panel panelTree;
         private Controls.ExploreTreeControl naviTreeControl1;
+        private ToolStripStatusLabel tslbIndexing;
     }
 }

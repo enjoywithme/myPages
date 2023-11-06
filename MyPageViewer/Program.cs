@@ -1,9 +1,10 @@
 ﻿using System.Diagnostics;
 using System.IO.Pipes;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using MyPageViewer.Model;
+using MyPageLib;
 using mySharedLib;
 
 namespace MyPageViewer
@@ -40,6 +41,10 @@ namespace MyPageViewer
                 return;
             }
 
+            //初始化setting
+            //MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+            MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\");
+
             //run main form
             FormMain.Instance = new FormMain(myPageDoc);
             Application.Run(FormMain.Instance);
@@ -47,7 +52,7 @@ namespace MyPageViewer
             //Task.Delay(1000).Wait();
 
             //Save settings
-            MyPageSettings.Instance.Save();
+            MyPageSettings.Instance.Save(out _);
 
             SingleInstance.Instance.Stop();
         }
