@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,6 +10,14 @@ namespace MyPageLib
 {
     public class PageIndexer
     {
+        public enum ScanMode
+        {
+            FullScan,
+            ScanWaitList
+        }
+
+        private ScanMode _currentScanMode;
+
         public static PageIndexer Instance { get; } =new();
 
         public event EventHandler IndexStopped;
@@ -16,9 +26,12 @@ namespace MyPageLib
         public bool IsRunning { get; private set; }
         private bool _stopPending;
 
-        public void Start()
+        private ConcurrentQueue<string> _filesWaitIndex = new ConcurrentQueue<string>();
+
+        public void Start(ScanMode mode = ScanMode.FullScan)
         {
             if(IsRunning) return;
+            _currentScanMode = mode;
             _stopPending=false;
             Task.Run(Processing);
 
@@ -27,13 +40,33 @@ namespace MyPageLib
         public void Stop()
         {
             _stopPending=true;
-
         }
 
-
-        private void Processing()
+        public void Enqueue(string fileName)
         {
-            IsRunning = true;
+            _filesWaitIndex.Enqueue(fileName);
+            Start(ScanMode.ScanWaitList);
+        }
+
+        private void ScanWaitList()
+        {
+            while (true)
+            {
+                if(!_filesWaitIndex.TryDequeue(out var file)) break;
+
+                var poCo = new PageDocumentPoCo()
+                {
+                    FilePath = file,
+                    Name = Path.GetFileNameWithoutExtension(file),
+                    LocalPresent = 1
+                };
+                poCo.CheckInfo();
+                MyPageDb.Instance.InsertUpdateDocument(poCo);
+            }
+        }
+
+        private void ScanLocalFolder()
+        {
             try
             {
                 //先更新所有纪录的Local present 为 false
@@ -65,7 +98,22 @@ namespace MyPageLib
             {
                 System.Diagnostics.Debug.WriteLine(e.Message);
             }
-            
+        }
+
+
+        private void Processing()
+        {
+            IsRunning = true;
+
+            if(_currentScanMode == ScanMode.ScanWaitList)
+                ScanWaitList();
+            else
+            {
+                ScanWaitList();
+                ScanLocalFolder();
+                ScanWaitList();
+
+            }
 
             IsRunning = false;
             IndexStopped?.Invoke(this,EventArgs.Empty);

@@ -1,4 +1,5 @@
-﻿using MyPageLib;
+﻿using System.Reflection;
+using MyPageLib;
 using mySharedLib;
 
 namespace MyPageViewer
