@@ -1,17 +1,11 @@
-﻿using System.Diagnostics;
-using System.IO.Pipes;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.AccessControl;
-using System.Security.Principal;
-using MyPageLib;
+﻿using MyPageLib;
 using mySharedLib;
 
 namespace MyPageViewer
 {
     internal static partial class Program
     {
-        public const string InstanceGuid = "AC9B6BF8-A4A6-4FAD-AC57-856CB01280C}";
+        //public const string InstanceGuid = "AC9B6BF8-A4A6-4FAD-AC57-856CB01280C}";
 
 
         /// <summary>
@@ -27,7 +21,7 @@ namespace MyPageViewer
             //Associate .piz extension
             FileAssociations.EnsureAssociationsSet();
 
-            if (!SingleInstance.InitInstance(out var message, InstanceGuid))
+            if (!SingleInstance.InitInstance(out var message))
             {
                 ShowError(message);
                 return;

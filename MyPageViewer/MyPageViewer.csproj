@@ -27,12 +27,10 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Web.WebView2" Version="1.0.1661.34" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MyPageLib\MyPageLib.csproj" />
-    <ProjectReference Include="..\..\mySharedLib\mySharedLib.csproj" />
+    <ProjectReference Include="..\MyPageLib\MyPageLib.csproj" />
   </ItemGroup>
 
   <ItemGroup>
