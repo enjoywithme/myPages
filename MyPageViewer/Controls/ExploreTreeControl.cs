@@ -113,15 +113,12 @@ namespace MyPageViewer.Controls
 
             foreach (var pizFile in pizFiles)
             {
-                try
+                if (!MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)),out var message))
                 {
-                    File.Move(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)));
+                    sb.AppendLine($"移动文件{pizFile}错误:\r\n{message}");
 
                 }
-                catch (Exception exception)
-                {
-                    sb.AppendLine($"移动文件{pizFile}错误:\r\n{exception.Message}");
-                }
+
             }
 
             var msg = sb.ToString();

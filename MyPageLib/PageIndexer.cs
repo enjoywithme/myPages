@@ -48,20 +48,25 @@ namespace MyPageLib
             Start(ScanMode.ScanWaitList);
         }
 
+        public void IndexFile(string file)
+        {
+            var poCo = new PageDocumentPoCo()
+            {
+                FilePath = file,
+                Name = Path.GetFileNameWithoutExtension(file),
+                LocalPresent = 1
+            };
+            poCo.CheckInfo();
+            MyPageDb.Instance.InsertUpdateDocument(poCo);
+        }
+
         private void ScanWaitList()
         {
             while (true)
             {
                 if(!_filesWaitIndex.TryDequeue(out var file)) break;
 
-                var poCo = new PageDocumentPoCo()
-                {
-                    FilePath = file,
-                    Name = Path.GetFileNameWithoutExtension(file),
-                    LocalPresent = 1
-                };
-                poCo.CheckInfo();
-                MyPageDb.Instance.InsertUpdateDocument(poCo);
+                IndexFile(file);
             }
         }
 
@@ -93,6 +98,9 @@ namespace MyPageLib
 
                     }
                 }
+
+                //删除本地不存在的条目
+                MyPageDb.Instance.CleanUpLocalNotPresent();
             }
             catch (Exception e)
             {

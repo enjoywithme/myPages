@@ -69,12 +69,19 @@ namespace MyPageLib
                 .ExecuteCommand();
         }
 
+        /// <summary>
+        /// 删除本地文件不存在的条目
+        /// </summary>
+        public void CleanUpLocalNotPresent()
+        {
+            _db.Deleteable<PageDocumentPoCo>().Where(co => co.LocalPresent==0).ExecuteCommand();
+        }
 
-        public async void DeleteDocument(PageDocumentPoCo documentPoCo)
+
+        public void DeleteDocumentByFilePath(string filePath)
         {
 
-            var list = new List<PageDocumentPoCo> { documentPoCo };
-            await _db.Deleteable<PageDocumentPoCo>().WhereColumns(list, it => new { it.FilePath }).ExecuteCommandAsync();
+            _db.Deleteable<PageDocumentPoCo>().Where( it => it.FilePath == filePath).ExecuteCommand();
         }
 
         public PageDocumentPoCo FindFilePath(string filePath)
@@ -85,6 +92,27 @@ namespace MyPageLib
         public PageDocumentPoCo FindOriginUrl(string originUrl)
         {
             return _db.Queryable<PageDocumentPoCo>().First(it => it.OriginUrl == originUrl);
+        }
+
+
+        public bool MoveFile(string orgFileName, string dstFileName,out string message)
+        {
+            try
+            {
+                File.Move(orgFileName, dstFileName, true);
+                DeleteDocumentByFilePath(orgFileName);
+                PageIndexer.Instance.IndexFile(dstFileName);
+
+            }
+            catch (Exception e)
+            {
+                message = e.Message;
+                return false;
+            }
+
+            message = string.Empty;
+            return true;
+
         }
 
         /// <summary>

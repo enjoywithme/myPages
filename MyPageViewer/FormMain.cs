@@ -103,6 +103,12 @@ namespace MyPageViewer
                 var ret = MyPageDb.Instance.BatchDelete(list,out var message);
                 MessageBox.Show(message, ret ? Properties.Resources.Text_Hint : Properties.Resources.Text_Error,
                     MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+
+                if (!ret) return;
+                foreach (ListViewItem eachItem in listView.SelectedItems)
+                {
+                    listView.Items.Remove(eachItem);
+                }
             };
 
             //list view

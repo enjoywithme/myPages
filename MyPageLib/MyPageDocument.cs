@@ -321,7 +321,7 @@ namespace MyPageLib
             try
             {
                 File.Delete(FilePath);
-                MyPageDb.Instance.DeleteDocument(ToPoCo());
+                MyPageDb.Instance.DeleteDocumentByFilePath(FilePath);
                 Deleted = true;
             }
             catch (Exception e)
