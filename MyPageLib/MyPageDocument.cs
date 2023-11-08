@@ -13,6 +13,8 @@ namespace MyPageLib
 {
     public class MyPageDocument:IDisposable
     {
+        public const string AttachmentsFolderName = "Attachments";
+
         public string FilePath { get; set; }
         public long FileSize { get; set; }
         public string GuId { get; set; }
@@ -75,8 +77,8 @@ namespace MyPageLib
         /// </summary>
         public string TempIndexPath { get; private set; }
 
-        public string TempAttachmentsPath => Path.Combine(DocTempPath, "Attachments");
-
+        public string TempAttachmentsPath => Path.Combine(DocTempPath, AttachmentsFolderName);
+        public IList<PageAttachment>? ExtractedAttachments { get; private set; }
 
         public static MyPageDocument NewFromArgs(string[] args)
         {
@@ -147,6 +149,10 @@ namespace MyPageLib
                     if(tags!= null)
                         Tags = tags.ToObject<List<string>>();
                 }
+
+                //检查附件
+                ExtractedAttachments = PageAttachment.CheckAttachmentsFromTempPath(this);
+
             }
             catch (Exception e)
             {

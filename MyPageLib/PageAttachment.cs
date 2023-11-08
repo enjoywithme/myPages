@@ -31,7 +31,7 @@ namespace MyPageLib
         }
 
 
-        public static IList<PageAttachment> CheckAttachmentsFromTempPath(MyPageDocument document)
+        public static IList<PageAttachment>? CheckAttachmentsFromTempPath(MyPageDocument? document)
         {
             if (document==null || !Directory.Exists(document.DocTempPath)) return null;
 

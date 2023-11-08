@@ -25,7 +25,7 @@ namespace MyPageViewer.Controls
         public void LoadAttachments()
         {
             listAttachments.Items.Clear();
-            var attachments = PageAttachment.CheckAttachmentsFromTempPath(_document);
+            var attachments = _document?.ExtractedAttachments;
             if (attachments == null)
             {
                 return;

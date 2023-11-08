@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net6.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Platforms>AnyCPU;x86</Platforms>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="System.IO.Compression.ZipFile" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\mySharedLib\mySharedLib.csproj" />
+    <ProjectReference Include="..\MyPageLib\MyPageLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="WizKMCoreLib">
+      <HintPath>..\..\ZeroDown\ZeroDownLib\Lib\WizKMCoreLib.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

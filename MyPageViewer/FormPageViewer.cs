@@ -39,6 +39,9 @@ namespace MyPageViewer
 
 
             InitializeComponent();
+
+            if(pageDocument.ExtractedAttachments is { Count: > 0 })
+                btAttachment.BackColor = Color.Crimson;
         }
 
         private void FormPageViewer_Load(object sender, EventArgs e)

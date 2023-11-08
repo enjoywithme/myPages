@@ -101,7 +101,7 @@ namespace MyPageLib
             {
                 File.Move(orgFileName, dstFileName, true);
                 DeleteDocumentByFilePath(orgFileName);
-                PageIndexer.Instance.IndexFile(dstFileName);
+                MyPageIndexer.Instance.IndexFile(dstFileName);
 
             }
             catch (Exception e)
@@ -217,7 +217,7 @@ namespace MyPageLib
         {
             try
             {
-                return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath).ToList();
+                return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath).OrderByDescending(it=>it.Title).ToList();
             }
             catch (Exception)
             {

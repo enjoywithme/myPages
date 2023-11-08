@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using MyPageLib.PoCo;
 
 namespace MyPageLib
 {
-    public class PageIndexer
+    public class MyPageIndexer
     {
         public enum ScanMode
         {
@@ -18,7 +17,7 @@ namespace MyPageLib
 
         private ScanMode _currentScanMode;
 
-        public static PageIndexer Instance { get; } =new();
+        public static MyPageIndexer Instance { get; } =new();
 
         public event EventHandler IndexStopped;
         public event EventHandler<string> IndexFileChanged; 

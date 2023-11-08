@@ -3,9 +3,7 @@ using MyPageViewer.Dlg;
 using mySharedLib;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
-using System.Timers;
 using MyPageLib.PoCo;
-using System.Drawing.Printing;
 
 namespace MyPageViewer
 {
@@ -25,8 +23,8 @@ namespace MyPageViewer
         private void FormMain_Load(object sender, EventArgs e)
         {
 
-            PageIndexer.Instance.IndexStopped += Instance_IndexStopped;
-            PageIndexer.Instance.IndexFileChanged += Instance_IndexFileChanged;
+            MyPageIndexer.Instance.IndexStopped += Instance_IndexStopped;
+            MyPageIndexer.Instance.IndexFileChanged += Instance_IndexFileChanged;
 
             #region 主菜单
 
@@ -133,7 +131,10 @@ namespace MyPageViewer
 
         private void StartAutoIndexTimer()
         {
-            if (!MyPageSettings.Instance.AutoIndex) return;
+            if (!MyPageSettings.Instance.AutoIndex)
+            {
+                _autoIndexTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+            }
             _autoIndexTimer ??= new System.Threading.Timer(_autoIndexTimer_Elapsed, null, Timeout.Infinite, Timeout.Infinite);
 
             _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
@@ -142,10 +143,10 @@ namespace MyPageViewer
         private void _autoIndexTimer_Elapsed(object sender)
         {
 
-            if (PageIndexer.Instance.IsRunning) return;
+            if (MyPageIndexer.Instance.IsRunning) return;
             _autoIndexTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-            PageIndexer.Instance.Start();
+            MyPageIndexer.Instance.Start();
 
             Invoke(() =>
             {
@@ -174,16 +175,16 @@ namespace MyPageViewer
 
         private void StartIndex()
         {
-            if (!PageIndexer.Instance.IsRunning)
+            if (!MyPageIndexer.Instance.IsRunning)
             {
-                PageIndexer.Instance.Start();
+                MyPageIndexer.Instance.Start();
                 tslbIndexing.Visible = true;
                 tsbStartIndex.Checked = true;
 
                 return;
             }
 
-            PageIndexer.Instance.Stop();
+            MyPageIndexer.Instance.Stop();
         }
 
         private void Instance_IndexStopped(object sender, EventArgs e)
