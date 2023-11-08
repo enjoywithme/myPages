@@ -46,6 +46,9 @@ namespace MyPageViewer
             btAttachment = new Button();
             panel1 = new Panel();
             btDelete = new Button();
+            btBack = new Button();
+            btForward = new Button();
+            btExit = new Button();
             btReloadFromTemp = new Button();
             btCleanHmtl = new Button();
             btZip = new Button();
@@ -166,9 +169,9 @@ namespace MyPageViewer
             // 
             tbTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tbTitle.BackColor = SystemColors.InactiveBorder;
-            tbTitle.Location = new Point(12, 20);
+            tbTitle.Location = new Point(143, 20);
             tbTitle.Name = "tbTitle";
-            tbTitle.Size = new Size(712, 23);
+            tbTitle.Size = new Size(581, 23);
             tbTitle.TabIndex = 0;
             // 
             // btAttachment
@@ -185,6 +188,9 @@ namespace MyPageViewer
             // panel1
             // 
             panel1.Controls.Add(btDelete);
+            panel1.Controls.Add(btBack);
+            panel1.Controls.Add(btForward);
+            panel1.Controls.Add(btExit);
             panel1.Controls.Add(btReloadFromTemp);
             panel1.Controls.Add(btCleanHmtl);
             panel1.Controls.Add(btZip);
@@ -207,6 +213,36 @@ namespace MyPageViewer
             btDelete.TabIndex = 2;
             toolTip1.SetToolTip(btDelete, "删除文档");
             btDelete.UseVisualStyleBackColor = true;
+            // 
+            // btBack
+            // 
+            btBack.Image = Properties.Resources.Arrow_left24;
+            btBack.Location = new Point(12, 10);
+            btBack.Name = "btBack";
+            btBack.Size = new Size(38, 43);
+            btBack.TabIndex = 2;
+            toolTip1.SetToolTip(btBack, "后退");
+            btBack.UseVisualStyleBackColor = true;
+            // 
+            // btForward
+            // 
+            btForward.Image = Properties.Resources.Arrow_right24;
+            btForward.Location = new Point(55, 10);
+            btForward.Name = "btForward";
+            btForward.Size = new Size(38, 43);
+            btForward.TabIndex = 2;
+            toolTip1.SetToolTip(btForward, "前进");
+            btForward.UseVisualStyleBackColor = true;
+            // 
+            // btExit
+            // 
+            btExit.Image = Properties.Resources.Door_out24;
+            btExit.Location = new Point(99, 10);
+            btExit.Name = "btExit";
+            btExit.Size = new Size(38, 43);
+            btExit.TabIndex = 2;
+            toolTip1.SetToolTip(btExit, "退出");
+            btExit.UseVisualStyleBackColor = true;
             // 
             // btReloadFromTemp
             // 
@@ -353,5 +389,8 @@ namespace MyPageViewer
         private TagsControl tagsControl;
         private Button btTags;
         private Button btDelete;
+        private Button btExit;
+        private Button btBack;
+        private Button btForward;
     }
 }

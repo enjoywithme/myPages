@@ -45,6 +45,10 @@ namespace MyPageViewer
         {
             FormClosed += FormPageViewer_FormClosed;
             FormClosing += FormPageViewer_FormClosing;
+            btExit.Click += (_, _) => { Close(); };
+            btBack.Click += (_, _) => { webView.GoBack(); };
+            btForward.Click += (_, _) => { webView.GoForward(); };
+
             btAttachment.Click += BtAttachment_Click;
             btTags.Click += BtTags_Click;
             btZip.Click += BtZip_Click;
@@ -269,6 +273,7 @@ namespace MyPageViewer
         {
             await webView.EnsureCoreWebView2Async(null);
             webView.CoreWebView2.WebMessageReceived += UpdateAddressBar;
+            webView.CoreWebView2.HistoryChanged += CoreWebView2_HistoryChanged;
 
             //await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.chrome.webview.postMessage(window.document.URL);");
             //await webView.CoreWebView2.AddScriptToExecuteOnDocumentCreatedAsync("window.chrome.webview.addEventListener(\'message\', event => alert(event.data));");
@@ -281,6 +286,12 @@ namespace MyPageViewer
                 webView.CoreWebView2.Navigate(PageDocument.TempIndexPath);
                 tsbRate.Image = RateBitmap(PageDocument.Rate);
             }
+        }
+
+        private void CoreWebView2_HistoryChanged(object sender, object e)
+        {
+            btBack.Enabled = webView.CoreWebView2.CanGoBack;
+            btForward.Enabled = webView.CoreWebView2.CanGoForward;
         }
 
         void UpdateAddressBar(object sender, CoreWebView2WebMessageReceivedEventArgs args)

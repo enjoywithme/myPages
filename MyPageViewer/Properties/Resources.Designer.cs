@@ -63,6 +63,26 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Arrow_left24 {
+            get {
+                object obj = ResourceManager.GetObject("Arrow-left24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Arrow_right24 {
+            get {
+                object obj = ResourceManager.GetObject("Arrow-right24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Attach24 {
             get {
                 object obj = ResourceManager.GetObject("Attach24", resourceCulture);
@@ -126,6 +146,16 @@ namespace MyPageViewer.Properties {
         internal static System.Drawing.Bitmap delete24 {
             get {
                 object obj = ResourceManager.GetObject("delete24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap Door_out24 {
+            get {
+                object obj = ResourceManager.GetObject("Door-out24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

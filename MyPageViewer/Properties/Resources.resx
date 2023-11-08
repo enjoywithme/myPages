@@ -117,8 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Text_Error" xml:space="preserve">
-    <value>错误</value>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="plus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\plus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Arrow-right24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arrow-right24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Text_Hint" xml:space="preserve">
     <value>提示</value>
@@ -126,18 +130,20 @@
   <data name="Text_SaveModified" xml:space="preserve">
     <value>文档已经修改，要保存吗？</value>
   </data>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="Sub_blue_rotate_cw24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Sub_blue_rotate_cw24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="Cross24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Cross24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Database_search24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Database_search24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="plus24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\plus24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="star3" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star0" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star0.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -150,9 +156,6 @@
   </data>
   <data name="star2" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star2.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="star3" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\star3.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="Broom24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Broom24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -168,6 +171,9 @@
   </data>
   <data name="Database-lightning24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Database-lightning24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="star5" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\star5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ZipFolder24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ZipFolder24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -199,10 +205,13 @@
   <data name="Text_ConfirmAttachmentsDelete" xml:space="preserve">
     <value>确定删除选择的附件?</value>
   </data>
-  <data name="star5" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\star5.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Door-out24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Door-out24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Cross24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Cross24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Text_Error" xml:space="preserve">
+    <value>错误</value>
+  </data>
+  <data name="Arrow-left24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arrow-left24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>
