@@ -252,7 +252,7 @@ namespace Wiz2Mypage
             }
             catch (Exception e)
             {
-                message = e.Message;
+                message = $"!!!失败 {file} {e.Message}";
                 return false;
             }
 

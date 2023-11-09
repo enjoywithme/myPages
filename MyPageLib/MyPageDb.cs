@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using MyPageLib.PoCo;
+using System.Linq;
 using SqlSugar;
 
 namespace MyPageLib
@@ -16,6 +19,7 @@ namespace MyPageLib
         public string DataBaseName => Path.Combine(MyPageSettings.Instance.WorkingDirectory, "myPage.db");
 
         public string ConnectionString => $"Data Source={DataBaseName};";
+        private static readonly List<string> SimilarSkipWords = new() { "pro", "ultimate" };
 
         //用单例模式
         private readonly SqlSugarScope _db;
@@ -129,6 +133,32 @@ namespace MyPageLib
         {
             var dt = DateTime.Now.AddDays(-n);
             return _db.Queryable<PageDocumentPoCo>().Where(co=>co.DtModified>=dt).OrderByDescending(co => co.DtModified).ToList();
+        }
+
+        public IList<PageDocumentPoCo> FindSimilarTitle(string similarTitle)
+        {
+            var splits = similarTitle.Split();
+            var firstWord = true;
+            var sb = new StringBuilder();
+            var exp = Expressionable.Create<PageDocumentPoCo>();
+
+            foreach (var split in splits)
+            {
+                if (split.Length <= 2 || SimilarSkipWords.Any(x => split.ToLower() == x)) continue;
+                //if (firstWord)
+                //{
+                //    sb.Append($"Title like '%{split}%'");
+                //    firstWord = false;
+                //    continue;
+                //}
+                //sb.Append($"AND Title like '%{split}%'");
+
+                exp.And(it => it.Title.Contains(split));
+
+            }
+
+
+            return _db.Queryable<PageDocumentPoCo>().Where(exp.ToExpression()).ToList();
         }
 
         /// <summary>
@@ -266,5 +296,7 @@ namespace MyPageLib
                 return null;
             }
         }
+
+
     }
 }

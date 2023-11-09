@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Microsoft.VisualBasic.FileIO;
 using MyPageLib.PoCo;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -200,7 +201,7 @@ namespace MyPageLib
                 if(File.Exists(tempZip))
                     File.Delete(tempZip); 
                 System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);
-                File.Move(tempZip,FilePath);
+                File.Move(tempZip,FilePath,true);
 
                 _manifestChanged = false;
                 IsModified = false;
@@ -326,7 +327,8 @@ namespace MyPageLib
             }
             try
             {
-                File.Delete(FilePath);
+                //File.Delete(FilePath);
+                FileSystem.DeleteFile(FilePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                 MyPageDb.Instance.DeleteDocumentByFilePath(FilePath);
                 Deleted = true;
             }

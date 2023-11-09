@@ -28,14 +28,6 @@ namespace MyPageViewer
                 return;
             }
 
-            //Single instance
-            var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
-            if (!SingleInstance.Instance.Start())
-            {
-                SingleInstance.Instance.ShowFirstInstance(myPageDoc?.FilePath);
-                return;
-            }
-
             //初始化setting
 #if DEBUG
             MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\");
@@ -44,6 +36,15 @@ namespace MyPageViewer
             MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
             //MessageBox.Show(MyPageSettings.Instance.SettingFilePath);
 #endif
+
+            //Single instance
+            var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
+            if (!SingleInstance.Instance.Start())
+            {
+                SingleInstance.Instance.ShowFirstInstance(myPageDoc?.FilePath);
+                return;
+            }
+            
 
             //run main form
             FormMain.Instance = new FormMain(myPageDoc);

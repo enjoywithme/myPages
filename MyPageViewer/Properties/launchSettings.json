@@ -2,7 +2,7 @@
   "profiles": {
     "MyPageViewer": {
       "commandName": "Project",
-      "commandLineArgs": "\"D:\\temp\\test.piz\""
+      "commandLineArgs": "\"F:\\temp\\ASP.NET Core 6.0 Blazor Server APP and Working with MySQL DB - CodeProject (2023_11_8 22_17_40).piz\""
     }
   }
 }
