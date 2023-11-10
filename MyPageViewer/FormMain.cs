@@ -14,6 +14,8 @@ namespace MyPageViewer
         private readonly MyPageDocument _startDocument;
         private static System.Threading.Timer _autoIndexTimer;
 
+        private PageDocumentPoCo _gotoDocumentPoCo;
+
         public FormMain(MyPageDocument startDocument)
         {
             InitializeComponent();
@@ -162,6 +164,7 @@ namespace MyPageViewer
 
             var poco = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
             if (string.IsNullOrEmpty(poco.FolderPath)) return;
+            _gotoDocumentPoCo = poco;
             naviTreeControl1.GotoPath(poco.FolderPath);
         }
 
@@ -220,6 +223,11 @@ namespace MyPageViewer
             tsbDelete.Enabled = true;
         }
 
+        /// <summary>
+        /// 树节点改变，重新加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void NaviTreeControl1_NodeChanged(object sender, string e)
         {
             listView.Items.Clear();
@@ -301,10 +309,16 @@ namespace MyPageViewer
                 listViewItem.SubItems.Add(poCo.FilePath);
 
                 listView.Items.Add(listViewItem);
+                if (_gotoDocumentPoCo != null && _gotoDocumentPoCo.Guid == poCo.Guid)
+                {
+                    listViewItem.Selected = true;
+                    listView.EnsureVisible(listViewItem.Index);
+                }
             }
 
 
             listView.EndUpdate();
+            _gotoDocumentPoCo = null;
         }
 
 

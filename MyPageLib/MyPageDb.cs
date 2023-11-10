@@ -93,7 +93,7 @@ namespace MyPageLib
             return _db.Queryable<PageDocumentPoCo>().First(it => it.FilePath == filePath);
         }
 
-        public PageDocumentPoCo FindOriginUrl(string originUrl)
+        public PageDocumentPoCo? FindOriginUrl(string originUrl)
         {
             return _db.Queryable<PageDocumentPoCo>().First(it => it.OriginUrl == originUrl);
         }
