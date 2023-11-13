@@ -20,6 +20,9 @@ namespace MyPageViewer.Dlg
 
         private void DlgOptions_Load(object sender, EventArgs e)
         {
+            if (MyPageSettings.Instance == null)
+                throw new Exception("Invalid myPage settings.");
+
             tbWorkingDir.Text = MyPageSettings.Instance.WorkingDirectory;
 
 
@@ -29,11 +32,11 @@ namespace MyPageViewer.Dlg
             cbAutoIndexUnit.SelectedIndex = MyPageSettings.Instance.AutoIndexIntervalUnit;
 
             listScanFolders.Items.Clear();
-            if (MyPageSettings.Instance.ScanFolders != null)
+            if (MyPageSettings.Instance?.TopFolders != null)
             {
-                foreach (var folder in MyPageSettings.Instance.ScanFolders)
+                foreach (var folder in MyPageSettings.Instance.TopFolders)
                 {
-                    listScanFolders.Items.Add(folder);
+                    listScanFolders.Items.Add(folder.Value);
                 }
             }
 
@@ -56,6 +59,9 @@ namespace MyPageViewer.Dlg
                 return;
             }
 
+            if (MyPageSettings.Instance == null)
+                throw new Exception("Invalid myPage settings.");
+
             MyPageSettings.Instance.AutoIndex = rbScanInterval.Checked;
             if (MyPageSettings.Instance.AutoIndex)
             {
@@ -74,7 +80,12 @@ namespace MyPageViewer.Dlg
             }
 
             MyPageSettings.Instance.WorkingDirectory = tbWorkingDir.Text;
-            MyPageSettings.Instance.ScanFolders = listScanFolders.Items.Cast<string>().ToList();
+            if (!MyPageSettings.Instance.InitTopFolder(listScanFolders.Items.Cast<string>().ToList(), out var message))
+            {
+                Program.ShowWarning(message);
+                return;
+
+            }
             MyPageSettings.Instance.Save(out _, true);
 
             DialogResult = DialogResult.OK;

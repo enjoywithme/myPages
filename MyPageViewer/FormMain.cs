@@ -34,6 +34,11 @@ namespace MyPageViewer
             {
                 StartIndex();
             };
+            tsmiStopIndex.Click += (_, _) =>
+            {
+                StopIndex();
+            };
+            ;
             tsmiExit.Click += (_, _) => { Close(); };
             tsmiOptions.Click += (_, _) =>
             {
@@ -78,6 +83,10 @@ namespace MyPageViewer
 
             //工具栏
             tsbStartIndex.Click += (_, _) => { StartIndex(); };
+            tsbStopIndex.Click += (_, _) =>
+            {
+                StopIndex();
+            };
             tsbGotoDocFolder.Click += TsbGotoDocFolder_Click;
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
             tsbLast100Items.Click += (_, _) =>
@@ -97,10 +106,10 @@ namespace MyPageViewer
             };
             tsbDelete.Click += (_, _) =>
             {
-                if(listView.SelectedItems.Count==0) return;
-                if(MessageBox.Show("确认删除选择的条目？",Properties.Resources.Text_Hint,MessageBoxButtons.YesNo,MessageBoxIcon.Warning) == DialogResult.No) return;
+                if (listView.SelectedItems.Count == 0) return;
+                if (MessageBox.Show("确认删除选择的条目？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
                 var list = (from ListViewItem item in listView.SelectedItems select (PageDocumentPoCo)item.Tag).ToList();
-                var ret = MyPageDb.Instance.BatchDelete(list,out var message);
+                var ret = MyPageDb.Instance.BatchDelete(list, out var message);
                 MessageBox.Show(message, ret ? Properties.Resources.Text_Hint : Properties.Resources.Text_Error,
                     MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
 
@@ -136,10 +145,11 @@ namespace MyPageViewer
             if (!MyPageSettings.Instance.AutoIndex)
             {
                 _autoIndexTimer?.Change(Timeout.Infinite, Timeout.Infinite);
+                return;
             }
             _autoIndexTimer ??= new System.Threading.Timer(_autoIndexTimer_Elapsed, null, Timeout.Infinite, Timeout.Infinite);
-
-            _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
+            if (MyPageSettings.Instance.AutoIndexIntervalSeconds > 0)
+                _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
         }
 
         private void _autoIndexTimer_Elapsed(object sender)
@@ -163,9 +173,9 @@ namespace MyPageViewer
             if (listView.SelectedIndices.Count == 0) return;
 
             var poco = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
-            if (string.IsNullOrEmpty(poco.FolderPath)) return;
+            if (string.IsNullOrEmpty(poco.FullFolderPath)) return;
             _gotoDocumentPoCo = poco;
-            naviTreeControl1.GotoPath(poco.FolderPath);
+            naviTreeControl1.GotoPath(poco.FullFolderPath);
         }
 
         private void Instance_IndexFileChanged(object sender, string e)
@@ -178,16 +188,19 @@ namespace MyPageViewer
 
         private void StartIndex()
         {
-            if (!MyPageIndexer.Instance.IsRunning)
-            {
-                MyPageIndexer.Instance.Start();
-                tslbIndexing.Visible = true;
-                tsbStartIndex.Checked = true;
+            if (MyPageIndexer.Instance.IsRunning) return;
+            MyPageIndexer.Instance.Start();
+            tslbIndexing.Visible = true;
+            tsbStartIndex.Enabled = false;
+            tsbStopIndex.Enabled = true;
 
-                return;
-            }
+        }
 
+        private void StopIndex()
+        {
             MyPageIndexer.Instance.Stop();
+            tsbStopIndex.Enabled = false;
+
         }
 
         private void Instance_IndexStopped(object sender, EventArgs e)
@@ -195,8 +208,7 @@ namespace MyPageViewer
             Invoke(() =>
             {
                 tslbIndexing.Visible = false;
-                tsbStartIndex.Checked = false;
-
+                tsbStartIndex.Enabled = true;
 
             });
 

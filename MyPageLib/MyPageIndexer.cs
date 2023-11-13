@@ -25,7 +25,7 @@ namespace MyPageLib
         public bool IsRunning { get; private set; }
         private bool _stopPending;
 
-        private ConcurrentQueue<string> _filesWaitIndex = new ConcurrentQueue<string>();
+        private readonly ConcurrentQueue<string> _filesWaitIndex = new();
 
         public void Start(ScanMode mode = ScanMode.FullScan)
         {
@@ -71,14 +71,15 @@ namespace MyPageLib
 
         private void ScanLocalFolder()
         {
+            if(MyPageSettings.Instance?.TopFolders == null) return;
             try
             {
                 //先更新所有纪录的Local present 为 false
                 MyPageDb.Instance.UpdateLocalPresentFalse();
 
-                foreach (var folder in MyPageSettings.Instance.ScanFolders)
+                foreach (var folder in MyPageSettings.Instance.TopFolders)
                 {
-                    foreach (var file in Directory.EnumerateFiles(folder, "*.piz", SearchOption.AllDirectories))
+                    foreach (var file in Directory.EnumerateFiles(folder.Value, "*.piz", SearchOption.AllDirectories))
                     {
                         Debug.WriteLine(file);
                         IndexFileChanged?.Invoke(this, file);
@@ -89,7 +90,6 @@ namespace MyPageLib
                         var poCo = new PageDocumentPoCo()
                         {
                             FilePath = file,
-                            Name = Path.GetFileNameWithoutExtension(file),
                             LocalPresent = 1
                         };
                         poCo.CheckInfo();
@@ -99,7 +99,8 @@ namespace MyPageLib
                 }
 
                 //删除本地不存在的条目
-                MyPageDb.Instance.CleanUpLocalNotPresent();
+                if(!_stopPending)
+                    MyPageDb.Instance.CleanUpLocalNotPresent();
             }
             catch (Exception e)
             {

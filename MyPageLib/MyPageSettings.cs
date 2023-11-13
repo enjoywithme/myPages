@@ -5,24 +5,28 @@ using System.Reflection;
 using System.Text;
 using System.Xml;
 using System.Xml.Serialization;
+using Kdbndp.NameTranslation;
+using mySharedLib;
+using Newtonsoft.Json;
+using Formatting = Newtonsoft.Json.Formatting;
 
 namespace MyPageLib
 {
     [Serializable]
     public class MyPageSettings
     {
-        [XmlIgnore]
-        public string SettingFilePath { get; set; }
+        [JsonIgnore]
+        public string? SettingFilePath { get; set; }
         
 
-        public static MyPageSettings Instance
+        public static MyPageSettings? Instance
         {
             get => _instance;
             set => _instance = value;
         }
 
         private bool _modified;
-        private string _workingDirectory;
+        private string? _workingDirectory;
         /// <summary>
         /// 工作目录，存放数据库、临时文件
         /// </summary>
@@ -43,16 +47,15 @@ namespace MyPageLib
             }
         }
 
-        private string _tempPath;
-        private List<string> _scanFolders;
+        private string? _tempPath;
         private bool _viewTree;
         private bool _viewPreview;
-        private static MyPageSettings _instance;
+        private static MyPageSettings? _instance;
 
         /// <summary>
         /// 临时文件目录
         /// </summary>
-        [XmlIgnore]
+        [JsonIgnore]
         public string TempPath
         {
             get
@@ -68,11 +71,50 @@ namespace MyPageLib
             }
         }
 
-        public List<string> ScanFolders
+        private Dictionary<string,string> _topFolders = new();
+        public Dictionary<string, string> TopFolders => _topFolders;
+
+        public bool InitTopFolder(IList<string> scanFolders,out string message)
         {
-            get => _scanFolders;
-            set => _scanFolders = value;
+            var topFolders = new Dictionary<string,string>();
+            foreach (var scanFolder in scanFolders)
+            {
+                if (!Directory.Exists(scanFolder))
+                {
+                    message = $"文件夹{scanFolder}不存在";
+                    return false;
+                }
+
+                var dirName = new DirectoryInfo(scanFolder).Name;
+                if (topFolders.ContainsKey(dirName))
+                {
+                    message = $"已经存在顶级目录{dirName}。";
+                    return false;
+                }
+
+                topFolders.Add(dirName,scanFolder);
+            }
+
+            _topFolders = topFolders;
+            message = string.Empty;
+            return true;
         }
+
+        public (string?, string?) ParsePath(string path)
+        {
+            foreach (var topFolder in TopFolders)
+            {
+                var topPath = topFolder.Value;
+                if (path.StartsWith(topPath, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    return (topFolder.Key, path.Substring(topPath.Length).ClearPathPrefix());
+                }
+
+            }
+
+            return (null,null);
+        }
+
 
         public bool ViewTree
         {
@@ -99,10 +141,10 @@ namespace MyPageLib
         public bool AutoIndex { get; set; }
         public int AutoIndexInterval { get; set; }
         public int AutoIndexIntervalUnit { get; set; } //0 = 小时，1=分钟
-        [XmlIgnore]
+        [JsonIgnore]
         public int AutoIndexIntervalSeconds => AutoIndexInterval * (AutoIndexIntervalUnit == 0 ? 3600 : 60) * 1000;
-        public static string ExecutePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-        private const string SettingFileName = "mypages.xml";
+        public static string? ExecutePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+        private const string SettingFileName = "mypages.json";
 
         public static void InitInstance(string settingsPath)
         {
@@ -117,9 +159,7 @@ namespace MyPageLib
 
             try
             {
-                var serializer = new XmlSerializer(typeof(MyPageSettings));
-                using Stream reader = new FileStream(settingsFile, FileMode.Open);
-                Instance = (MyPageSettings)serializer.Deserialize(reader);
+                Instance = JsonConvert.DeserializeObject<MyPageSettings>(File.ReadAllText(settingsFile));
                 Instance.SettingFilePath = settingsFile;
             }
             catch (Exception e)
@@ -135,13 +175,9 @@ namespace MyPageLib
             if (!_modified && !force) return true;
             try
             {
-                var serializer = new XmlSerializer(typeof(MyPageSettings));
-                //var settingsFile = Path.Combine(ExecutePath, SettingFileName);
+                var json = JsonConvert.SerializeObject(this,Formatting.Indented);
+                File.WriteAllText(SettingFilePath,json);
 
-                Stream fs = new FileStream(SettingFilePath, FileMode.Create);
-                XmlWriter writer = new XmlTextWriter(fs, Encoding.UTF8);
-                serializer.Serialize(writer, this);
-                writer.Close();
                 _modified = false;
             }
             catch (Exception exception)

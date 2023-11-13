@@ -33,6 +33,7 @@
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
             tsmiStartIndex = new ToolStripMenuItem();
+            tsmiStopIndex = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             工具TToolStripMenuItem = new ToolStripMenuItem();
@@ -48,13 +49,16 @@
             notifyIcon1 = new NotifyIcon(components);
             toolStrip1 = new ToolStrip();
             tsbStartIndex = new ToolStripButton();
-            tsbGotoDocFolder = new ToolStripButton();
+            tsbStopIndex = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
             tsbLast100Items = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             tsbLastDay1 = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             tsbLast2Days = new ToolStripButton();
+            toolStripSeparator4 = new ToolStripSeparator();
+            tsbGotoDocFolder = new ToolStripButton();
+            tsbDelete = new ToolStripButton();
             panelTop = new Panel();
             tbSearch = new TextBox();
             panelMain = new Panel();
@@ -69,9 +73,7 @@
             panelPreview = new Panel();
             splitterLeft = new Splitter();
             panelTree = new Panel();
-            naviTreeControl1 = new Controls.ExploreTreeControl();
-            toolStripSeparator4 = new ToolStripSeparator();
-            tsbDelete = new ToolStripButton();
+            naviTreeControl1 = new MyPageLib.Controls.ExploreTreeControl();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -92,7 +94,7 @@
             // 
             // 文件FToolStripMenuItem
             // 
-            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, toolStripMenuItem2, tsmiExit });
+            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, tsmiStopIndex, toolStripMenuItem2, tsmiExit });
             文件FToolStripMenuItem.Name = "文件FToolStripMenuItem";
             文件FToolStripMenuItem.Size = new Size(58, 21);
             文件FToolStripMenuItem.Text = "文件(&F)";
@@ -102,6 +104,12 @@
             tsmiStartIndex.Name = "tsmiStartIndex";
             tsmiStartIndex.Size = new Size(124, 22);
             tsmiStartIndex.Text = "开始索引";
+            // 
+            // tsmiStopIndex
+            // 
+            tsmiStopIndex.Name = "tsmiStopIndex";
+            tsmiStopIndex.Size = new Size(124, 22);
+            tsmiStopIndex.Text = "停止索引";
             // 
             // toolStripMenuItem2
             // 
@@ -172,7 +180,7 @@
             // tslbIndexing
             // 
             tslbIndexing.BorderStyle = Border3DStyle.Etched;
-            tslbIndexing.Image = Properties.Resources.list24;
+            tslbIndexing.Image = Properties.Resources.Clock_history_frame24;
             tslbIndexing.Name = "tslbIndexing";
             tslbIndexing.Size = new Size(74, 17);
             tslbIndexing.Text = "Indexing";
@@ -194,7 +202,7 @@
             // toolStrip1
             // 
             toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days, toolStripSeparator4, tsbGotoDocFolder, tsbDelete });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbStopIndex, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days, toolStripSeparator4, tsbGotoDocFolder, tsbDelete });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(939, 31);
@@ -210,14 +218,15 @@
             tsbStartIndex.Size = new Size(28, 28);
             tsbStartIndex.Text = "开始索引";
             // 
-            // tsbGotoDocFolder
+            // tsbStopIndex
             // 
-            tsbGotoDocFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbGotoDocFolder.Image = Properties.Resources.Folder_go24;
-            tsbGotoDocFolder.ImageTransparentColor = Color.Magenta;
-            tsbGotoDocFolder.Name = "tsbGotoDocFolder";
-            tsbGotoDocFolder.Size = new Size(28, 28);
-            tsbGotoDocFolder.Text = "定位目录";
+            tsbStopIndex.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbStopIndex.Enabled = false;
+            tsbStopIndex.Image = Properties.Resources.Database_delete24;
+            tsbStopIndex.ImageTransparentColor = Color.Magenta;
+            tsbStopIndex.Name = "tsbStopIndex";
+            tsbStopIndex.Size = new Size(28, 28);
+            tsbStopIndex.Text = "停止索引";
             // 
             // toolStripSeparator1
             // 
@@ -260,6 +269,29 @@
             tsbLast2Days.Name = "tsbLast2Days";
             tsbLast2Days.Size = new Size(55, 28);
             tsbLast2Days.Text = "最近2天";
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 31);
+            // 
+            // tsbGotoDocFolder
+            // 
+            tsbGotoDocFolder.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbGotoDocFolder.Image = Properties.Resources.Folder_go24;
+            tsbGotoDocFolder.ImageTransparentColor = Color.Magenta;
+            tsbGotoDocFolder.Name = "tsbGotoDocFolder";
+            tsbGotoDocFolder.Size = new Size(28, 28);
+            tsbGotoDocFolder.Text = "定位目录";
+            // 
+            // tsbDelete
+            // 
+            tsbDelete.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbDelete.Image = Properties.Resources.Cross24;
+            tsbDelete.ImageTransparentColor = Color.Magenta;
+            tsbDelete.Name = "tsbDelete";
+            tsbDelete.Size = new Size(28, 28);
+            tsbDelete.Text = "删除";
             // 
             // panelTop
             // 
@@ -380,20 +412,6 @@
             naviTreeControl1.Size = new Size(221, 496);
             naviTreeControl1.TabIndex = 0;
             // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 31);
-            // 
-            // tsbDelete
-            // 
-            tsbDelete.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbDelete.Image = Properties.Resources.Cross24;
-            tsbDelete.ImageTransparentColor = Color.Magenta;
-            tsbDelete.Name = "tsbDelete";
-            tsbDelete.Size = new Size(28, 28);
-            tsbDelete.Text = "删除";
-            // 
             // FormMain
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -453,7 +471,6 @@
         private Panel panelPreview;
         private Splitter splitterLeft;
         private Panel panelTree;
-        private Controls.ExploreTreeControl naviTreeControl1;
         private ToolStripStatusLabel tslbIndexing;
         private ColumnHeader colName;
         private ColumnHeader colSize;
@@ -468,5 +485,8 @@
         private ToolStripMenuItem tsmiOptions;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton tsbDelete;
+        private ToolStripButton tsbStopIndex;
+        private ToolStripMenuItem tsmiStopIndex;
+        private MyPageLib.Controls.ExploreTreeControl naviTreeControl1;
     }
 }

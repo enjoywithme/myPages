@@ -124,14 +124,20 @@
   <data name="Arrow-right24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Arrow-right24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="Text_Hint" xml:space="preserve">
-    <value>提示</value>
-  </data>
   <data name="Text_SaveModified" xml:space="preserve">
     <value>文档已经修改，要保存吗？</value>
   </data>
+  <data name="Text_Hint" xml:space="preserve">
+    <value>提示</value>
+  </data>
+  <data name="Arrow-left24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Arrow-left24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="Sub_blue_rotate_cw24" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Sub_blue_rotate_cw24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="Database-delete24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Database-delete24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="star4" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star4.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -211,7 +217,7 @@
   <data name="Text_Error" xml:space="preserve">
     <value>错误</value>
   </data>
-  <data name="Arrow-left24" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Arrow-left24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="Clock-history-frame24" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Clock-history-frame24.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

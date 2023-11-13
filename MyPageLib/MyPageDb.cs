@@ -37,9 +37,12 @@ namespace MyPageLib
 
         public async void InsertUpdateDocument(PageDocumentPoCo documentPoCo)
         {
-            try
-            {
-                var poCo = await _db.Queryable<PageDocumentPoCo>().FirstAsync(x => x.FilePath == documentPoCo.FilePath);
+
+                var poCo = await _db.Queryable<PageDocumentPoCo>().FirstAsync(x 
+                    => x.Name == documentPoCo.Name
+                && x.TopFolder == documentPoCo.TopFolder
+                && x.FolderPath == documentPoCo.FolderPath
+                && x.FileExt == documentPoCo.FileExt);
                 if (poCo != null)
                 {
                     if (documentPoCo.Guid != poCo.Guid)
@@ -53,11 +56,7 @@ namespace MyPageLib
                     await _db.Insertable(documentPoCo).ExecuteCommandAsync();
 
                 }
-            }
-            catch (Exception e)
-            {
-                Debug.WriteLine(e.Message);
-            }
+
 
         }
 
@@ -90,7 +89,12 @@ namespace MyPageLib
 
         public PageDocumentPoCo FindFilePath(string filePath)
         {
-            return _db.Queryable<PageDocumentPoCo>().First(it => it.FilePath == filePath);
+            var poco = new PageDocumentPoCo() { FilePath = filePath };
+
+            return _db.Queryable<PageDocumentPoCo>().First(it => it.Name == poco.Name
+            && it.FileExt == poco.FileExt
+            && it.FolderPath == poco.FolderPath
+            && it.TopFolder == poco.TopFolder);
         }
 
         public PageDocumentPoCo? FindOriginUrl(string originUrl)
@@ -243,11 +247,14 @@ namespace MyPageLib
         }
 
 
-        public IList<PageDocumentPoCo> FindFolderPath(string folderPath)
+        public IList<PageDocumentPoCo> FindFolderPath(string folderFullPath)
         {
             try
             {
-                return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath).OrderByDescending(it=>it.Title).ToList();
+                var (topFolder, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
+
+                return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath
+                && it.TopFolder == topFolder).OrderByDescending(it=>it.Title).ToList();
             }
             catch (Exception)
             {
@@ -275,7 +282,9 @@ namespace MyPageLib
                 var conModels = new List<IConditionalModel>
                 {
                     BuildConditionalCollections("Title", splits),
-                    BuildConditionalCollections("FilePath", splits),
+                    BuildConditionalCollections("FolderPath", splits),
+                    BuildConditionalCollections("FileExt", splits),
+
                     BuildNotDeletedCondition()
                 };
 

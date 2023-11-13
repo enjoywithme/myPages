@@ -1,4 +1,7 @@
-﻿namespace MyPageViewer.Controls
+﻿using System.Drawing;
+using System.Windows.Forms;
+
+namespace MyPageLib.Controls
 {
     partial class ExploreTreeControl
     {

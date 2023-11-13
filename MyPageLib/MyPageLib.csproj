@@ -14,7 +14,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\mySharedLib\mySharedLib.csproj" />
+    <ProjectReference Include="..\mySharedLib\mySharedLib.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Controls\ExploreTreeControl.cs" />
   </ItemGroup>
 
 </Project>

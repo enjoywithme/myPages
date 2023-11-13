@@ -1,18 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MyPageLib;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using TreeView = System.Windows.Forms.TreeView;
 
-namespace MyPageViewer.Controls
+namespace MyPageLib.Controls
 {
     public enum ExploreTreeType
     {
@@ -56,10 +51,10 @@ namespace MyPageViewer.Controls
         private void LoadFolderTree()
         {
             treeView1.Nodes.Clear();
-            if (MyPageSettings.Instance.ScanFolders is not { Count: > 0 }) return;
-            foreach (var scanFolder in MyPageSettings.Instance.ScanFolders)
+            if (MyPageSettings.Instance?.TopFolders is not { Count: > 0 }) return;
+            foreach (var scanFolder in MyPageSettings.Instance.TopFolders)
             {
-                LoadDirectory(scanFolder);
+                LoadDirectory(scanFolder.Value);
             }
         }
 
@@ -113,7 +108,7 @@ namespace MyPageViewer.Controls
 
             foreach (var pizFile in pizFiles)
             {
-                if (!MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)),out var message))
+                if (!MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)), out var message))
                 {
                     sb.AppendLine($"移动文件{pizFile}错误:\r\n{message}");
 
@@ -122,7 +117,7 @@ namespace MyPageViewer.Controls
             }
 
             var msg = sb.ToString();
-            if (!string.IsNullOrEmpty(msg)) { Program.ShowError(msg); }
+            if (!string.IsNullOrEmpty(msg)) { MessageBox.Show(msg); }
 
             NodeChanged?.Invoke(this, destPath);
 
