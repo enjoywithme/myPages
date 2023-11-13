@@ -52,7 +52,6 @@ namespace MyPageLib
             var poCo = new PageDocumentPoCo()
             {
                 FilePath = file,
-                Name = Path.GetFileNameWithoutExtension(file),
                 LocalPresent = 1
             };
             poCo.CheckInfo();
