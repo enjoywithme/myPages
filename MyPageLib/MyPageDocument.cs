@@ -317,7 +317,7 @@ namespace MyPageLib
             Dispose();
         }
 
-        public bool Delete(out string message)
+        public bool Delete(out string? message)
         {
             message = null;
             if (!File.Exists(FilePath))

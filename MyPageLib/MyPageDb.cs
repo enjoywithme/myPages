@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Xml.Linq;
 using MyPageLib.PoCo;
 using System.Linq;
+using Microsoft.VisualBasic.FileIO;
 using SqlSugar;
 
 namespace MyPageLib
@@ -135,7 +136,7 @@ namespace MyPageLib
 
         public IList<PageDocumentPoCo> FindLastDays(int n)
         {
-            var dt = DateTime.Now.AddDays(-n);
+            var dt = DateTime.Today.AddDays(-n);
             return _db.Queryable<PageDocumentPoCo>().Where(co=>co.DtModified>=dt).OrderByDescending(co => co.DtModified).ToList();
         }
 
@@ -177,8 +178,11 @@ namespace MyPageLib
                 _db.Deleteable<PageDocumentPoCo>(documents).ExecuteCommand(); //批量删除
                 foreach (var co in documents)
                 {
-                    if(File.Exists(co.FilePath))
-                        File.Delete(co.FilePath);
+                    if (File.Exists(co.FilePath))
+                    {
+                        //File.Delete(co.FilePath);
+                        FileSystem.DeleteFile(co.FilePath,UIOption.OnlyErrorDialogs,RecycleOption.SendToRecycleBin);
+                    }
                 }
             }
             catch (Exception ex)
