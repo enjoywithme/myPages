@@ -100,7 +100,7 @@ namespace MyPageLib
 
         public PageDocumentPoCo? FindOriginUrl(string originUrl)
         {
-            return _db.Queryable<PageDocumentPoCo>().First(it => it.OriginUrl == originUrl);
+            return _db.Queryable<PageDocumentPoCo>().Where(it => it.OriginUrl == originUrl).OrderByDescending(x=>x.DtCreated).First();
         }
 
 
@@ -134,7 +134,7 @@ namespace MyPageLib
             return _db.Queryable<PageDocumentPoCo>().OrderByDescending(co => co.DtModified).Take(n).ToList();
         }
 
-        public IList<PageDocumentPoCo> FindLastDays(int n)
+        public IList<PageDocumentPoCo> FindLastDays(int n=0)
         {
             var dt = DateTime.Today.AddDays(-n);
             return _db.Queryable<PageDocumentPoCo>().Where(co=>co.DtModified>=dt).OrderByDescending(co => co.DtModified).ToList();

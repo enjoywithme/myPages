@@ -96,12 +96,12 @@ namespace MyPageViewer
             };
             tsbLastDay1.Click += (_, _) =>
             {
-                FillListView(MyPageDb.Instance.FindLastDays(1));
+                FillListView(MyPageDb.Instance.FindLastDays());
                 RefreshStatusInfo();
             };
             tsbLast2Days.Click += (_, _) =>
             {
-                FillListView(MyPageDb.Instance.FindLastDays(2));
+                FillListView(MyPageDb.Instance.FindLastDays(1));
                 RefreshStatusInfo();
             };
             tsbDelete.Click += (_, _) =>
@@ -110,8 +110,8 @@ namespace MyPageViewer
                 if (MessageBox.Show("确认删除选择的条目？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
                 var list = (from ListViewItem item in listView.SelectedItems select (PageDocumentPoCo)item.Tag).ToList();
                 var ret = MyPageDb.Instance.BatchDelete(list, out var message);
-                MessageBox.Show(message, ret ? Properties.Resources.Text_Hint : Properties.Resources.Text_Error,
-                    MessageBoxButtons.OK, ret ? MessageBoxIcon.Information : MessageBoxIcon.Error);
+                if(!ret)
+                    MessageBox.Show(message,  Properties.Resources.Text_Error, MessageBoxButtons.OK,  MessageBoxIcon.Error);
 
                 if (!ret) return;
                 foreach (ListViewItem eachItem in listView.SelectedItems)
