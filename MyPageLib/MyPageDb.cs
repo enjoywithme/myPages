@@ -85,7 +85,10 @@ namespace MyPageLib
         public void DeleteDocumentByFilePath(string filePath)
         {
             var poCo = new PageDocumentPoCo { FilePath = filePath };
-            _db.Deleteable(poCo).ExecuteCommand();
+            _db.Deleteable<PageDocumentPoCo>().Where(it => it.Name == poCo.Name
+                                                           && it.FileExt == poCo.FileExt
+                                                           && it.FolderPath == poCo.FolderPath
+                                                           && it.TopFolder == poCo.TopFolder).ExecuteCommand();
         }
 
         public PageDocumentPoCo FindFilePath(string filePath)
