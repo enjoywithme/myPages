@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
+using Meilisearch;
 using MyPageLib.PoCo;
+using mySharedLib;
 
 namespace MyPageLib
 {
@@ -15,54 +17,132 @@ namespace MyPageLib
             ScanWaitList
         }
 
-        private ScanMode _currentScanMode;
+        public const string MeilisearchIndexKey = "myPages";
+        private const int MaxErrorLimit = 10;
+        public static MyPageIndexer Instance { get; } = new();
 
-        public static MyPageIndexer Instance { get; } =new();
-
-        public event EventHandler IndexStopped;
-        public event EventHandler<string> IndexFileChanged; 
+        public event EventHandler? IndexStopped;
+        public event EventHandler<string>? IndexFileChanged;
 
         public bool IsRunning { get; private set; }
         private bool _stopPending;
 
         private readonly ConcurrentQueue<string> _filesWaitIndex = new();
+        private Meilisearch.Index? _meiliSearchIndex;
+
+        private StringBuilder? _errorBuilder;
+        public bool IsError => _errorCount > 0;
+        private int _errorCount;
+        public string? ErrorMessage => _errorBuilder?.ToString();
 
         public void Start(ScanMode mode = ScanMode.FullScan)
         {
-            if(IsRunning) return;
-            _currentScanMode = mode;
-            _stopPending=false;
-            Task.Run(Processing);
+            if (IsRunning) return;
+
+            Task.Run(() => { Processing(mode);});
 
         }
 
         public void Stop()
         {
-            _stopPending=true;
+            _stopPending = true;
         }
 
         public void Enqueue(string fileName)
         {
             _filesWaitIndex.Enqueue(fileName);
-            Start(ScanMode.ScanWaitList);
+            Processing(ScanMode.ScanWaitList);
         }
 
-        public void IndexFile(string file)
+        /// <summary>
+        /// 索引路径指定的文件
+        /// </summary>
+        /// <param name="file"></param>
+        public async void IndexFile(string file)
         {
-            var poCo = new PageDocumentPoCo()
+            var poCoLocal = new PageDocumentPoCo()
             {
                 FilePath = file,
                 LocalPresent = 1
             };
-            poCo.CheckInfo();
-            MyPageDb.Instance.InsertUpdateDocument(poCo);
+            poCoLocal.CheckInfo();
+
+            var poCo = MyPageDb.Instance.FindFilePath(file);
+            if (poCo != null)
+            {
+                var modified = false;
+                if (poCo.DataMd5 != poCoLocal.DataMd5)
+                {
+                    poCo.DataMd5 = poCoLocal.DataMd5;
+                    modified = true;
+                }
+
+                if (poCo.DtModified != poCoLocal.DtModified)
+                {
+                    poCo.DataMd5 = poCoLocal.DataMd5;
+                    modified = true;
+                }
+
+                if (poCo.FileSize != poCoLocal.FileSize)
+                {
+                    poCo.FileSize = poCoLocal.FileSize;
+                    modified = true;
+                }
+
+                if (modified)
+                {
+                     await FullTextIndexPoCo(poCo);
+                    MyPageDb.Instance.UpdateDocument(poCo);
+                }
+                else if (poCo.FullTextIndexed == 0)
+                {
+                    poCo.ContentText = poCoLocal.ContentText;
+                    var fullIndexed = await  FullTextIndexPoCo(poCo);
+                    if(fullIndexed)
+                        MyPageDb.Instance.UpdateDocument(poCo);
+                }
+            }
+            else
+            {
+                 await FullTextIndexPoCo(poCoLocal);
+                 MyPageDb.Instance.InsertDocument(poCoLocal);
+            }
+
+        }
+
+        /// <summary>
+        /// 提交全文索引文档
+        /// </summary>
+        /// <param name="poCo"></param>
+        /// <returns></returns>
+        private async Task<bool> FullTextIndexPoCo(PageDocumentPoCo poCo)
+        {
+            if (_meiliSearchIndex == null)
+            {
+                poCo.FullTextIndexed = 0;
+                return false;
+            }
+
+            try
+            {
+                await _meiliSearchIndex.AddDocumentsAsync(new[] { poCo }, "guid"); //主key必须小写
+                poCo.FullTextIndexed = 1;
+            }
+            catch (Exception ex)
+            {
+                _errorBuilder?.AppendLine($"全文索引条目错误：{ex.Message}");
+                _errorCount++;
+                return false;
+            }
+            
+            return true;
         }
 
         private void ScanWaitList()
         {
             while (true)
             {
-                if(!_filesWaitIndex.TryDequeue(out var file)) break;
+                if (!_filesWaitIndex.TryDequeue(out var file)) break;
 
                 IndexFile(file);
             }
@@ -70,63 +150,87 @@ namespace MyPageLib
 
         private void ScanLocalFolder()
         {
-            if(MyPageSettings.Instance?.TopFolders == null) return;
+            if (MyPageSettings.Instance?.TopFolders == null) return;
+
+            //先更新所有纪录的Local present 为 false
+            MyPageDb.Instance.UpdateLocalPresentFalse();
+            var counter = 0;
+            foreach (var folder in MyPageSettings.Instance.TopFolders)
+            {
+                foreach (var file in Directory.EnumerateFiles(folder.Value, "*.piz", SearchOption.AllDirectories))
+                {
+                    counter++;
+                    IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
+
+                    if (_stopPending) break;
+                    IndexFile(file);
+
+                    if (_errorCount < MaxErrorLimit) continue;
+                    _errorBuilder?.AppendLine("发生错误太多，终止索引，请检查后重试。");
+                    return;
+                }
+            }
+
+            //删除本地不存在的条目
+            if (!_stopPending)
+                MyPageDb.Instance.CleanUpLocalNotPresent();
+
+        }
+
+
+        private void Processing(ScanMode scanMode)
+        {
+            _stopPending = false;
+            _errorCount = 0;
+            _errorBuilder = new StringBuilder();
+            IsRunning = true;
+
+            //Init full text search
+            if (MyPageSettings.Instance != null && MyPageSettings.Instance.EnableFullTextIndex)
+            {
+                try
+                {
+                    var client = new MeilisearchClient(MyPageSettings.Instance.MeilisearchServer,
+                        MyPageSettings.Instance.MeilisearchMasterKey);
+                    _meiliSearchIndex = client.Index(MeilisearchIndexKey);
+                }
+                catch (Exception e)
+                {
+                    MyLog.Log(e.Message);
+                    _errorBuilder.AppendLine(e.Message);
+                    _meiliSearchIndex = null;
+                    _errorCount++;
+                }
+            }
+            else
+                _meiliSearchIndex = null;
+
+            //Index files
             try
             {
-                //先更新所有纪录的Local present 为 false
-                MyPageDb.Instance.UpdateLocalPresentFalse();
-
-                foreach (var folder in MyPageSettings.Instance.TopFolders)
+                //Index documents
+                if (scanMode == ScanMode.ScanWaitList)
+                    ScanWaitList();
+                else
                 {
-                    foreach (var file in Directory.EnumerateFiles(folder.Value, "*.piz", SearchOption.AllDirectories))
-                    {
-                        Debug.WriteLine(file);
-                        IndexFileChanged?.Invoke(this, file);
+                    ScanWaitList();
+                    ScanLocalFolder();
+                    ScanWaitList();
 
-
-                        if (_stopPending) break;
-
-                        var poCo = new PageDocumentPoCo()
-                        {
-                            FilePath = file,
-                            LocalPresent = 1
-                        };
-                        poCo.CheckInfo();
-                        MyPageDb.Instance.InsertUpdateDocument(poCo);
-
-                    }
                 }
-
-                //删除本地不存在的条目
-                if(!_stopPending)
-                    MyPageDb.Instance.CleanUpLocalNotPresent();
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.WriteLine(e.Message);
-            }
-        }
-
-
-        private void Processing()
-        {
-            IsRunning = true;
-
-            if(_currentScanMode == ScanMode.ScanWaitList)
-                ScanWaitList();
-            else
-            {
-                ScanWaitList();
-                ScanLocalFolder();
-                ScanWaitList();
-
+                MyLog.Log(e.Message);
+                _errorBuilder.AppendLine(e.Message);
+                _errorCount++;
             }
 
             IsRunning = false;
-            IndexStopped?.Invoke(this,EventArgs.Empty);
+            IndexStopped?.Invoke(this, EventArgs.Empty);
         }
 
-        
+
 
     }
 }

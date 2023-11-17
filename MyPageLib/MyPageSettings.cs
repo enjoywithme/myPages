@@ -146,6 +146,13 @@ namespace MyPageLib
         public static string? ExecutePath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
         private const string SettingFileName = "mypages.json";
 
+
+        public bool EnableFullTextIndex { get; set; }
+        public string? MeilisearchServer { get; set; }
+        public string? MeilisearchMasterKey { get; set; }
+
+
+
         public static void InitInstance(string settingsPath)
         {
             var settingsFile = Path.Combine(settingsPath, SettingFileName);

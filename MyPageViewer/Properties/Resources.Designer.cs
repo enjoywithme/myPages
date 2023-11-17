@@ -193,6 +193,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Exclamation24 {
+            get {
+                object obj = ResourceManager.GetObject("Exclamation24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Folder_go24 {
             get {
                 object obj = ResourceManager.GetObject("Folder-go24", resourceCulture);
@@ -216,16 +226,6 @@ namespace MyPageViewer.Properties {
         internal static System.Drawing.Bitmap Link24 {
             get {
                 object obj = ResourceManager.GetObject("Link24", resourceCulture);
-                return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Bitmap.
-        /// </summary>
-        internal static System.Drawing.Bitmap list24 {
-            get {
-                object obj = ResourceManager.GetObject("list24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -382,6 +382,24 @@ namespace MyPageViewer.Properties {
         internal static string Text_SaveModified {
             get {
                 return ResourceManager.GetString("Text_SaveModified", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 确认删除选择的条目？.
+        /// </summary>
+        internal static string TextConfirmDeleteItem {
+            get {
+                return ResourceManager.GetString("TextConfirmDeleteItem", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 索引过程中有错误发生。.
+        /// </summary>
+        internal static string TextIndexErrorHappend {
+            get {
+                return ResourceManager.GetString("TextIndexErrorHappend", resourceCulture);
             }
         }
         

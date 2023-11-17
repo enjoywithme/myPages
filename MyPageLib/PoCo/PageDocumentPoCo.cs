@@ -27,9 +27,11 @@ namespace MyPageLib.PoCo
         public DateTime? ArchiveTime { get; set; }
         public int Rate { get; set; }
         public string? OriginUrl { get; set; }
-        public int Indexed { get; set; }
         [SugarColumn(ColumnName = "LOCAL_PRESENT")]
         public int LocalPresent { get; set; }
+        public int FullTextIndexed { get; set; }
+        [SugarColumn(IsIgnore = true)]
+        public string? ContentText { get; set; }
 
         public override string? ToString()
         {
@@ -94,13 +96,19 @@ namespace MyPageLib.PoCo
             foreach (var entry in zip.Entries)
                 if (entry.Name == "manifest.json")
                 {
-                    var sr = new StreamReader(entry.Open(), Encoding.UTF8);
+                    using var sr = new StreamReader(entry.Open(), Encoding.UTF8);
                     var json = sr.ReadToEnd();
                     var jo = JObject.Parse(json);
                     if (jo.TryGetValue("title", out var title)) Title = (string?)title;
                     if(jo.TryGetValue("originalUrl", out var url)) OriginUrl = (string?)url;
                     if (jo.TryGetValue("archiveTime", out var archiveTimeToken) && DateTime.TryParse((string?)archiveTimeToken,out var archiveTime))  ArchiveTime = archiveTime;
                     break;
+                }
+                else if (MyPageSettings.Instance != null && MyPageSettings.Instance.EnableFullTextIndex && entry.Name.Equals("index.html", StringComparison.InvariantCultureIgnoreCase))
+                {
+                    using var sr = new StreamReader(entry.Open());
+                    ContentText = HtmlUtilities.ConvertToPlainText(sr);
+
                 }
 
             if (string.IsNullOrEmpty(Title))

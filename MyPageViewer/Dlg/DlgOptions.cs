@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
-using MyPageLib;
+﻿using MyPageLib;
 
 namespace MyPageViewer.Dlg
 {
@@ -30,6 +21,10 @@ namespace MyPageViewer.Dlg
             rbScanInterval.Checked = MyPageSettings.Instance.AutoIndex;
             tbAutoIndexInterval.Text = MyPageSettings.Instance.AutoIndexInterval.ToString();
             cbAutoIndexUnit.SelectedIndex = MyPageSettings.Instance.AutoIndexIntervalUnit;
+
+            cbEnableFullText.Checked = MyPageSettings.Instance.EnableFullTextIndex;
+            tbMeilisearchAddress.Text = MyPageSettings.Instance.MeilisearchServer;
+            tbMeilisearchMasterKey.Text = MyPageSettings.Instance.MeilisearchMasterKey;
 
             listScanFolders.Items.Clear();
             if (MyPageSettings.Instance?.TopFolders != null)
@@ -65,7 +60,7 @@ namespace MyPageViewer.Dlg
             MyPageSettings.Instance.AutoIndex = rbScanInterval.Checked;
             if (MyPageSettings.Instance.AutoIndex)
             {
-                if (!int.TryParse(tbAutoIndexInterval.Text, out var interval)||interval<=0)
+                if (!int.TryParse(tbAutoIndexInterval.Text, out var interval) || interval <= 0)
                 {
                     Program.ShowWarning("不正确的索引周期！");
                     tabPageIndex.Select();
@@ -86,6 +81,25 @@ namespace MyPageViewer.Dlg
                 return;
 
             }
+
+            //full text search
+            if (cbEnableFullText.Checked)
+            {
+                if (string.IsNullOrEmpty(tbMeilisearchAddress.Text) ||
+                    !Uri.IsWellFormedUriString(tbMeilisearchAddress.Text, UriKind.Absolute))
+                {
+                    Program.ShowWarning("Meilisearch服务地址无效。");
+                    return;
+                }
+
+                MyPageSettings.Instance.MeilisearchServer = tbMeilisearchAddress.Text;
+                MyPageSettings.Instance.MeilisearchMasterKey = tbMeilisearchMasterKey.Text;
+                MyPageSettings.Instance.EnableFullTextIndex = true;
+            }
+            else
+                MyPageSettings.Instance.EnableFullTextIndex = false;
+
+
             MyPageSettings.Instance.Save(out _, true);
 
             DialogResult = DialogResult.OK;
@@ -114,5 +128,7 @@ namespace MyPageViewer.Dlg
             if (_folderBrowserDialog.ShowDialog(this) == DialogResult.Cancel) return;
             tbWorkingDir.Text = _folderBrowserDialog.SelectedPath;
         }
+
+
     }
 }

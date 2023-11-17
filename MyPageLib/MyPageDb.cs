@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 using MyPageLib.PoCo;
 using System.Linq;
 using Microsoft.VisualBasic.FileIO;
 using SqlSugar;
+using Meilisearch;
+using mySharedLib;
 
 namespace MyPageLib
 {
@@ -17,7 +16,7 @@ namespace MyPageLib
     {
         public static MyPageDb Instance { get; } = new();
 
-        public string DataBaseName => Path.Combine(MyPageSettings.Instance.WorkingDirectory, "myPage.db");
+        public string? DataBaseName => MyPageSettings.Instance==null?null:Path.Combine(MyPageSettings.Instance.WorkingDirectory, "myPage.db");
 
         public string ConnectionString => $"Data Source={DataBaseName};";
         private static readonly List<string> SimilarSkipWords = new() { "pro", "ultimate" };
@@ -30,7 +29,7 @@ namespace MyPageLib
             _db = new SqlSugarScope(new ConnectionConfig()
             {
                 ConnectionString = ConnectionString,
-                DbType = SqlSugar.DbType.Sqlite,
+                DbType = DbType.Sqlite,
                 IsAutoCloseConnection = true
             }
                 );
@@ -48,6 +47,9 @@ namespace MyPageLib
                 {
                     if (documentPoCo.Guid != poCo.Guid)
                         documentPoCo.Guid = poCo.Guid;
+
+
+
                     await _db.Updateable(documentPoCo).ExecuteCommandAsync();
                 }
                 else
@@ -60,6 +62,19 @@ namespace MyPageLib
 
 
         }
+
+        public async void UpdateDocument(PageDocumentPoCo documentPoCo)
+        {
+            await _db.Updateable(documentPoCo).ExecuteCommandAsync();
+        }
+
+        public async void InsertDocument(PageDocumentPoCo documentPoCo)
+        {
+            if (string.IsNullOrEmpty(documentPoCo.Guid))
+                documentPoCo.Guid = Guid.NewGuid().ToString();
+            await _db.Insertable(documentPoCo).ExecuteCommandAsync();
+        }
+
 
         /// <summary>
         /// 更新所有纪录的本地文件标志为FALSE
@@ -91,14 +106,14 @@ namespace MyPageLib
                                                            && it.TopFolder == poCo.TopFolder).ExecuteCommand();
         }
 
-        public PageDocumentPoCo FindFilePath(string filePath)
+        public PageDocumentPoCo? FindFilePath(string filePath)
         {
-            var poco = new PageDocumentPoCo() { FilePath = filePath };
+            var poCo = new PageDocumentPoCo() { FilePath = filePath };
 
-            return _db.Queryable<PageDocumentPoCo>().First(it => it.Name == poco.Name
-            && it.FileExt == poco.FileExt
-            && it.FolderPath == poco.FolderPath
-            && it.TopFolder == poco.TopFolder);
+            return _db.Queryable<PageDocumentPoCo>().First(it => it.Name == poCo.Name
+            && it.FileExt == poCo.FileExt
+            && it.FolderPath == poCo.FolderPath
+            && it.TopFolder == poCo.TopFolder);
         }
 
         public PageDocumentPoCo? FindOriginUrl(string originUrl)
@@ -146,8 +161,6 @@ namespace MyPageLib
         public IList<PageDocumentPoCo> FindSimilarTitle(string similarTitle)
         {
             var splits = similarTitle.Split();
-            var firstWord = true;
-            var sb = new StringBuilder();
             var exp = Expressionable.Create<PageDocumentPoCo>();
 
             foreach (var split in splits)
@@ -161,7 +174,7 @@ namespace MyPageLib
                 //}
                 //sb.Append($"AND Title like '%{split}%'");
 
-                exp.And(it => it.Title.Contains(split));
+                exp.And(it => it.Title!=null && it.Title.Contains(split));
 
             }
 
@@ -173,6 +186,7 @@ namespace MyPageLib
         /// 删除一组文档
         /// </summary>
         /// <param name="documents"></param>
+        /// <param name="message"></param>
         public bool BatchDelete(IList<PageDocumentPoCo> documents,out string message)
         {
             
@@ -254,10 +268,11 @@ namespace MyPageLib
         }
 
 
-        public IList<PageDocumentPoCo> FindFolderPath(string folderFullPath)
+        public IList<PageDocumentPoCo>? FindFolderPath(string folderFullPath)
         {
             try
             {
+                if(MyPageSettings.Instance==null) return null; 
                 var (topFolder, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
 
                 return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath
@@ -277,40 +292,69 @@ namespace MyPageLib
         /// <param name="searchString"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<IList<PageDocumentPoCo>> Search(string searchString, CancellationToken cancellationToken)
+        public async Task<IList<PageDocumentPoCo>?> Search(string searchString, CancellationToken cancellationToken)
         {
             try
             {
                 if (string.IsNullOrWhiteSpace(searchString) || searchString.Length < 2)
                     return null;
 
-                var splits = searchString.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
-
-                var conModels = new List<IConditionalModel>
-                {
-                    BuildConditionalCollections("Title", splits),
-                    BuildConditionalCollections("FolderPath", splits),
-                    BuildConditionalCollections("FileExt", splits),
-
-                    BuildNotDeletedCondition()
-                };
-
-                return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
-
-
-                //return await _db.Queryable<PageDocumentPoCo>().Where(it => 
-                //        splits.All(s=> it.Title.Contains(s)) 
-                //        || splits.All(s=>it.FilePath.Contains(s))
-                //        )
-                //    .ToListAsync(cancellationToken);
-
+                var fullIndexed = await SearchFullIndex(searchString, cancellationToken);
+                
+                if(fullIndexed == null||fullIndexed.Count==0) 
+                    return await SearchLocalIndex(searchString, cancellationToken);
+                return fullIndexed;
+                
 
             }
             catch (Exception e)
             {
-                Debug.WriteLine(e.Message);
-                return null;
+                MyLog.Log(e.Message);
             }
+
+            return null;
+        }
+
+
+        /// <summary>
+        /// 在全文索引中搜索
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<IList<PageDocumentPoCo>?> SearchFullIndex(string searchString, CancellationToken cancellationToken)
+        {
+            if (MyPageSettings.Instance == null || !MyPageSettings.Instance.EnableFullTextIndex ||
+                string.IsNullOrEmpty(MyPageSettings.Instance.MeilisearchServer))
+                return null;
+
+            var client = new MeilisearchClient(MyPageSettings.Instance.MeilisearchServer, MyPageSettings.Instance.MeilisearchMasterKey);
+            var index = client.Index(MyPageIndexer.MeilisearchIndexKey);
+
+            var result = await index.SearchAsync<PageDocumentPoCo>(searchString, cancellationToken: cancellationToken);
+            return result?.Hits.ToList();
+        }
+
+        /// <summary>
+        /// 在本地index.db中搜索
+        /// </summary>
+        /// <param name="searchString"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        private async Task<IList<PageDocumentPoCo>?> SearchLocalIndex(string searchString, CancellationToken cancellationToken)
+        {
+            var splits = searchString.Split(Array.Empty<char>(), StringSplitOptions.RemoveEmptyEntries);
+
+            var conModels = new List<IConditionalModel>
+            {
+                BuildConditionalCollections("Title", splits),
+                BuildConditionalCollections("FolderPath", splits),
+                BuildConditionalCollections("FileExt", splits),
+
+                BuildNotDeletedCondition()
+            };
+
+            return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
         }
 
 

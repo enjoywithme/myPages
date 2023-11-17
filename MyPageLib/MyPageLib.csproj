@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="HtmlAgilityPack" Version="1.11.54" />
+    <PackageReference Include="MeiliSearch" Version="0.14.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="SqlSugarCore" Version="5.1.4.114" />
     <PackageReference Include="System.Data.SQLite" Version="1.0.118" />

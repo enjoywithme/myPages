@@ -42,11 +42,18 @@
             btAddScanFolder = new Button();
             listScanFolders = new ListBox();
             label2 = new Label();
+            tabPage2 = new TabPage();
+            label4 = new Label();
+            label3 = new Label();
+            tbMeilisearchMasterKey = new TextBox();
+            tbMeilisearchAddress = new TextBox();
+            cbEnableFullText = new CheckBox();
             btOk = new Button();
             btCancel = new Button();
             tabControl1.SuspendLayout();
             tabPageIndex.SuspendLayout();
             tabPage1.SuspendLayout();
+            tabPage2.SuspendLayout();
             SuspendLayout();
             // 
             // tabControl1
@@ -54,6 +61,7 @@
             tabControl1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tabControl1.Controls.Add(tabPageIndex);
             tabControl1.Controls.Add(tabPage1);
+            tabControl1.Controls.Add(tabPage2);
             tabControl1.Location = new Point(12, 12);
             tabControl1.Name = "tabControl1";
             tabControl1.SelectedIndex = 0;
@@ -191,6 +199,64 @@
             label2.TabIndex = 4;
             label2.Text = "文件夹：";
             // 
+            // tabPage2
+            // 
+            tabPage2.Controls.Add(label4);
+            tabPage2.Controls.Add(label3);
+            tabPage2.Controls.Add(tbMeilisearchMasterKey);
+            tabPage2.Controls.Add(tbMeilisearchAddress);
+            tabPage2.Controls.Add(cbEnableFullText);
+            tabPage2.Location = new Point(4, 26);
+            tabPage2.Name = "tabPage2";
+            tabPage2.Padding = new Padding(3);
+            tabPage2.Size = new Size(403, 291);
+            tabPage2.TabIndex = 4;
+            tabPage2.Text = "全文搜索";
+            tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(34, 111);
+            label4.Name = "label4";
+            label4.Size = new Size(98, 17);
+            label4.TabIndex = 2;
+            label4.Text = "Meilisearch key";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(34, 70);
+            label3.Name = "label3";
+            label3.Size = new Size(98, 17);
+            label3.TabIndex = 2;
+            label3.Text = "Meilisearch地址";
+            // 
+            // tbMeilisearchMasterKey
+            // 
+            tbMeilisearchMasterKey.Location = new Point(138, 108);
+            tbMeilisearchMasterKey.Name = "tbMeilisearchMasterKey";
+            tbMeilisearchMasterKey.PasswordChar = '*';
+            tbMeilisearchMasterKey.Size = new Size(233, 23);
+            tbMeilisearchMasterKey.TabIndex = 1;
+            // 
+            // tbMeilisearchAddress
+            // 
+            tbMeilisearchAddress.Location = new Point(138, 67);
+            tbMeilisearchAddress.Name = "tbMeilisearchAddress";
+            tbMeilisearchAddress.Size = new Size(233, 23);
+            tbMeilisearchAddress.TabIndex = 1;
+            // 
+            // cbEnableFullText
+            // 
+            cbEnableFullText.AutoSize = true;
+            cbEnableFullText.Location = new Point(34, 30);
+            cbEnableFullText.Name = "cbEnableFullText";
+            cbEnableFullText.Size = new Size(99, 21);
+            cbEnableFullText.TabIndex = 0;
+            cbEnableFullText.Text = "启用全文搜索";
+            cbEnableFullText.UseVisualStyleBackColor = true;
+            // 
             // btOk
             // 
             btOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -224,6 +290,7 @@
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "DlgOptions";
+            ShowInTaskbar = false;
             StartPosition = FormStartPosition.CenterScreen;
             Text = "选项设置";
             Load += DlgOptions_Load;
@@ -232,6 +299,8 @@
             tabPageIndex.PerformLayout();
             tabPage1.ResumeLayout(false);
             tabPage1.PerformLayout();
+            tabPage2.ResumeLayout(false);
+            tabPage2.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -253,5 +322,11 @@
         private TextBox tbAutoIndexInterval;
         private RadioButton rbNoAutoScan;
         private RadioButton rbScanInterval;
+        private TabPage tabPage2;
+        private Label label4;
+        private Label label3;
+        private TextBox tbMeilisearchMasterKey;
+        private TextBox tbMeilisearchAddress;
+        private CheckBox cbEnableFullText;
     }
 }

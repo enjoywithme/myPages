@@ -171,25 +171,27 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { tslbIndexing, tsslInfo });
-            statusStrip1.Location = new Point(0, 580);
+            statusStrip1.Location = new Point(0, 576);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(939, 22);
+            statusStrip1.Size = new Size(939, 26);
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
             // 
             // tslbIndexing
             // 
+            tslbIndexing.BorderSides = ToolStripStatusLabelBorderSides.Left | ToolStripStatusLabelBorderSides.Top | ToolStripStatusLabelBorderSides.Right | ToolStripStatusLabelBorderSides.Bottom;
             tslbIndexing.BorderStyle = Border3DStyle.Etched;
             tslbIndexing.Image = Properties.Resources.Clock_history_frame24;
             tslbIndexing.Name = "tslbIndexing";
-            tslbIndexing.Size = new Size(74, 17);
+            tslbIndexing.Size = new Size(78, 21);
             tslbIndexing.Text = "Indexing";
+            tslbIndexing.ToolTipText = "索引信息";
             tslbIndexing.Visible = false;
             // 
             // tsslInfo
             // 
             tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(924, 17);
+            tsslInfo.Size = new Size(815, 21);
             tsslInfo.Spring = true;
             tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -320,7 +322,7 @@
             panelMain.Dock = DockStyle.Fill;
             panelMain.Location = new Point(0, 84);
             panelMain.Name = "panelMain";
-            panelMain.Size = new Size(939, 496);
+            panelMain.Size = new Size(939, 492);
             panelMain.TabIndex = 6;
             // 
             // panelMiddle
@@ -329,7 +331,7 @@
             panelMiddle.Dock = DockStyle.Fill;
             panelMiddle.Location = new Point(224, 0);
             panelMiddle.Name = "panelMiddle";
-            panelMiddle.Size = new Size(538, 496);
+            panelMiddle.Size = new Size(538, 492);
             panelMiddle.TabIndex = 12;
             // 
             // listView
@@ -339,7 +341,7 @@
             listView.FullRowSelect = true;
             listView.Location = new Point(0, 4);
             listView.Name = "listView";
-            listView.Size = new Size(538, 489);
+            listView.Size = new Size(538, 485);
             listView.TabIndex = 3;
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
@@ -373,7 +375,7 @@
             splitterRight.Dock = DockStyle.Right;
             splitterRight.Location = new Point(762, 0);
             splitterRight.Name = "splitterRight";
-            splitterRight.Size = new Size(3, 496);
+            splitterRight.Size = new Size(3, 492);
             splitterRight.TabIndex = 11;
             splitterRight.TabStop = false;
             // 
@@ -382,7 +384,7 @@
             panelPreview.Dock = DockStyle.Right;
             panelPreview.Location = new Point(765, 0);
             panelPreview.Name = "panelPreview";
-            panelPreview.Size = new Size(174, 496);
+            panelPreview.Size = new Size(174, 492);
             panelPreview.TabIndex = 10;
             panelPreview.Visible = false;
             // 
@@ -390,7 +392,7 @@
             // 
             splitterLeft.Location = new Point(221, 0);
             splitterLeft.Name = "splitterLeft";
-            splitterLeft.Size = new Size(3, 496);
+            splitterLeft.Size = new Size(3, 492);
             splitterLeft.TabIndex = 9;
             splitterLeft.TabStop = false;
             // 
@@ -400,7 +402,7 @@
             panelTree.Dock = DockStyle.Left;
             panelTree.Location = new Point(0, 0);
             panelTree.Name = "panelTree";
-            panelTree.Size = new Size(221, 496);
+            panelTree.Size = new Size(221, 492);
             panelTree.TabIndex = 8;
             panelTree.Visible = false;
             // 
@@ -409,7 +411,7 @@
             naviTreeControl1.Dock = DockStyle.Fill;
             naviTreeControl1.Location = new Point(0, 0);
             naviTreeControl1.Name = "naviTreeControl1";
-            naviTreeControl1.Size = new Size(221, 496);
+            naviTreeControl1.Size = new Size(221, 492);
             naviTreeControl1.TabIndex = 0;
             // 
             // FormMain

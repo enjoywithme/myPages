@@ -4,6 +4,7 @@ using mySharedLib;
 using System.Diagnostics;
 using System.IO.MemoryMappedFiles;
 using MyPageLib.PoCo;
+using MyPageViewer.Properties;
 
 namespace MyPageViewer
 {
@@ -107,11 +108,11 @@ namespace MyPageViewer
             tsbDelete.Click += (_, _) =>
             {
                 if (listView.SelectedItems.Count == 0) return;
-                if (MessageBox.Show("确认删除选择的条目？", Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
+                if (MessageBox.Show(Resources.TextConfirmDeleteItem, Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
                 var list = (from ListViewItem item in listView.SelectedItems select (PageDocumentPoCo)item.Tag).ToList();
                 var ret = MyPageDb.Instance.BatchDelete(list, out var message);
-                if(!ret)
-                    MessageBox.Show(message,  Properties.Resources.Text_Error, MessageBoxButtons.OK,  MessageBoxIcon.Error);
+                if (!ret)
+                    MessageBox.Show(message, Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
                 if (!ret) return;
                 foreach (ListViewItem eachItem in listView.SelectedItems)
@@ -119,6 +120,10 @@ namespace MyPageViewer
                     listView.Items.Remove(eachItem);
                 }
             };
+
+            //状态栏
+            tslbIndexing.DoubleClick += TslbIndexing_DoubleClick;
+
 
             //list view
             listView.SelectedIndexChanged += ListView_SelectedIndexChanged;
@@ -134,21 +139,22 @@ namespace MyPageViewer
             Hide();
 
 
-            //启动Timer
         }
+
+
 
 
         #region 索引
 
         private void StartAutoIndexTimer()
         {
-            if (!MyPageSettings.Instance.AutoIndex)
+            if (MyPageSettings.Instance != null && !MyPageSettings.Instance.AutoIndex)
             {
                 _autoIndexTimer?.Change(Timeout.Infinite, Timeout.Infinite);
                 return;
             }
             _autoIndexTimer ??= new System.Threading.Timer(_autoIndexTimer_Elapsed, null, Timeout.Infinite, Timeout.Infinite);
-            if (MyPageSettings.Instance.AutoIndexIntervalSeconds > 0)
+            if (MyPageSettings.Instance != null && MyPageSettings.Instance.AutoIndexIntervalSeconds > 0)
                 _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
         }
 
@@ -172,10 +178,10 @@ namespace MyPageViewer
         {
             if (listView.SelectedIndices.Count == 0) return;
 
-            var poco = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
-            if (string.IsNullOrEmpty(poco.FullFolderPath)) return;
-            _gotoDocumentPoCo = poco;
-            naviTreeControl1.GotoPath(poco.FullFolderPath);
+            var poCo = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
+            if (string.IsNullOrEmpty(poCo.FullFolderPath)) return;
+            _gotoDocumentPoCo = poCo;
+            naviTreeControl1.GotoPath(poCo.FullFolderPath);
         }
 
         private void Instance_IndexFileChanged(object sender, string e)
@@ -190,7 +196,9 @@ namespace MyPageViewer
         {
             if (MyPageIndexer.Instance.IsRunning) return;
             MyPageIndexer.Instance.Start();
+            tslbIndexing.Image = Resources.Clock_history_frame24;
             tslbIndexing.Visible = true;
+            tslbIndexing.DoubleClickEnabled = false;
             tsbStartIndex.Enabled = false;
             tsbStopIndex.Enabled = true;
 
@@ -207,12 +215,29 @@ namespace MyPageViewer
         {
             Invoke(() =>
             {
-                tslbIndexing.Visible = false;
                 tsbStartIndex.Enabled = true;
+                tsbStopIndex.Enabled = false;
+                if (MyPageIndexer.Instance.IsError)
+                {
+                    tslbIndexing.Text = Resources.TextIndexErrorHappend;
+                    tslbIndexing.Image = Resources.Exclamation24;
+                    tslbIndexing.DoubleClickEnabled = true;
 
+                }
+                else
+                {
+                    tslbIndexing.Visible = false;
+                }
             });
 
             StartAutoIndexTimer();
+        }
+
+        private void TslbIndexing_DoubleClick(object sender, EventArgs e)
+        {
+            Program.ShowError(MyPageIndexer.Instance.ErrorMessage);
+            tslbIndexing.Visible = false;
+
         }
         #endregion
 
