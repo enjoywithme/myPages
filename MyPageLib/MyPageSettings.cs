@@ -2,10 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using System.Text;
-using System.Xml;
-using System.Xml.Serialization;
-using Kdbndp.NameTranslation;
 using mySharedLib;
 using Newtonsoft.Json;
 using Formatting = Newtonsoft.Json.Formatting;
@@ -71,29 +67,6 @@ namespace MyPageLib
             }
         }
 
-        private Dictionary<string,string> _topFolders = new();
-        public Dictionary<string, string> TopFolders => _topFolders;
-
-        public bool InitTopFolder(IList<string> scanFolders,out string message)
-        {
-            var topFolders = new Dictionary<string,string>();
-            foreach (var scanFolder in scanFolders)
-            {
-                if (!Directory.Exists(scanFolder))
-                {
-                    message = $"文件夹{scanFolder}不存在";
-                    return false;
-                }
-
-                var dirName = new DirectoryInfo(scanFolder).Name;
-                if (topFolders.ContainsKey(dirName))
-                {
-                    message = $"已经存在顶级目录{dirName}。";
-                    return false;
-                }
-
-                topFolders.Add(dirName,scanFolder);
-            }
 
         private Dictionary<string,string> _topFolders = new();
         public Dictionary<string, string> TopFolders => _topFolders;
