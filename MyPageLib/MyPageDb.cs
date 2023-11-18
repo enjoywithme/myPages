@@ -36,12 +36,7 @@ namespace MyPageLib
                 );
         }
 
-        public IList<PageDocumentPoCo> QueryAll()
-        {
 
-            var poCo = _db.Queryable<PageDocumentPoCo>().ToList();
-            return poCo;
-        }
 
         public async void UpdateDocument(PageDocumentPoCo documentPoCo)
         {
@@ -57,14 +52,14 @@ namespace MyPageLib
 
 
         /// <summary>
-        /// 更新所有纪录的本地文件标志为FALSE
+        /// 更新所有纪录的全文索引标志
         /// </summary>
-        public void UpdateLocalPresentFalse()
+        public void UpdateFullTextIndexed(int indexed=0)
         {
             _db.Updateable<object>()
                 .AS("PG_DOCUMENT")
-                .SetColumns("LOCAL_PRESENT", 0)
-                .Where("LOCAL_PRESENT=1")
+                .SetColumns("FullTextIndexed", indexed)
+                .Where($"FullTextIndexed<>{indexed}")
                 .ExecuteCommand();
         }
 

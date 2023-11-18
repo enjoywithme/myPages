@@ -50,6 +50,7 @@
             cbEnableFullText = new CheckBox();
             btOk = new Button();
             btCancel = new Button();
+            btlClearIndex = new Button();
             tabControl1.SuspendLayout();
             tabPageIndex.SuspendLayout();
             tabPage1.SuspendLayout();
@@ -201,6 +202,7 @@
             // 
             // tabPage2
             // 
+            tabPage2.Controls.Add(btlClearIndex);
             tabPage2.Controls.Add(label4);
             tabPage2.Controls.Add(label3);
             tabPage2.Controls.Add(tbMeilisearchMasterKey);
@@ -278,6 +280,15 @@
             btCancel.Text = "取消(&C)";
             btCancel.UseVisualStyleBackColor = true;
             // 
+            // btlClearIndex
+            // 
+            btlClearIndex.Location = new Point(140, 151);
+            btlClearIndex.Name = "btlClearIndex";
+            btlClearIndex.Size = new Size(231, 27);
+            btlClearIndex.TabIndex = 3;
+            btlClearIndex.Text = "清除全文索引";
+            btlClearIndex.UseVisualStyleBackColor = true;
+            // 
             // DlgOptions
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
@@ -328,5 +339,6 @@
         private TextBox tbMeilisearchMasterKey;
         private TextBox tbMeilisearchAddress;
         private CheckBox cbEnableFullText;
+        private Button btlClearIndex;
     }
 }

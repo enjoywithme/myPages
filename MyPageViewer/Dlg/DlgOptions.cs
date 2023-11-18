@@ -40,7 +40,19 @@ namespace MyPageViewer.Dlg
             btSetWorkingDir.Click += BtSetWorkingDir_Click;
             btAddScanFolder.Click += BtAddScanFolder_Click;
             btRemoveScanFolder.Click += BtRemoveScanFolder_Click;
+            btlClearIndex.Click += BtlClearIndex_Click;
             btOk.Click += BtOk_Click;
+        }
+
+        private async void BtlClearIndex_Click(object sender, EventArgs e)
+        {
+            var ret = await MyPageIndexer.Instance.ClearMeiliIndex(tbMeilisearchAddress.Text,
+                tbMeilisearchMasterKey.Text);
+            if(ret)
+                Program.ShowWarning("全文索引被成功删除。");
+            else
+                Program.ShowError($"删除全文索引失败:\r\n{ret.Message}");
+            
         }
 
         private void BtOk_Click(object sender, EventArgs e)

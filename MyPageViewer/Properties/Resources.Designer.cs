@@ -414,6 +414,15 @@ namespace MyPageViewer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 共 {0} 个对象。.
+        /// </summary>
+        internal static string TextTotalItemsCount {
+            get {
+                return ResourceManager.GetString("TextTotalItemsCount", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ZipFolder24 {

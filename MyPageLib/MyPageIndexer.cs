@@ -40,7 +40,7 @@ namespace MyPageLib
         private Meilisearch.Index? _meiliSearchIndex;
 
         private FuncResult? _errorBuilder;
-        public bool IsError=> _errorBuilder is { Ret: false };
+        public bool IsError=> _errorBuilder is { Success: false };
         public string? ErrorMessage => _errorBuilder?.Message;
         public void StartIndex(ScanMode mode = ScanMode.FullScan)
         {
@@ -196,6 +196,29 @@ namespace MyPageLib
 
         }
 
+
+        public async Task<FuncResult> ClearMeiliIndex(string meiliAddress,string meiliMasterKey)
+        {
+            var ret = new FuncResult();
+            try
+            {
+                var client = new MeilisearchClient(meiliAddress, meiliMasterKey);
+                var task = await client.DeleteIndexAsync(MeilisearchIndexKey);
+                if (task.Status == TaskInfoStatus.Failed || task.Status == TaskInfoStatus.Canceled)
+                {
+                    ret.False(string.Join("\r\n", task.Error.Values));
+                    return ret;
+                }
+                MyPageDb.Instance.UpdateFullTextIndexed();
+            }
+            catch (Exception e)
+            {
+                ret.False(e.Message);
+            }
+            
+            
+            return ret;
+        }
 
         private void InitMeiliSearch()
         {

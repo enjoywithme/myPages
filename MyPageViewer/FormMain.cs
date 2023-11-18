@@ -44,21 +44,25 @@ namespace MyPageViewer
             };
 
             //Menu items view
-            panelTree.Visible = tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
-
-            tsmiViewTree.Click += (_, _) =>
+            if (MyPageSettings.Instance != null)
             {
-                MyPageSettings.Instance.ViewTree = !MyPageSettings.Instance.ViewTree;
-                tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
-                panelTree.Visible = MyPageSettings.Instance.ViewTree;
-            };
-            panelPreview.Visible = tsmiViewPreviewPane.Checked = MyPageSettings.Instance.ViewPreview;
-            tsmiViewPreviewPane.Click += (_, _) =>
-            {
-                MyPageSettings.Instance.ViewPreview = !MyPageSettings.Instance.ViewPreview;
+                panelTree.Visible = tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
 
+                tsmiViewTree.Click += (_, _) =>
+                {
+                    MyPageSettings.Instance.ViewTree = !MyPageSettings.Instance.ViewTree;
+                    tsmiViewTree.Checked = MyPageSettings.Instance.ViewTree;
+                    panelTree.Visible = MyPageSettings.Instance.ViewTree;
+                };
                 panelPreview.Visible = tsmiViewPreviewPane.Checked = MyPageSettings.Instance.ViewPreview;
-            };
+                tsmiViewPreviewPane.Click += (_, _) =>
+                {
+                    MyPageSettings.Instance.ViewPreview = !MyPageSettings.Instance.ViewPreview;
+
+                    panelPreview.Visible = tsmiViewPreviewPane.Checked = MyPageSettings.Instance.ViewPreview;
+                };
+            }
+
             tsmiViewStatus.Click += (_, _) =>
             {
                 statusStrip1.Visible = !statusStrip1.Visible;
@@ -102,7 +106,7 @@ namespace MyPageViewer
             tsbDelete.Click += (_, _) =>
             {
                 if (listView.SelectedItems.Count == 0) return;
-                if (MessageBox.Show(Resources.TextConfirmDeleteItem, Properties.Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
+                if (MessageBox.Show(Resources.TextConfirmDeleteItem, Resources.Text_Hint, MessageBoxButtons.YesNo, MessageBoxIcon.Warning) == DialogResult.No) return;
                 var list = (from ListViewItem item in listView.SelectedItems select (PageDocumentPoCo)item.Tag).ToList();
                 var ret = MyPageDb.Instance.BatchDelete(list, out var message);
                 if (!ret)
@@ -127,6 +131,9 @@ namespace MyPageViewer
             notifyIcon1.MouseClick += (_, _) => ShowWindow();
             notifyIcon1.MouseDoubleClick += (_, _) => ShowWindow();
 
+            //form
+            Closing += FormMain_Closing;
+
             //处理命令行
             if (_startDocument == null) return;
             (new FormPageViewer(_startDocument)).Show(this);
@@ -134,8 +141,6 @@ namespace MyPageViewer
 
 
         }
-
-
 
 
         #region 索引
@@ -264,7 +269,7 @@ namespace MyPageViewer
             if (listView.SelectedIndices.Count == 0)
             {
                 tsbDelete.Enabled = false;
-                tsslInfo.Text = $"共 {listView.Items.Count} 个对象。";
+                tsslInfo.Text = string.Format(Resources.TextTotalItemsCount, listView.Items.Count);
                 return;
             }
 
@@ -431,6 +436,12 @@ namespace MyPageViewer
         }
 
         #region 窗口控制
+        private void FormMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (!MyPageIndexer.Instance.IsRunning) return;
+            Program.ShowWarning("索引服务正在运行，请停止后退出。");
+            e.Cancel = true;
+        }
 
         public void ShowWindow()
         {
