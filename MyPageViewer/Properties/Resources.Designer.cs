@@ -323,6 +323,16 @@ namespace MyPageViewer.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap Stop24 {
+            get {
+                object obj = ResourceManager.GetObject("Stop24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap Sub_blue_rotate_cw24 {
             get {
                 object obj = ResourceManager.GetObject("Sub_blue_rotate_cw24", resourceCulture);

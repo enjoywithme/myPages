@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Meilisearch;
 using MyPageLib.PoCo;
@@ -11,6 +11,13 @@ namespace MyPageLib
 {
     public class MyPageIndexer
     {
+        public enum ActionType
+        {
+            None,
+            IndexDb,
+            CleanDb
+        }
+
         public enum ScanMode
         {
             FullScan,
@@ -21,44 +28,51 @@ namespace MyPageLib
         private const int MaxErrorLimit = 10;
         public static MyPageIndexer Instance { get; } = new();
 
+        public ActionType CurrentAction { get; private set; }
+        public bool IsRunning { get; private set; }
+        //private bool _stopPending;
+        private CancellationTokenSource? _cancellationTokenSource;
+
         public event EventHandler? IndexStopped;
         public event EventHandler<string>? IndexFileChanged;
-
-        public bool IsRunning { get; private set; }
-        private bool _stopPending;
 
         private readonly ConcurrentQueue<string> _filesWaitIndex = new();
         private Meilisearch.Index? _meiliSearchIndex;
 
-        private StringBuilder? _errorBuilder;
-        public bool IsError => _errorCount > 0;
-        private int _errorCount;
-        public string? ErrorMessage => _errorBuilder?.ToString();
-
-        public void Start(ScanMode mode = ScanMode.FullScan)
+        private FuncResult? _errorBuilder;
+        public bool IsError=> _errorBuilder is { Ret: false };
+        public string? ErrorMessage => _errorBuilder?.Message;
+        public void StartIndex(ScanMode mode = ScanMode.FullScan)
         {
             if (IsRunning) return;
+            CurrentAction = ActionType.IndexDb;
+            Task.Run(() => { Indexing(mode);});
 
-            Task.Run(() => { Processing(mode);});
+        }
 
+        public void StartClean()
+        {
+            if (IsRunning) return;
+            CurrentAction = ActionType.CleanDb;
+            Task.Run(Cleaning);
         }
 
         public void Stop()
         {
-            _stopPending = true;
+            _cancellationTokenSource?.Cancel();
         }
 
         public void Enqueue(string fileName)
         {
             _filesWaitIndex.Enqueue(fileName);
-            Processing(ScanMode.ScanWaitList);
+            Indexing(ScanMode.ScanWaitList);
         }
 
         /// <summary>
         /// 索引路径指定的文件
         /// </summary>
         /// <param name="file"></param>
-        public async void IndexFile(string file)
+        public async Task IndexFile(string file)
         {
             var poCoLocal = new PageDocumentPoCo()
             {
@@ -86,6 +100,12 @@ namespace MyPageLib
                 if (poCo.FileSize != poCoLocal.FileSize)
                 {
                     poCo.FileSize = poCoLocal.FileSize;
+                    modified = true;
+                }
+
+                if (poCo.LocalPresent != poCoLocal.LocalPresent)
+                {
+                    poCo.LocalPresent = 1;
                     modified = true;
                 }
 
@@ -130,8 +150,7 @@ namespace MyPageLib
             }
             catch (Exception ex)
             {
-                _errorBuilder?.AppendLine($"全文索引条目错误：{ex.Message}");
-                _errorCount++;
+                _errorBuilder?.False($"全文索引条目错误：{ex.Message}");
                 return false;
             }
             
@@ -144,7 +163,7 @@ namespace MyPageLib
             {
                 if (!_filesWaitIndex.TryDequeue(out var file)) break;
 
-                IndexFile(file);
+                IndexFile(file).Wait();
             }
         }
 
@@ -153,7 +172,7 @@ namespace MyPageLib
             if (MyPageSettings.Instance?.TopFolders == null) return;
 
             //先更新所有纪录的Local present 为 false
-            MyPageDb.Instance.UpdateLocalPresentFalse();
+            //MyPageDb.Instance.UpdateLocalPresentFalse();
             var counter = 0;
             foreach (var folder in MyPageSettings.Instance.TopFolders)
             {
@@ -162,29 +181,24 @@ namespace MyPageLib
                     counter++;
                     IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
 
-                    if (_stopPending) break;
-                    IndexFile(file);
+                    if (_cancellationTokenSource is { IsCancellationRequested: true }) break;
+                    IndexFile(file).Wait();
 
-                    if (_errorCount < MaxErrorLimit) continue;
-                    _errorBuilder?.AppendLine("发生错误太多，终止索引，请检查后重试。");
+                    if (_errorBuilder is { ErrorCount: < MaxErrorLimit }) continue;
+                    _errorBuilder?.False("发生错误太多，终止索引，请检查后重试。");
                     return;
                 }
             }
 
             //删除本地不存在的条目
-            if (!_stopPending)
-                MyPageDb.Instance.CleanUpLocalNotPresent();
+            //if (!_stopPending)
+            //    MyPageDb.Instance.CleanUpLocalNotPresent();
 
         }
 
 
-        private void Processing(ScanMode scanMode)
+        private void InitMeiliSearch()
         {
-            _stopPending = false;
-            _errorCount = 0;
-            _errorBuilder = new StringBuilder();
-            IsRunning = true;
-
             //Init full text search
             if (MyPageSettings.Instance != null && MyPageSettings.Instance.EnableFullTextIndex)
             {
@@ -197,13 +211,25 @@ namespace MyPageLib
                 catch (Exception e)
                 {
                     MyLog.Log(e.Message);
-                    _errorBuilder.AppendLine(e.Message);
+                    _errorBuilder?.False(e.Message);
                     _meiliSearchIndex = null;
-                    _errorCount++;
                 }
             }
             else
                 _meiliSearchIndex = null;
+        }
+
+        /// <summary>
+        /// 从本地文件夹中索引文件-处理队列
+        /// </summary>
+        /// <param name="scanMode"></param>
+        private void Indexing(ScanMode scanMode)
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _errorBuilder = new FuncResult();
+            IsRunning = true;
+
+            InitMeiliSearch();
 
             //Index files
             try
@@ -221,16 +247,61 @@ namespace MyPageLib
             }
             catch (Exception e)
             {
-                MyLog.Log(e.Message);
-                _errorBuilder.AppendLine(e.Message);
-                _errorCount++;
+                _errorBuilder.False(e.Message);
             }
 
             IsRunning = false;
             IndexStopped?.Invoke(this, EventArgs.Empty);
         }
 
+        /// <summary>
+        /// Clean files does not exists
+        /// </summary>
+        private void Cleaning()
+        {
+            _cancellationTokenSource = new CancellationTokenSource();
+            _errorBuilder = new FuncResult();
+            IsRunning = true;
 
+            InitMeiliSearch();
+
+            var counter = 0;
+
+            MyPageDb.Instance.Db.Queryable<PageDocumentPoCo>().ForEach(poCo =>
+            {
+                var file = poCo.FilePath;
+                counter++;
+                IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
+
+                if (_cancellationTokenSource.IsCancellationRequested) return;
+
+                if (string.IsNullOrEmpty(file) && File.Exists(file)) return;
+
+                try
+                {
+                    poCo.LocalPresent = 0;
+                    MyPageDb.Instance.UpdateDocument(poCo);
+
+                    _meiliSearchIndex?.DeleteOneDocumentAsync(poCo.Guid).Wait();
+                }
+                catch (Exception e)
+                {
+                    _errorBuilder.False(e.Message);
+                    if (_errorBuilder.ErrorCount > MaxErrorLimit)
+                    {
+                        _errorBuilder.False("发生错误太多，终止清除，请检查后重试。");
+                        _cancellationTokenSource?.Cancel();
+                    }
+                }
+                
+
+
+            }, 200,_cancellationTokenSource);//设置分页 
+
+            IsRunning =false;
+            IndexStopped?.Invoke(this, EventArgs.Empty);
+
+        }
 
     }
 }

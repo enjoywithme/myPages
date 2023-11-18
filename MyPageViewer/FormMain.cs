@@ -8,6 +8,7 @@ using MyPageViewer.Properties;
 
 namespace MyPageViewer
 {
+
     public partial class FormMain : Form
     {
 
@@ -31,15 +32,9 @@ namespace MyPageViewer
 
             #region 主菜单
 
-            tsmiStartIndex.Click += (_, _) =>
-            {
-                StartIndex();
-            };
-            tsmiStopIndex.Click += (_, _) =>
-            {
-                StopIndex();
-            };
-            ;
+            tsmiStartIndex.Click += (_, _) => { StartIndex(); };
+            tsmiStop.Click += (_, _) => { StopAction(); };
+
             tsmiExit.Click += (_, _) => { Close(); };
             tsmiOptions.Click += (_, _) =>
             {
@@ -84,10 +79,9 @@ namespace MyPageViewer
 
             //工具栏
             tsbStartIndex.Click += (_, _) => { StartIndex(); };
-            tsbStopIndex.Click += (_, _) =>
-            {
-                StopIndex();
-            };
+            tsbCleanDb.Click += (_, _) => { StartClean(); };
+            tsbStop.Click += (_, _) => { StopAction(); };
+
             tsbGotoDocFolder.Click += TsbGotoDocFolder_Click;
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
             tsbLast100Items.Click += (_, _) =>
@@ -164,7 +158,7 @@ namespace MyPageViewer
             if (MyPageIndexer.Instance.IsRunning) return;
             _autoIndexTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
-            MyPageIndexer.Instance.Start();
+            MyPageIndexer.Instance.StartIndex();
 
             Invoke(() =>
             {
@@ -192,22 +186,39 @@ namespace MyPageViewer
             });
         }
 
+        /// <summary>
+        /// 开始索引
+        /// </summary>
         private void StartIndex()
         {
             if (MyPageIndexer.Instance.IsRunning) return;
-            MyPageIndexer.Instance.Start();
+            MyPageIndexer.Instance.StartIndex();
             tslbIndexing.Image = Resources.Clock_history_frame24;
             tslbIndexing.Visible = true;
             tslbIndexing.DoubleClickEnabled = false;
             tsbStartIndex.Enabled = false;
-            tsbStopIndex.Enabled = true;
+            tsbCleanDb.Enabled = false;
+            tsbStop.Enabled = true;
 
         }
 
-        private void StopIndex()
+        private void StartClean()
+        {
+            if (MyPageIndexer.Instance.IsRunning) return;
+            MyPageIndexer.Instance.StartClean();
+            tslbIndexing.Image = Resources.Clock_history_frame24;
+            tslbIndexing.Visible = true;
+            tslbIndexing.DoubleClickEnabled = false;
+            tsbStartIndex.Enabled = false;
+            tsbCleanDb.Enabled = false;
+            tsbStop.Enabled = true;
+        }
+
+        private void StopAction()
         {
             MyPageIndexer.Instance.Stop();
-            tsbStopIndex.Enabled = false;
+
+            tsbStop.Enabled = false;
 
         }
 
@@ -216,7 +227,8 @@ namespace MyPageViewer
             Invoke(() =>
             {
                 tsbStartIndex.Enabled = true;
-                tsbStopIndex.Enabled = false;
+                tsbCleanDb.Enabled = true;
+                tsbStop.Enabled = false;
                 if (MyPageIndexer.Instance.IsError)
                 {
                     tslbIndexing.Text = Resources.TextIndexErrorHappend;

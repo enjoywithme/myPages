@@ -1,4 +1,7 @@
-﻿namespace MyPageViewer
+﻿
+using MyPageViewer.Controls;
+
+namespace MyPageViewer
 {
     partial class FormMain
     {
@@ -33,7 +36,7 @@
             menuStrip1 = new MenuStrip();
             文件FToolStripMenuItem = new ToolStripMenuItem();
             tsmiStartIndex = new ToolStripMenuItem();
-            tsmiStopIndex = new ToolStripMenuItem();
+            tsmiStop = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
             工具TToolStripMenuItem = new ToolStripMenuItem();
@@ -49,7 +52,8 @@
             notifyIcon1 = new NotifyIcon(components);
             toolStrip1 = new ToolStrip();
             tsbStartIndex = new ToolStripButton();
-            tsbStopIndex = new ToolStripButton();
+            tsbCleanDb = new ToolStripButton();
+            tsbStop = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
             tsbLast100Items = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
@@ -73,7 +77,7 @@
             panelPreview = new Panel();
             splitterLeft = new Splitter();
             panelTree = new Panel();
-            naviTreeControl1 = new MyPageLib.Controls.ExploreTreeControl();
+            naviTreeControl1 = new ExploreTreeControl();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -94,7 +98,7 @@
             // 
             // 文件FToolStripMenuItem
             // 
-            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, tsmiStopIndex, toolStripMenuItem2, tsmiExit });
+            文件FToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiStartIndex, tsmiStop, toolStripMenuItem2, tsmiExit });
             文件FToolStripMenuItem.Name = "文件FToolStripMenuItem";
             文件FToolStripMenuItem.Size = new Size(58, 21);
             文件FToolStripMenuItem.Text = "文件(&F)";
@@ -102,24 +106,24 @@
             // tsmiStartIndex
             // 
             tsmiStartIndex.Name = "tsmiStartIndex";
-            tsmiStartIndex.Size = new Size(124, 22);
+            tsmiStartIndex.Size = new Size(180, 22);
             tsmiStartIndex.Text = "开始索引";
             // 
-            // tsmiStopIndex
+            // tsmiStop
             // 
-            tsmiStopIndex.Name = "tsmiStopIndex";
-            tsmiStopIndex.Size = new Size(124, 22);
-            tsmiStopIndex.Text = "停止索引";
+            tsmiStop.Name = "tsmiStop";
+            tsmiStop.Size = new Size(180, 22);
+            tsmiStop.Text = "停止操作";
             // 
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(121, 6);
+            toolStripMenuItem2.Size = new Size(177, 6);
             // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(124, 22);
+            tsmiExit.Size = new Size(180, 22);
             tsmiExit.Text = "退出(&X)";
             // 
             // 工具TToolStripMenuItem
@@ -171,9 +175,9 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { tslbIndexing, tsslInfo });
-            statusStrip1.Location = new Point(0, 576);
+            statusStrip1.Location = new Point(0, 580);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(939, 26);
+            statusStrip1.Size = new Size(939, 22);
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -191,7 +195,7 @@
             // tsslInfo
             // 
             tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(815, 21);
+            tsslInfo.Size = new Size(924, 17);
             tsslInfo.Spring = true;
             tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -204,7 +208,7 @@
             // toolStrip1
             // 
             toolStrip1.ImageScalingSize = new Size(24, 24);
-            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbStopIndex, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days, toolStripSeparator4, tsbGotoDocFolder, tsbDelete });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { tsbStartIndex, tsbCleanDb, tsbStop, toolStripSeparator1, tsbLast100Items, toolStripSeparator2, tsbLastDay1, toolStripSeparator3, tsbLast2Days, toolStripSeparator4, tsbGotoDocFolder, tsbDelete });
             toolStrip1.Location = new Point(0, 25);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(939, 31);
@@ -220,15 +224,25 @@
             tsbStartIndex.Size = new Size(28, 28);
             tsbStartIndex.Text = "开始索引";
             // 
-            // tsbStopIndex
+            // tsbCleanDb
             // 
-            tsbStopIndex.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbStopIndex.Enabled = false;
-            tsbStopIndex.Image = Properties.Resources.Database_delete24;
-            tsbStopIndex.ImageTransparentColor = Color.Magenta;
-            tsbStopIndex.Name = "tsbStopIndex";
-            tsbStopIndex.Size = new Size(28, 28);
-            tsbStopIndex.Text = "停止索引";
+            tsbCleanDb.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbCleanDb.Image = Properties.Resources.Database_delete24;
+            tsbCleanDb.ImageTransparentColor = Color.Magenta;
+            tsbCleanDb.Name = "tsbCleanDb";
+            tsbCleanDb.Size = new Size(28, 28);
+            tsbCleanDb.Text = "清理条目";
+            tsbCleanDb.ToolTipText = "清理无效条目";
+            // 
+            // tsbStop
+            // 
+            tsbStop.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            tsbStop.Enabled = false;
+            tsbStop.Image = Properties.Resources.Stop24;
+            tsbStop.ImageTransparentColor = Color.Magenta;
+            tsbStop.Name = "tsbStop";
+            tsbStop.Size = new Size(28, 28);
+            tsbStop.Text = "停止操作";
             // 
             // toolStripSeparator1
             // 
@@ -322,7 +336,7 @@
             panelMain.Dock = DockStyle.Fill;
             panelMain.Location = new Point(0, 84);
             panelMain.Name = "panelMain";
-            panelMain.Size = new Size(939, 492);
+            panelMain.Size = new Size(939, 496);
             panelMain.TabIndex = 6;
             // 
             // panelMiddle
@@ -331,7 +345,7 @@
             panelMiddle.Dock = DockStyle.Fill;
             panelMiddle.Location = new Point(224, 0);
             panelMiddle.Name = "panelMiddle";
-            panelMiddle.Size = new Size(538, 492);
+            panelMiddle.Size = new Size(538, 496);
             panelMiddle.TabIndex = 12;
             // 
             // listView
@@ -341,7 +355,7 @@
             listView.FullRowSelect = true;
             listView.Location = new Point(0, 4);
             listView.Name = "listView";
-            listView.Size = new Size(538, 485);
+            listView.Size = new Size(538, 489);
             listView.TabIndex = 3;
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
@@ -375,7 +389,7 @@
             splitterRight.Dock = DockStyle.Right;
             splitterRight.Location = new Point(762, 0);
             splitterRight.Name = "splitterRight";
-            splitterRight.Size = new Size(3, 492);
+            splitterRight.Size = new Size(3, 496);
             splitterRight.TabIndex = 11;
             splitterRight.TabStop = false;
             // 
@@ -384,7 +398,7 @@
             panelPreview.Dock = DockStyle.Right;
             panelPreview.Location = new Point(765, 0);
             panelPreview.Name = "panelPreview";
-            panelPreview.Size = new Size(174, 492);
+            panelPreview.Size = new Size(174, 496);
             panelPreview.TabIndex = 10;
             panelPreview.Visible = false;
             // 
@@ -392,7 +406,7 @@
             // 
             splitterLeft.Location = new Point(221, 0);
             splitterLeft.Name = "splitterLeft";
-            splitterLeft.Size = new Size(3, 492);
+            splitterLeft.Size = new Size(3, 496);
             splitterLeft.TabIndex = 9;
             splitterLeft.TabStop = false;
             // 
@@ -402,7 +416,7 @@
             panelTree.Dock = DockStyle.Left;
             panelTree.Location = new Point(0, 0);
             panelTree.Name = "panelTree";
-            panelTree.Size = new Size(221, 492);
+            panelTree.Size = new Size(221, 496);
             panelTree.TabIndex = 8;
             panelTree.Visible = false;
             // 
@@ -411,7 +425,7 @@
             naviTreeControl1.Dock = DockStyle.Fill;
             naviTreeControl1.Location = new Point(0, 0);
             naviTreeControl1.Name = "naviTreeControl1";
-            naviTreeControl1.Size = new Size(221, 492);
+            naviTreeControl1.Size = new Size(221, 496);
             naviTreeControl1.TabIndex = 0;
             // 
             // FormMain
@@ -487,8 +501,9 @@
         private ToolStripMenuItem tsmiOptions;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton tsbDelete;
-        private ToolStripButton tsbStopIndex;
-        private ToolStripMenuItem tsmiStopIndex;
-        private MyPageLib.Controls.ExploreTreeControl naviTreeControl1;
+        private ToolStripButton tsbStop;
+        private ToolStripMenuItem tsmiStop;
+        private ExploreTreeControl naviTreeControl1;
+        private ToolStripButton tsbCleanDb;
     }
 }

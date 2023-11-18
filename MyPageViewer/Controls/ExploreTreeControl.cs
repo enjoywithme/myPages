@@ -1,13 +1,8 @@
-﻿using System;
-using System.Drawing;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+﻿using MyPageLib;
+using mySharedLib;
 using TreeView = System.Windows.Forms.TreeView;
 
-namespace MyPageLib.Controls
+namespace MyPageViewer.Controls
 {
     public enum ExploreTreeType
     {
@@ -89,7 +84,7 @@ namespace MyPageLib.Controls
 
         #region piz文件拖放
 
-        private void TreeView1_DragDrop(object sender, DragEventArgs e)
+        private async void TreeView1_DragDrop(object? sender, DragEventArgs e)
         {
             var targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
 
@@ -104,20 +99,16 @@ namespace MyPageLib.Controls
             var pizFiles = fileList.Where(x => Path.GetExtension(x).ToLower() == ".piz").ToList();
 
 
-            var sb = new StringBuilder();
+            var sb = new FuncResult();
 
             foreach (var pizFile in pizFiles)
             {
-                if (!MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)), out var message))
-                {
-                    sb.AppendLine($"移动文件{pizFile}错误:\r\n{message}");
-
-                }
-
+                var ret = await MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)));
+                if(!ret)
+                    sb.False($"移动文件{pizFile}错误:\r\n{ret.Message}");
             }
 
-            var msg = sb.ToString();
-            if (!string.IsNullOrEmpty(msg)) { MessageBox.Show(msg); }
+            if (!sb) { MessageBox.Show(sb.Message); }
 
             NodeChanged?.Invoke(this, destPath);
 

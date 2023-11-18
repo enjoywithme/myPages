@@ -23,6 +23,7 @@ namespace MyPageLib
 
         //用单例模式
         private readonly SqlSugarScope _db;
+        public SqlSugarScope Db => _db;
 
         public MyPageDb()
         {
@@ -35,32 +36,11 @@ namespace MyPageLib
                 );
         }
 
-        public async void InsertUpdateDocument(PageDocumentPoCo documentPoCo)
+        public IList<PageDocumentPoCo> QueryAll()
         {
 
-                var poCo = await _db.Queryable<PageDocumentPoCo>().FirstAsync(x 
-                    => x.Name == documentPoCo.Name
-                && x.TopFolder == documentPoCo.TopFolder
-                && x.FolderPath == documentPoCo.FolderPath
-                && x.FileExt == documentPoCo.FileExt);
-                if (poCo != null)
-                {
-                    if (documentPoCo.Guid != poCo.Guid)
-                        documentPoCo.Guid = poCo.Guid;
-
-
-
-                    await _db.Updateable(documentPoCo).ExecuteCommandAsync();
-                }
-                else
-                {
-                    if (string.IsNullOrEmpty(documentPoCo.Guid))
-                        documentPoCo.Guid = Guid.NewGuid().ToString();
-                    await _db.Insertable(documentPoCo).ExecuteCommandAsync();
-
-                }
-
-
+            var poCo = _db.Queryable<PageDocumentPoCo>().ToList();
+            return poCo;
         }
 
         public async void UpdateDocument(PageDocumentPoCo documentPoCo)
@@ -122,23 +102,23 @@ namespace MyPageLib
         }
 
 
-        public bool MoveFile(string orgFileName, string dstFileName,out string message)
+        public async Task<FuncResult> MoveFile(string orgFileName, string dstFileName)
         {
+            var ret = new FuncResult();
             try
             {
                 File.Move(orgFileName, dstFileName, true);
                 DeleteDocumentByFilePath(orgFileName);
-                MyPageIndexer.Instance.IndexFile(dstFileName);
+                await MyPageIndexer.Instance.IndexFile(dstFileName);
 
             }
             catch (Exception e)
             {
-                message = e.Message;
-                return false;
+                ret.False(e.Message);
+                return ret;
             }
 
-            message = string.Empty;
-            return true;
+            return ret;
 
         }
 
