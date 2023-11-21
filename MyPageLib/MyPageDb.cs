@@ -81,6 +81,14 @@ namespace MyPageLib
                                                            && it.TopFolder == poCo.TopFolder).ExecuteCommand();
         }
 
+        public void DeleteDocument(PageDocumentPoCo poCo)
+        {
+            _db.Deleteable<PageDocumentPoCo>().Where(it => it.Name == poCo.Name
+                                                           && it.FileExt == poCo.FileExt
+                                                           && it.FolderPath == poCo.FolderPath
+                                                           && it.TopFolder == poCo.TopFolder).ExecuteCommand();
+        }
+
         public PageDocumentPoCo? FindFilePath(string filePath)
         {
             var poCo = new PageDocumentPoCo() { FilePath = filePath };
@@ -97,14 +105,24 @@ namespace MyPageLib
         }
 
 
-        public async Task<FuncResult> MoveFile(string orgFileName, string dstFileName)
+        public FuncResult MoveFile(string orgFileName, string dstFileName)
         {
             var ret = new FuncResult();
             try
             {
                 File.Move(orgFileName, dstFileName, true);
-                DeleteDocumentByFilePath(orgFileName);
-                await MyPageIndexer.Instance.IndexFile(dstFileName);
+                var orgPoCo = FindFilePath(orgFileName);
+                if (orgPoCo != null)
+                {
+                    DeleteDocument(orgPoCo);
+                    if (orgPoCo.FullTextIndexed == 1)
+                    {
+                        MyPageIndexer.Instance.DeleteDocumentFromMeiliIndex(orgPoCo);
+                        
+                    }
+                }
+
+                MyPageIndexer.Instance.IndexFile(dstFileName);
 
             }
             catch (Exception e)

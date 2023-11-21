@@ -84,7 +84,7 @@ namespace MyPageViewer.Controls
 
         #region piz文件拖放
 
-        private async void TreeView1_DragDrop(object? sender, DragEventArgs e)
+        private void TreeView1_DragDrop(object? sender, DragEventArgs e)
         {
             var targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
 
@@ -103,7 +103,7 @@ namespace MyPageViewer.Controls
 
             foreach (var pizFile in pizFiles)
             {
-                var ret = await MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)));
+                var ret = MyPageDb.Instance.MoveFile(pizFile, Path.Combine(destPath, Path.GetFileName(pizFile)));
                 if(!ret)
                     sb.False($"移动文件{pizFile}错误:\r\n{ret.Message}");
             }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -18,11 +17,6 @@ namespace MyPageLib
             CleanDb
         }
 
-        public enum ScanMode
-        {
-            FullScan,
-            ScanWaitList
-        }
 
         public const string MeilisearchIndexKey = "myPages";
         private const int MaxErrorLimit = 10;
@@ -36,17 +30,16 @@ namespace MyPageLib
         public event EventHandler? IndexStopped;
         public event EventHandler<string>? IndexFileChanged;
 
-        private readonly ConcurrentQueue<string> _filesWaitIndex = new();
         private Meilisearch.Index? _meiliSearchIndex;
 
         private FuncResult? _errorBuilder;
-        public bool IsError=> _errorBuilder is { Success: false };
-        public string? ErrorMessage => _errorBuilder?.Message;
-        public void StartIndex(ScanMode mode = ScanMode.FullScan)
+        public bool IsError => _errorBuilder is { Success: false };
+        public string? Message => _errorBuilder?.Message;
+        public void StartIndex()
         {
             if (IsRunning) return;
             CurrentAction = ActionType.IndexDb;
-            Task.Run(() => { Indexing(mode);});
+            Task.Run(Indexing);
 
         }
 
@@ -62,17 +55,12 @@ namespace MyPageLib
             _cancellationTokenSource?.Cancel();
         }
 
-        public void Enqueue(string fileName)
-        {
-            _filesWaitIndex.Enqueue(fileName);
-            Indexing(ScanMode.ScanWaitList);
-        }
 
         /// <summary>
         /// 索引路径指定的文件
         /// </summary>
         /// <param name="file"></param>
-        public async Task IndexFile(string file)
+        public void IndexFile(string file)
         {
             var poCoLocal = new PageDocumentPoCo()
             {
@@ -111,21 +99,21 @@ namespace MyPageLib
 
                 if (modified)
                 {
-                     await FullTextIndexPoCo(poCo);
+                    FullTextIndexPoCo(poCo);
                     MyPageDb.Instance.UpdateDocument(poCo);
                 }
                 else if (poCo.FullTextIndexed == 0)
                 {
                     poCo.ContentText = poCoLocal.ContentText;
-                    var fullIndexed = await  FullTextIndexPoCo(poCo);
-                    if(fullIndexed)
+                    var fullIndexed = FullTextIndexPoCo(poCo);
+                    if (fullIndexed)
                         MyPageDb.Instance.UpdateDocument(poCo);
                 }
             }
             else
             {
-                 await FullTextIndexPoCo(poCoLocal);
-                 MyPageDb.Instance.InsertDocument(poCoLocal);
+                FullTextIndexPoCo(poCoLocal);
+                MyPageDb.Instance.InsertDocument(poCoLocal);
             }
 
         }
@@ -135,7 +123,7 @@ namespace MyPageLib
         /// </summary>
         /// <param name="poCo"></param>
         /// <returns></returns>
-        private async Task<bool> FullTextIndexPoCo(PageDocumentPoCo poCo)
+        private bool FullTextIndexPoCo(PageDocumentPoCo poCo)
         {
             if (_meiliSearchIndex == null)
             {
@@ -145,27 +133,18 @@ namespace MyPageLib
 
             try
             {
-                await _meiliSearchIndex.AddDocumentsAsync(new[] { poCo }, "guid"); //主key必须小写
-                poCo.FullTextIndexed = 1;
+                if (_meiliSearchIndex.AddDocumentsAsync(new[] { poCo }, "guid").Wait(3000)) //主key必须小写
+                    poCo.FullTextIndexed = 1;
             }
             catch (Exception ex)
             {
-                _errorBuilder?.False($"全文索引条目错误：{ex.Message}");
+                _errorBuilder?.Log($"全文索引条目错误：{ex.Message}");
                 return false;
             }
-            
+
             return true;
         }
 
-        private void ScanWaitList()
-        {
-            while (true)
-            {
-                if (!_filesWaitIndex.TryDequeue(out var file)) break;
-
-                IndexFile(file).Wait();
-            }
-        }
 
         private void ScanLocalFolder()
         {
@@ -182,7 +161,7 @@ namespace MyPageLib
                     IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
 
                     if (_cancellationTokenSource is { IsCancellationRequested: true }) break;
-                    IndexFile(file).Wait();
+                    IndexFile(file);
 
                     if (_errorBuilder is { ErrorCount: < MaxErrorLimit }) continue;
                     _errorBuilder?.False("发生错误太多，终止索引，请检查后重试。");
@@ -197,7 +176,7 @@ namespace MyPageLib
         }
 
 
-        public async Task<FuncResult> ClearMeiliIndex(string meiliAddress,string meiliMasterKey)
+        public async Task<FuncResult> ClearMeiliIndex(string meiliAddress, string meiliMasterKey)
         {
             var ret = new FuncResult();
             try
@@ -215,9 +194,28 @@ namespace MyPageLib
             {
                 ret.False(e.Message);
             }
-            
-            
+
+
             return ret;
+        }
+
+        public void DeleteDocumentFromMeiliIndex(PageDocumentPoCo poCo)
+        {
+            if (MyPageSettings.Instance == null || !MyPageSettings.Instance.EnableFullTextIndex) return;
+
+
+            try
+            {
+                if (_meiliSearchIndex == null)
+                    InitMeiliSearch();
+                _meiliSearchIndex?.DeleteOneDocumentAsync(poCo.Guid).Wait(2000);
+
+            }
+            catch (Exception e)
+            {
+
+            }
+
         }
 
         private void InitMeiliSearch()
@@ -245,8 +243,7 @@ namespace MyPageLib
         /// <summary>
         /// 从本地文件夹中索引文件-处理队列
         /// </summary>
-        /// <param name="scanMode"></param>
-        private void Indexing(ScanMode scanMode)
+        private void Indexing()
         {
             _cancellationTokenSource = new CancellationTokenSource();
             _errorBuilder = new FuncResult();
@@ -257,16 +254,9 @@ namespace MyPageLib
             //Index files
             try
             {
-                //Index documents
-                if (scanMode == ScanMode.ScanWaitList)
-                    ScanWaitList();
-                else
-                {
-                    ScanWaitList();
-                    ScanLocalFolder();
-                    ScanWaitList();
 
-                }
+                ScanLocalFolder();
+
             }
             catch (Exception e)
             {
@@ -316,12 +306,12 @@ namespace MyPageLib
                         _cancellationTokenSource?.Cancel();
                     }
                 }
-                
 
 
-            }, 200,_cancellationTokenSource);//设置分页 
 
-            IsRunning =false;
+            }, 200, _cancellationTokenSource);//设置分页 
+
+            IsRunning = false;
             IndexStopped?.Invoke(this, EventArgs.Empty);
 
         }

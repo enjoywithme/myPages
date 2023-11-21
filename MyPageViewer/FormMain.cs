@@ -252,7 +252,7 @@ namespace MyPageViewer
 
         private void TslbIndexing_DoubleClick(object sender, EventArgs e)
         {
-            Program.ShowError(MyPageIndexer.Instance.ErrorMessage);
+            Program.ShowError(MyPageIndexer.Instance.Message);
             tslbIndexing.Visible = false;
 
         }

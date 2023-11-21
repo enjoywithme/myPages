@@ -329,7 +329,9 @@ namespace MyPageLib
             {
                 //File.Delete(FilePath);
                 FileSystem.DeleteFile(FilePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-                MyPageDb.Instance.DeleteDocumentByFilePath(FilePath);
+                var poCo = new PageDocumentPoCo() { FilePath = FilePath };
+                MyPageDb.Instance.DeleteDocument(poCo);
+                MyPageIndexer.Instance.DeleteDocumentFromMeiliIndex(poCo);
                 Deleted = true;
             }
             catch (Exception e)

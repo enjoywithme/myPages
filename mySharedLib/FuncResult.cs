@@ -18,6 +18,11 @@ namespace mySharedLib
             _stringBuilder.AppendLine(msg);
         }
 
+        public void Log(string msg)
+        {
+            _stringBuilder.AppendLine(msg);
+        }
+
         public void False(string msg)
         {
             Set(false, msg);
