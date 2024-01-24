@@ -15,21 +15,25 @@ namespace mySharedLib
     {
         private static string[] _badWords;
         private static string[] _badNames;
+        public static string[] _btItemPrefix;
 
+        private static string _currentPath;
 
-        static Utility()
+        public static void UtilityInit(string currentPath)
         {
-            ReadBadWords();
-        }
-
-        //读取bad_words
-        public static void ReadBadWords()
-        {
-            var badWordsFilePath = Path.Combine(ExecutingAssemblyPath(), "BAD_WORDS.txt");
+            _currentPath = currentPath;
+            var badWordsFilePath = Path.Combine(_currentPath, "BAD_WORDS.txt");
             _badWords = File.Exists(badWordsFilePath) ? File.ReadAllLines(badWordsFilePath) : null;
 
-            var badNamesFilePath = Path.Combine(ExecutingAssemblyPath(), "BAD_NAMES.txt");
+            var badNamesFilePath = Path.Combine(_currentPath, "BAD_NAMES.txt");
             _badNames = File.Exists(badWordsFilePath) ? File.ReadAllLines(badNamesFilePath) : null;
+
+            _btItemPrefix = null;
+            var btPrefixFile = Path.Combine(_currentPath, "BtItemPrefix.txt");
+            if (File.Exists(btPrefixFile))
+            {
+                _btItemPrefix = File.ReadAllLines(btPrefixFile);
+            }
         }
 
         //标准化文件名
