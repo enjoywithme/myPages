@@ -34,9 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Compile Update="Controls\ExploreTreeControl.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Update="Controls\ExploreTreeControl.cs" />
     <Compile Update="Dlg\DlgTagAdd.cs">
       <SubType>Form</SubType>
     </Compile>
