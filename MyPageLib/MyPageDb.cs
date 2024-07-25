@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -89,6 +90,11 @@ namespace MyPageLib
                                                            && it.TopFolder == poCo.TopFolder).ExecuteCommand();
         }
 
+        /// <summary>
+        /// 根据文件完整路径查找记录
+        /// </summary>
+        /// <param name="filePath"></param>
+        /// <returns></returns>
         public PageDocumentPoCo? FindFilePath(string filePath)
         {
             var poCo = new PageDocumentPoCo() { FilePath = filePath };
@@ -99,12 +105,24 @@ namespace MyPageLib
             && it.TopFolder == poCo.TopFolder);
         }
 
+
+        /// <summary>
+        /// 根据记录的原始链接查找
+        /// </summary>
+        /// <param name="originUrl"></param>
+        /// <returns></returns>
         public PageDocumentPoCo? FindOriginUrl(string originUrl)
         {
             return _db.Queryable<PageDocumentPoCo>().Where(it => it.OriginUrl == originUrl).OrderByDescending(x=>x.DtCreated).First();
         }
 
 
+        /// <summary>
+        /// 移动/重命名文件
+        /// </summary>
+        /// <param name="orgFileName"></param>
+        /// <param name="dstFileName"></param>
+        /// <returns></returns>
         public FuncResult MoveFile(string orgFileName, string dstFileName)
         {
             var ret = new FuncResult();
@@ -151,6 +169,12 @@ namespace MyPageLib
             return _db.Queryable<PageDocumentPoCo>().Where(co=>co.DtModified>=dt).OrderByDescending(co => co.DtModified).ToList();
         }
 
+
+        /// <summary>
+        /// 根据标题查找类似的文章
+        /// </summary>
+        /// <param name="similarTitle"></param>
+        /// <returns></returns>
         public IList<PageDocumentPoCo> FindSimilarTitle(string similarTitle)
         {
             var splits = similarTitle.Split();
@@ -260,13 +284,17 @@ namespace MyPageLib
 
         }
 
-
+        /// <summary>
+        /// 根据全路径查找路径下的记录
+        /// </summary>
+        /// <param name="folderFullPath"></param>
+        /// <returns></returns>
         public IList<PageDocumentPoCo>? FindFolderPath(string folderFullPath)
         {
             try
             {
                 if(MyPageSettings.Instance==null) return null; 
-                var (topFolder, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
+                var (topFolder,topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
 
                 return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath
                 && it.TopFolder == topFolder).OrderByDescending(it=>it.Title).ToList();
@@ -278,6 +306,42 @@ namespace MyPageLib
 
             return null;
         }
+
+
+        /// <summary>
+        /// 检查给定的完整目录下是否在数据库中有记录
+        /// </summary>
+        /// <param name="folderFullPath"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public bool IsDocumentInFolder(string folderFullPath)
+        {
+            if (MyPageSettings.Instance == null) 
+                throw new Exception("没有正确的配置信息。");
+
+
+            var (topFolder, topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
+            
+            if(topFolder == null)
+                throw new Exception("不正确的顶级目录。");
+
+            if(string.IsNullOrEmpty(folderPath))
+                return _db.Queryable<PageDocumentPoCo>().Any(it => it.TopFolder == topFolder);
+
+            var subFolder = folderPath + "\\";
+
+            return _db.Queryable<PageDocumentPoCo>().Any(it => 
+                it.TopFolder == topFolder
+                && it.FolderPath!=null
+                && (it.FolderPath == folderPath
+                || it.FolderPath.StartsWith(subFolder)));
+        }
+
+        public bool IsFilesInFolder(string folderFullPath)
+        {
+            return Directory.EnumerateFileSystemEntries(folderFullPath).Any();
+        }
+
 
         /// <summary>
         /// https://www.donet5.com/home/Doc?typeId=2314
@@ -350,6 +414,37 @@ namespace MyPageLib
             return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
         }
 
+        public void ReplaceFolderPath(string topFolder, string folderPath,string newFolderPath)
+        {
 
+            //更新目录下的文档
+            var docs = _db.Queryable<PageDocumentPoCo>().Where(it => it.TopFolder == topFolder
+            && it.FolderPath == folderPath).ToList();
+            foreach (var poCo in docs)
+            {
+                poCo.FolderPath = newFolderPath;
+
+            }
+            _db.Updateable(docs)
+                .UpdateColumns(it => new { it.FolderPath })
+                .ExecuteCommand();
+
+            //更新子目录下的文档
+            var s = folderPath + "\\";
+            docs = _db.Queryable<PageDocumentPoCo>().Where(it => it.TopFolder == topFolder
+                                                                 && it.FolderPath!=null
+                                                                 && it.FolderPath.StartsWith(s)).ToList();
+            foreach (var poCo in docs)
+            {
+                if(poCo.FolderPath==null)
+                    continue;
+                poCo.FolderPath = poCo.FolderPath.Replace(folderPath, newFolderPath,
+                    StringComparison.InvariantCultureIgnoreCase);
+            }
+
+            _db.Updateable(docs)
+                .UpdateColumns(it => new { it.FolderPath })
+                .ExecuteCommand();
+        }
     }
 }

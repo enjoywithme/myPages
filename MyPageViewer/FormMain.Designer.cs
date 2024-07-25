@@ -78,6 +78,11 @@ namespace MyPageViewer
             splitterLeft = new Splitter();
             panelTree = new Panel();
             naviTreeControl1 = new ExploreTreeControl();
+            treeViewMenu = new ContextMenuStrip(components);
+            tsmiOpenFolderPath = new ToolStripMenuItem();
+            tsmiAddFolder = new ToolStripMenuItem();
+            tsmiRenameFolder = new ToolStripMenuItem();
+            tsmiDeleteFolder = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -85,6 +90,7 @@ namespace MyPageViewer
             panelMain.SuspendLayout();
             panelMiddle.SuspendLayout();
             panelTree.SuspendLayout();
+            treeViewMenu.SuspendLayout();
             SuspendLayout();
             // 
             // menuStrip1
@@ -106,24 +112,24 @@ namespace MyPageViewer
             // tsmiStartIndex
             // 
             tsmiStartIndex.Name = "tsmiStartIndex";
-            tsmiStartIndex.Size = new Size(180, 22);
+            tsmiStartIndex.Size = new Size(124, 22);
             tsmiStartIndex.Text = "开始索引";
             // 
             // tsmiStop
             // 
             tsmiStop.Name = "tsmiStop";
-            tsmiStop.Size = new Size(180, 22);
+            tsmiStop.Size = new Size(124, 22);
             tsmiStop.Text = "停止操作";
             // 
             // toolStripMenuItem2
             // 
             toolStripMenuItem2.Name = "toolStripMenuItem2";
-            toolStripMenuItem2.Size = new Size(177, 6);
+            toolStripMenuItem2.Size = new Size(121, 6);
             // 
             // tsmiExit
             // 
             tsmiExit.Name = "tsmiExit";
-            tsmiExit.Size = new Size(180, 22);
+            tsmiExit.Size = new Size(124, 22);
             tsmiExit.Text = "退出(&X)";
             // 
             // 工具TToolStripMenuItem
@@ -422,11 +428,42 @@ namespace MyPageViewer
             // 
             // naviTreeControl1
             // 
+            naviTreeControl1.ContextMenuStrip = treeViewMenu;
             naviTreeControl1.Dock = DockStyle.Fill;
             naviTreeControl1.Location = new Point(0, 0);
             naviTreeControl1.Name = "naviTreeControl1";
             naviTreeControl1.Size = new Size(221, 496);
             naviTreeControl1.TabIndex = 0;
+            // 
+            // treeViewMenu
+            // 
+            treeViewMenu.Items.AddRange(new ToolStripItem[] { tsmiOpenFolderPath, tsmiAddFolder, tsmiDeleteFolder, tsmiRenameFolder });
+            treeViewMenu.Name = "treeViewMenu";
+            treeViewMenu.Size = new Size(181, 114);
+            // 
+            // tsmiOpenFolderPath
+            // 
+            tsmiOpenFolderPath.Name = "tsmiOpenFolderPath";
+            tsmiOpenFolderPath.Size = new Size(180, 22);
+            tsmiOpenFolderPath.Text = "打开文件夹路径";
+            // 
+            // tsmiAddFolder
+            // 
+            tsmiAddFolder.Name = "tsmiAddFolder";
+            tsmiAddFolder.Size = new Size(180, 22);
+            tsmiAddFolder.Text = "添加文件夹";
+            // 
+            // tsmiRenameFolder
+            // 
+            tsmiRenameFolder.Name = "tsmiRenameFolder";
+            tsmiRenameFolder.Size = new Size(180, 22);
+            tsmiRenameFolder.Text = "重命名文件夹";
+            // 
+            // tsmiDeleteFolder
+            // 
+            tsmiDeleteFolder.Name = "tsmiDeleteFolder";
+            tsmiDeleteFolder.Size = new Size(180, 22);
+            tsmiDeleteFolder.Text = "删除文件夹";
             // 
             // FormMain
             // 
@@ -454,6 +491,7 @@ namespace MyPageViewer
             panelMain.ResumeLayout(false);
             panelMiddle.ResumeLayout(false);
             panelTree.ResumeLayout(false);
+            treeViewMenu.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -505,5 +543,10 @@ namespace MyPageViewer
         private ToolStripMenuItem tsmiStop;
         private ExploreTreeControl naviTreeControl1;
         private ToolStripButton tsbCleanDb;
+        private ContextMenuStrip treeViewMenu;
+        private ToolStripMenuItem tsmiRenameFolder;
+        private ToolStripMenuItem tsmiOpenFolderPath;
+        private ToolStripMenuItem tsmiAddFolder;
+        private ToolStripMenuItem tsmiDeleteFolder;
     }
 }

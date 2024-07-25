@@ -97,20 +97,27 @@ namespace MyPageLib
             return true;
         }
 
-        public (string?, string?) ParsePath(string path)
+        /// <summary>
+        /// 返回顶级路径名、顶级完整路径名、顶级路径下的相对路径
+        /// </summary>
+        /// <param name="path"></param>
+        /// <returns></returns>
+        public (string?, string?,string?) ParsePath(string path)
         {
             foreach (var topFolder in TopFolders)
             {
                 var topPath = topFolder.Value;
+
                 if (path.StartsWith(topPath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return (topFolder.Key, path.Substring(topPath.Length).ClearPathPrefix());
+                    return (topFolder.Key,topPath, path.Substring(topPath.Length).ClearPathPrefix());
                 }
 
             }
 
-            return (null,null);
+            return (null,null,null);
         }
+
 
 
         public bool ViewTree
@@ -150,27 +157,34 @@ namespace MyPageLib
 
 
 
-        public static void InitInstance(string settingsPath)
+        public static bool InitInstance(string settingsPath,out string message)
         {
+            message = string.Empty;
             var settingsFile = Path.Combine(settingsPath, SettingFileName);
 
             if (!File.Exists(settingsFile))
             {
                 Instance = new MyPageSettings() { SettingFilePath = settingsFile };
 
-                return;
+                return true;
             }
 
             try
             {
                 Instance = JsonConvert.DeserializeObject<MyPageSettings>(File.ReadAllText(settingsFile));
+                if (Instance == null)
+                {
+                    throw new Exception("解析设置文件错误！");
+                }
                 Instance.SettingFilePath = settingsFile;
             }
             catch (Exception e)
             {
-                Instance = new MyPageSettings() { SettingFilePath = settingsFile };
+                message = $"初始化设置失败:\r\n{e.Message}";
+                return false;
             }
 
+            return true;
         }
 
         public bool Save(out string message,bool force=false)

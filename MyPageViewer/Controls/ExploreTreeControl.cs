@@ -16,6 +16,9 @@ namespace MyPageViewer.Controls
 
         public event EventHandler<string> NodeChanged;
         private readonly TreeView _cacheTree = new();
+        private string _nodeFilter;
+
+        public TreeNode SelectedNode => treeView1.SelectedNode;
 
         public ExploreTreeControl()
         {
@@ -24,35 +27,35 @@ namespace MyPageViewer.Controls
         }
         private void ExploreTreeControl_Load(object sender, EventArgs e)
         {
-            LoadFolderTree();
+            ReloadFolderTree();
 
             cbTreeType.SelectedIndex = 0;
             cbTreeType.SelectedIndexChanged += CbTreeType_SelectedIndexChanged;
             btRefresh.Click += BtRefresh_Click;
 
             treeView1.AfterSelect += TreeView1_AfterSelect;
+            treeView1.NodeMouseClick += (_, args) => treeView1.SelectedNode = args.Node;
             treeView1.DragEnter += TreeView1_DragEnter;
             treeView1.DragOver += TreeView1_DragOver;
             treeView1.DragDrop += TreeView1_DragDrop;
             treeView1.AllowDrop = true;
+
+
             cbFilter.TextUpdate += ((_, _) => DisplayTree());
         }
 
         private void BtRefresh_Click(object sender, EventArgs e)
         {
-            LoadFolderTree();
+            ReloadFolderTree();
         }
 
-        private void LoadFolderTree()
-        {
-            treeView1.Nodes.Clear();
-            if (MyPageSettings.Instance?.TopFolders is not { Count: > 0 }) return;
-            foreach (var scanFolder in MyPageSettings.Instance.TopFolders)
-            {
-                LoadDirectory(scanFolder.Value);
-            }
-        }
+        
 
+
+        /// <summary>
+        /// 选中代表路径的节点
+        /// </summary>
+        /// <param name="folderPath">实际路径，包括根目录</param>
         public void GotoPath(string folderPath)
         {
             TreeNode tn = null;
@@ -68,6 +71,12 @@ namespace MyPageViewer.Controls
             treeView1.SelectedNode = tn;
         }
 
+        /// <summary>
+        /// 根据节点路径递归查找节点
+        /// </summary>
+        /// <param name="treeNode"></param>
+        /// <param name="folderPath"></param>
+        /// <returns></returns>
         private TreeNode FindNodeByPath(TreeNode treeNode, string folderPath)
         {
             var tag = (string)treeNode.Tag;
@@ -80,6 +89,8 @@ namespace MyPageViewer.Controls
 
             return null;
         }
+
+
 
 
         #region piz文件拖放
@@ -151,7 +162,20 @@ namespace MyPageViewer.Controls
         }
 
         #region 装载文件夹
-        public void LoadDirectory(string dir)
+
+        /// <summary>
+        /// 重新装载树节点
+        /// </summary>
+        public void ReloadFolderTree()
+        {
+            if (MyPageSettings.Instance?.TopFolders is not { Count: > 0 }) return;
+            foreach (var scanFolder in MyPageSettings.Instance.TopFolders)
+            {
+                LoadDirectory(scanFolder.Value);
+            }
+        }
+
+        private void LoadDirectory(string dir)
         {
             _cacheTree.Nodes.Clear();
             var di = new DirectoryInfo(dir);
@@ -160,52 +184,9 @@ namespace MyPageViewer.Controls
             tds.ImageIndex = 0;
             tds.StateImageIndex = 0;
             tds.ToolTipText = di.FullName;
-            //LoadFiles(dir, tds);
             LoadSubDirectories(dir, tds);
 
-            DisplayTree();
-        }
-
-        private async void DisplayTree()
-        {
-            async Task<bool> UserKeepsTyping()
-            {
-                var txt = cbFilter.Text;   // remember text
-                await Task.Delay(500);        // wait some
-                return txt != cbFilter.Text;  // return that text changed or not
-            }
-            if (await UserKeepsTyping()) return;
-
-            //blocks repainting tree till all objects loaded
-            treeView1.BeginUpdate();
-            treeView1.Nodes.Clear();
-            if (cbFilter.Text != string.Empty)
-            {
-                foreach (TreeNode parentNode in _cacheTree.Nodes)
-                {
-                    LoadFilterNode(parentNode);
-                }
-            }
-            else
-            {
-                foreach (TreeNode node in this._cacheTree.Nodes)
-                {
-                    treeView1.Nodes.Add((TreeNode)node.Clone());
-                }
-            }
-            //enables redrawing tree after all objects have been added
-            treeView1.EndUpdate();
-        }
-
-
-        private void LoadFilterNode(TreeNode node)
-        {
-            if (node.Text.IndexOf(cbFilter.Text, StringComparison.InvariantCultureIgnoreCase) >= 0)
-                treeView1.Nodes.Add((TreeNode)node.Clone());
-            foreach (TreeNode treeNode in node.Nodes)
-            {
-                LoadFilterNode(treeNode);
-            }
+            FilterTree();
         }
 
 
@@ -219,10 +200,75 @@ namespace MyPageViewer.Controls
                 tds.StateImageIndex = 0;
                 tds.Tag = di.FullName;
                 tds.ToolTipText = di.FullName;
-                //LoadFiles(subdirectory, tds);
                 LoadSubDirectories(s, tds); td.EnsureVisible();
             }
         }
+
+
+        private async void DisplayTree()
+        {
+            async Task<bool> UserKeepsTyping()
+            {
+                var txt = cbFilter.Text;   // remember text
+                await Task.Delay(500);        // wait some
+                return txt != cbFilter.Text;  // return that text changed or not
+            }
+
+            if (await UserKeepsTyping()) return;
+            _nodeFilter = cbFilter.Text;
+
+            FilterTree();
+
+        }
+
+
+
+        private void FilterTree()
+        {
+            //blocks repainting tree till all objects loaded
+            treeView1.BeginUpdate();
+
+            treeView1.Nodes.Clear();
+            if (!string.IsNullOrEmpty(_nodeFilter))
+            {
+                foreach (TreeNode parentNode in _cacheTree.Nodes)
+                {
+                    LoadFilterNode(parentNode);
+                }
+            }
+            else
+            {
+                foreach (TreeNode node in _cacheTree.Nodes)
+                {
+                    treeView1.Nodes.Add((TreeNode)node.Clone());
+                }
+            }
+
+            //展开第一级节点
+            foreach (TreeNode treeNode in treeView1.Nodes)
+            {
+                treeNode.Expand();
+            }
+
+
+            //enables redrawing tree after all objects have been added
+            treeView1.EndUpdate();
+        }
+
+
+        private void LoadFilterNode(TreeNode node)
+        {
+            if (node.Text.IndexOf(_nodeFilter, StringComparison.InvariantCultureIgnoreCase) >= 0)
+                treeView1.Nodes.Add((TreeNode)node.Clone());
+
+            foreach (TreeNode treeNode in node.Nodes)
+            {
+                LoadFilterNode(treeNode);
+            }
+
+        }
+
+
         #endregion
 
 

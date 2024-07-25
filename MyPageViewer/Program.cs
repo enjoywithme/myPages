@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 using MyPageLib;
 using mySharedLib;
 
@@ -30,12 +31,17 @@ namespace MyPageViewer
 
             //初始化setting
 #if DEBUG
-            MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\");
+            var ok = MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\",out message);
 
 #else
-            MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            //MessageBox.Show(MyPageSettings.Instance.SettingFilePath);
+            var ok = MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),out message);
 #endif
+            if (!ok)
+            {
+                MessageBox.Show(message, Resource.TextError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
 
             //Single instance
             var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());

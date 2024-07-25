@@ -63,7 +63,7 @@ namespace MyPageLib.PoCo
                     FolderPath = null;
                 }
                 else
-                    (TopFolder, FolderPath) = MyPageSettings.Instance.ParsePath(directoryName);
+                    (TopFolder, _, FolderPath) = MyPageSettings.Instance.ParsePath(directoryName);
             }
 
         }

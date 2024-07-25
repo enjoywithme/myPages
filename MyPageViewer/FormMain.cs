@@ -81,6 +81,13 @@ namespace MyPageViewer
             //Tree
             naviTreeControl1.NodeChanged += NaviTreeControl1_NodeChanged;
 
+            //Tree view menu
+            treeViewMenu.Opening += TreeViewMenu_Opening;
+            tsmiRenameFolder.Click += TsmiRenameFolder_Click;
+            tsmiOpenFolderPath.Click += TsmiOpenFolderPath_Click;
+            tsmiAddFolder.Click += TsmiAddFolder_Click;
+            tsmiDeleteFolder.Click += TsmiDeleteFolder_Click;
+
             //工具栏
             tsbStartIndex.Click += (_, _) => { StartIndex(); };
             tsbCleanDb.Click += (_, _) => { StartClean(); };
@@ -131,6 +138,8 @@ namespace MyPageViewer
             notifyIcon1.MouseClick += (_, _) => ShowWindow();
             notifyIcon1.MouseDoubleClick += (_, _) => ShowWindow();
 
+
+
             //form
             Closing += FormMain_Closing;
 
@@ -141,6 +150,145 @@ namespace MyPageViewer
 
 
         }
+
+   
+
+
+
+        #region Navigate tree and tree menu
+
+        private void TreeViewMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            if (naviTreeControl1.SelectedNode == null)
+            {
+                tsmiRenameFolder.Enabled = false;
+                tsmiOpenFolderPath.Enabled =false;
+            }
+            else
+            {
+                tsmiRenameFolder.Enabled = true;
+                tsmiOpenFolderPath.Enabled = true;
+
+            }
+        }
+
+        /// <summary>
+        /// 树节点改变，重新加载
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void NaviTreeControl1_NodeChanged(object sender, string e)
+        {
+            listView.Items.Clear();
+
+            if (!Directory.Exists(e)) return;
+
+            var pocos = MyPageDb.Instance.FindFolderPath(e);
+            FillListView(pocos);
+            RefreshStatusInfo();
+        }
+
+        /// <summary>
+        /// 添加文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsmiAddFolder_Click(object sender, EventArgs e)
+        {
+            var dlg = new DlgFolderAdd(naviTreeControl1.SelectedNode);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+
+            naviTreeControl1.ReloadFolderTree();
+            naviTreeControl1.GotoPath(dlg.NewNodeFullPath);
+        }
+
+        /// <summary>
+        /// 打开节点的文件夹路径
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsmiOpenFolderPath_Click(object sender, EventArgs e)
+        {
+            var path = (string)naviTreeControl1.SelectedNode.Tag;
+            try
+            {
+                Process.Start(new ProcessStartInfo()
+                    {
+                        FileName = path,
+                        UseShellExecute = true,
+                        Verb = "open"
+                    }
+                );
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, Resource.TextError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+            }
+        }
+
+        /// <summary>
+        /// 重命名文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsmiRenameFolder_Click(object sender, EventArgs e)
+        {
+            var node = naviTreeControl1.SelectedNode;
+            if (node.Parent == null)
+            {
+                MessageBox.Show(Resource.TextErrorRenameRoot, Resource.TextError, MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var dlg = new DlgFolderRename(naviTreeControl1.SelectedNode);
+            if(dlg.ShowDialog() != DialogResult.OK) return;
+            
+            naviTreeControl1.ReloadFolderTree();
+            naviTreeControl1.GotoPath(dlg.NewFullPath);
+        }
+
+        /// <summary>
+        /// 删除文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        private void TsmiDeleteFolder_Click(object sender, EventArgs e)
+        {
+            
+            try
+            {
+                var path = (string)naviTreeControl1.SelectedNode.Tag;
+                if (MyPageDb.Instance.IsDocumentInFolder(path))
+                {
+                    MessageBox.Show(Resource.TextDocumentInFolder, Resource.TextHint, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                if (MyPageDb.Instance.IsFilesInFolder(path))
+                {
+                    MessageBox.Show(Resource.TextFileInFolder, Resource.TextHint, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+
+                Directory.Delete(path);
+
+                naviTreeControl1.ReloadFolderTree();
+
+            }
+            catch (Exception exception)
+            {
+                MessageBox.Show(exception.Message, Resource.TextError, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+            }
+
+        }
+
+
+        #endregion
+
+
 
 
         #region 索引
@@ -277,21 +425,7 @@ namespace MyPageViewer
             tsbDelete.Enabled = true;
         }
 
-        /// <summary>
-        /// 树节点改变，重新加载
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        private void NaviTreeControl1_NodeChanged(object sender, string e)
-        {
-            listView.Items.Clear();
 
-            if (!Directory.Exists(e)) return;
-
-            var pocos = MyPageDb.Instance.FindFolderPath(e);
-            FillListView(pocos);
-            RefreshStatusInfo();
-        }
 
         private void OpenDocumentFromFilePath(string filePath)
         {
