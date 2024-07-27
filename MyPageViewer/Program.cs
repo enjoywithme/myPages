@@ -1,11 +1,10 @@
-﻿using System;
-using System.Reflection;
+﻿using System.Reflection;
 using MyPageLib;
 using mySharedLib;
 
 namespace MyPageViewer
 {
-    internal static partial class Program
+    internal static class Program
     {
         //public const string InstanceGuid = "AC9B6BF8-A4A6-4FAD-AC57-856CB01280C}";
 
@@ -34,9 +33,10 @@ namespace MyPageViewer
             var ok = MyPageSettings.InitInstance("D:\\programs\\_mytool\\myPages\\",out message);
 
 #else
-            var ok = MyPageSettings.InitInstance(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),out message);
+            var executingPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var ok = MyPageSettings.InitInstance(executingPath,out message);
 #endif
-            if (!ok)
+            if (MyPageSettings.Instance == null || !ok)
             {
                 MessageBox.Show(message, Resource.TextError, MessageBoxButtons.OK, MessageBoxIcon.Error);
 
@@ -47,13 +47,13 @@ namespace MyPageViewer
             var myPageDoc = MyPageDocument.NewFromArgs(Environment.GetCommandLineArgs());
             if (!SingleInstance.Instance.Start())
             {
-                SingleInstance.Instance.ShowFirstInstance(myPageDoc?.FilePath);
+                SingleInstance.Instance.ShowFirstInstance(myPageDoc.FilePath);
                 return;
             }
             
 
             //run main form
-            FormMain.Instance = new FormMain(myPageDoc);
+            FormMain.Instance = FormMain.CreateForm(myPageDoc);
             Application.Run(FormMain.Instance);
 
             //Task.Delay(1000).Wait();

@@ -97,7 +97,7 @@ namespace MyPageViewer {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to 文件夹下存在文件！.
+        ///   Looks up a localized string similar to 文件夹非空！.
         /// </summary>
         internal static string TextFileInFolder {
             get {
@@ -129,6 +129,15 @@ namespace MyPageViewer {
         internal static string TextParentNodeName {
             get {
                 return ResourceManager.GetString("TextParentNodeName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to My pages [{0}].
+        /// </summary>
+        internal static string TextSubWindowTitle {
+            get {
+                return ResourceManager.GetString("TextSubWindowTitle", resourceCulture);
             }
         }
     }

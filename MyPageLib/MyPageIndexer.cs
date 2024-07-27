@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Meilisearch;
@@ -35,9 +37,26 @@ namespace MyPageLib
         private FuncResult? _errorBuilder;
         public bool IsError => _errorBuilder is { Success: false };
         public string? Message => _errorBuilder?.Message;
-        public void StartIndex()
+
+        /// <summary>
+        /// 开始索引的顶级目录
+        /// </summary>
+        private IList<string>? _indexStartTopFolder;
+
+        public void StartIndex(string? startFolder=null)
         {
             if (IsRunning) return;
+
+            if (startFolder == null)
+            {
+                _indexStartTopFolder = MyPageSettings.Instance?.TopFolders.Values.ToList();
+            }
+            else
+            {
+                _indexStartTopFolder = new List<string>();
+                _indexStartTopFolder.Add(startFolder);
+            }
+
             CurrentAction = ActionType.IndexDb;
             Task.Run(Indexing);
 
@@ -100,14 +119,14 @@ namespace MyPageLib
                 if (modified)
                 {
                     FullTextIndexPoCo(poCo);
-                    MyPageDb.Instance.UpdateDocument(poCo);
+                    MyPageDb.Instance.UpdateDocumentAsync(poCo);
                 }
                 else if (poCo.FullTextIndexed == 0)
                 {
                     poCo.ContentText = poCoLocal.ContentText;
                     var fullIndexed = FullTextIndexPoCo(poCo);
                     if (fullIndexed)
-                        MyPageDb.Instance.UpdateDocument(poCo);
+                        MyPageDb.Instance.UpdateDocumentAsync(poCo);
                 }
             }
             else
@@ -148,14 +167,14 @@ namespace MyPageLib
 
         private void ScanLocalFolder()
         {
-            if (MyPageSettings.Instance?.TopFolders == null) return;
+            if (_indexStartTopFolder == null) return;
 
             //先更新所有纪录的Local present 为 false
             //MyPageDb.Instance.UpdateLocalPresentFalse();
             var counter = 0;
-            foreach (var folder in MyPageSettings.Instance.TopFolders)
+            foreach (var folder in _indexStartTopFolder)
             {
-                foreach (var file in Directory.EnumerateFiles(folder.Value, "*.piz", SearchOption.AllDirectories))
+                foreach (var file in Directory.EnumerateFiles(folder, "*.piz", SearchOption.AllDirectories))
                 {
                     counter++;
                     IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
@@ -293,7 +312,7 @@ namespace MyPageLib
                 try
                 {
                     poCo.LocalPresent = 0;
-                    MyPageDb.Instance.UpdateDocument(poCo);
+                    MyPageDb.Instance.UpdateDocumentAsync(poCo);
 
                     _meiliSearchIndex?.DeleteOneDocumentAsync(poCo.Guid).Wait();
                 }

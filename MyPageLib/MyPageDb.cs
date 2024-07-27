@@ -17,7 +17,7 @@ namespace MyPageLib
     {
         public static MyPageDb Instance { get; } = new();
 
-        public string? DataBaseName => MyPageSettings.Instance==null?null:Path.Combine(MyPageSettings.Instance.WorkingDirectory, "myPage.db");
+        public string? DataBaseName => MyPageSettings.Instance == null ? null : Path.Combine(MyPageSettings.Instance.WorkingDirectory, "myPage.db");
 
         public string ConnectionString => $"Data Source={DataBaseName};";
         private static readonly List<string> SimilarSkipWords = new() { "pro", "ultimate" };
@@ -39,9 +39,14 @@ namespace MyPageLib
 
 
 
-        public async void UpdateDocument(PageDocumentPoCo documentPoCo)
+        public async void UpdateDocumentAsync(PageDocumentPoCo documentPoCo)
         {
             await _db.Updateable(documentPoCo).ExecuteCommandAsync();
+        }
+
+        public void UpdateDocument(PageDocumentPoCo documentPoCo)
+        {
+            _db.Updateable(documentPoCo).ExecuteCommand();
         }
 
         public async void InsertDocument(PageDocumentPoCo documentPoCo)
@@ -55,7 +60,7 @@ namespace MyPageLib
         /// <summary>
         /// 更新所有纪录的全文索引标志
         /// </summary>
-        public void UpdateFullTextIndexed(int indexed=0)
+        public void UpdateFullTextIndexed(int indexed = 0)
         {
             _db.Updateable<object>()
                 .AS("PG_DOCUMENT")
@@ -69,7 +74,7 @@ namespace MyPageLib
         /// </summary>
         public void CleanUpLocalNotPresent()
         {
-            _db.Deleteable<PageDocumentPoCo>().Where(co => co.LocalPresent==0).ExecuteCommand();
+            _db.Deleteable<PageDocumentPoCo>().Where(co => co.LocalPresent == 0).ExecuteCommand();
         }
 
 
@@ -113,7 +118,7 @@ namespace MyPageLib
         /// <returns></returns>
         public PageDocumentPoCo? FindOriginUrl(string originUrl)
         {
-            return _db.Queryable<PageDocumentPoCo>().Where(it => it.OriginUrl == originUrl).OrderByDescending(x=>x.DtCreated).First();
+            return _db.Queryable<PageDocumentPoCo>().Where(it => it.OriginUrl == originUrl).OrderByDescending(x => x.DtCreated).First();
         }
 
 
@@ -136,7 +141,7 @@ namespace MyPageLib
                     if (orgPoCo.FullTextIndexed == 1)
                     {
                         MyPageIndexer.Instance.DeleteDocumentFromMeiliIndex(orgPoCo);
-                        
+
                     }
                 }
 
@@ -163,10 +168,10 @@ namespace MyPageLib
             return _db.Queryable<PageDocumentPoCo>().OrderByDescending(co => co.DtModified).Take(n).ToList();
         }
 
-        public IList<PageDocumentPoCo> FindLastDays(int n=0)
+        public IList<PageDocumentPoCo> FindLastDays(int n = 0)
         {
             var dt = DateTime.Today.AddDays(-n);
-            return _db.Queryable<PageDocumentPoCo>().Where(co=>co.DtModified>=dt).OrderByDescending(co => co.DtModified).ToList();
+            return _db.Queryable<PageDocumentPoCo>().Where(co => co.DtModified >= dt).OrderByDescending(co => co.DtModified).ToList();
         }
 
 
@@ -191,7 +196,7 @@ namespace MyPageLib
                 //}
                 //sb.Append($"AND Title like '%{split}%'");
 
-                exp.And(it => it.Title!=null && it.Title.Contains(split));
+                exp.And(it => it.Title != null && it.Title.Contains(split));
 
             }
 
@@ -204,9 +209,9 @@ namespace MyPageLib
         /// </summary>
         /// <param name="documents"></param>
         /// <param name="message"></param>
-        public bool BatchDelete(IList<PageDocumentPoCo> documents,out string message)
+        public bool BatchDelete(IList<PageDocumentPoCo> documents, out string message)
         {
-            
+
             try
             {
                 _db.Deleteable<PageDocumentPoCo>(documents).ExecuteCommand(); //批量删除
@@ -215,7 +220,7 @@ namespace MyPageLib
                     if (File.Exists(co.FilePath))
                     {
                         //File.Delete(co.FilePath);
-                        FileSystem.DeleteFile(co.FilePath,UIOption.OnlyErrorDialogs,RecycleOption.SendToRecycleBin);
+                        FileSystem.DeleteFile(co.FilePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
                     }
                 }
             }
@@ -293,11 +298,11 @@ namespace MyPageLib
         {
             try
             {
-                if(MyPageSettings.Instance==null) return null; 
-                var (topFolder,topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
+                if (MyPageSettings.Instance == null) return null;
+                var (topFolder, topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
 
                 return _db.Queryable<PageDocumentPoCo>().Where(it => it.FolderPath == folderPath
-                && it.TopFolder == topFolder).OrderByDescending(it=>it.Title).ToList();
+                && it.TopFolder == topFolder).OrderByDescending(it => it.Title).ToList();
             }
             catch (Exception)
             {
@@ -316,23 +321,23 @@ namespace MyPageLib
         /// <exception cref="Exception"></exception>
         public bool IsDocumentInFolder(string folderFullPath)
         {
-            if (MyPageSettings.Instance == null) 
+            if (MyPageSettings.Instance == null)
                 throw new Exception("没有正确的配置信息。");
 
 
             var (topFolder, topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(folderFullPath);
-            
-            if(topFolder == null)
+
+            if (topFolder == null)
                 throw new Exception("不正确的顶级目录。");
 
-            if(string.IsNullOrEmpty(folderPath))
+            if (string.IsNullOrEmpty(folderPath))
                 return _db.Queryable<PageDocumentPoCo>().Any(it => it.TopFolder == topFolder);
 
             var subFolder = folderPath + "\\";
 
-            return _db.Queryable<PageDocumentPoCo>().Any(it => 
+            return _db.Queryable<PageDocumentPoCo>().Any(it =>
                 it.TopFolder == topFolder
-                && it.FolderPath!=null
+                && it.FolderPath != null
                 && (it.FolderPath == folderPath
                 || it.FolderPath.StartsWith(subFolder)));
         }
@@ -357,11 +362,11 @@ namespace MyPageLib
                     return null;
 
                 var fullIndexed = await SearchFullIndex(searchString, cancellationToken);
-                
-                if(fullIndexed == null||fullIndexed.Count==0) 
+
+                if (fullIndexed == null || fullIndexed.Count == 0)
                     return await SearchLocalIndex(searchString, cancellationToken);
                 return fullIndexed;
-                
+
 
             }
             catch (Exception e)
@@ -414,7 +419,7 @@ namespace MyPageLib
             return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
         }
 
-        public void ReplaceFolderPath(string topFolder, string folderPath,string newFolderPath)
+        public void ReplaceFolderPath(string topFolder, string folderPath, string newFolderPath)
         {
 
             //更新目录下的文档
@@ -432,11 +437,11 @@ namespace MyPageLib
             //更新子目录下的文档
             var s = folderPath + "\\";
             docs = _db.Queryable<PageDocumentPoCo>().Where(it => it.TopFolder == topFolder
-                                                                 && it.FolderPath!=null
+                                                                 && it.FolderPath != null
                                                                  && it.FolderPath.StartsWith(s)).ToList();
             foreach (var poCo in docs)
             {
-                if(poCo.FolderPath==null)
+                if (poCo.FolderPath == null)
                     continue;
                 poCo.FolderPath = poCo.FolderPath.Replace(folderPath, newFolderPath,
                     StringComparison.InvariantCultureIgnoreCase);

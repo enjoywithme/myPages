@@ -157,9 +157,14 @@ namespace MyPageLib
 
 
 
-        public static bool InitInstance(string settingsPath,out string message)
+        public static bool InitInstance(string? settingsPath,out string message)
         {
             message = string.Empty;
+            if (string.IsNullOrWhiteSpace(settingsPath))
+            {
+                message = "没有设置工作路径。";
+                return false;
+            }
             var settingsFile = Path.Combine(settingsPath, SettingFileName);
 
             if (!File.Exists(settingsFile))

@@ -18,9 +18,9 @@ namespace MyPageLib
 
         public string FilePath { get; set; }
         public long FileSize { get; set; }
-        public string GuId { get; set; }
-        private string _title;
-        public string Title
+        public string? GuId { get; set; }
+        private string? _title;
+        public string? Title
         {
             get => _title;
             set
@@ -31,9 +31,9 @@ namespace MyPageLib
             }
         }
 
-        private string _originUrl;
+        private string? _originUrl;
 
-        public string OriginalUrl
+        public string? OriginalUrl
         {
             get => _originUrl;
             set
@@ -67,21 +67,21 @@ namespace MyPageLib
 
         private bool _manifestChanged;
         public bool IsModified { get; private set; }
-        public IList<string> Tags { get; set; }
+        public IList<string>? Tags { get; set; }
 
         /// <summary>
         /// 解压后的临时根目录
         /// </summary>
-        public string DocTempPath { get; private set; }
+        public string? DocTempPath { get; private set; }
         /// <summary>
         /// 解压后的临时index.html
         /// </summary>
-        public string TempIndexPath { get; private set; }
+        public string? TempIndexPath { get; private set; }
 
         public string TempAttachmentsPath => Path.Combine(DocTempPath, AttachmentsFolderName);
         public IList<PageAttachment>? ExtractedAttachments { get; private set; }
 
-        public static MyPageDocument NewFromArgs(string[] args)
+        public static MyPageDocument? NewFromArgs(string[]? args)
         {
             if (args == null || args.Length == 0) return null;
 
@@ -92,10 +92,12 @@ namespace MyPageLib
 
         public MyPageDocument(string filePath)
         {
-            var poCo = MyPageDb.Instance.FindFilePath(filePath);
             FilePath = filePath;
+
+            var poCo = MyPageDb.Instance.FindFilePath(filePath);
             if (poCo != null)
             {
+                GuId = poCo.Guid;
                 _title = poCo.Title;
                 FileSize = poCo.FileSize;
                 CreatedDate = poCo.DtCreated;
@@ -181,6 +183,9 @@ namespace MyPageLib
         {
             try
             {
+                if (MyPageSettings.Instance == null)
+                    throw new Exception("不正确的配置。");
+
                 //Save manifest
                 if (_manifestChanged)
                 {
@@ -202,6 +207,8 @@ namespace MyPageLib
                     File.Delete(tempZip); 
                 System.IO.Compression.ZipFile.CreateFromDirectory(DocTempPath, tempZip);
                 File.Move(tempZip,FilePath,true);
+
+                MyPageDb.Instance.UpdateDocument(ToPoCo());
 
                 _manifestChanged = false;
                 IsModified = false;

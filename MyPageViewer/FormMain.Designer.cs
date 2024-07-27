@@ -39,7 +39,7 @@ namespace MyPageViewer
             tsmiStop = new ToolStripMenuItem();
             toolStripMenuItem2 = new ToolStripSeparator();
             tsmiExit = new ToolStripMenuItem();
-            工具TToolStripMenuItem = new ToolStripMenuItem();
+            tsmiTools = new ToolStripMenuItem();
             tsmiPasteFromClipboard = new ToolStripMenuItem();
             tsmiOptions = new ToolStripMenuItem();
             视图VToolStripMenuItem = new ToolStripMenuItem();
@@ -81,8 +81,13 @@ namespace MyPageViewer
             treeViewMenu = new ContextMenuStrip(components);
             tsmiOpenFolderPath = new ToolStripMenuItem();
             tsmiAddFolder = new ToolStripMenuItem();
-            tsmiRenameFolder = new ToolStripMenuItem();
             tsmiDeleteFolder = new ToolStripMenuItem();
+            tsmiRenameFolder = new ToolStripMenuItem();
+            tsmiOpenInNewWindow = new ToolStripMenuItem();
+            tsmiRefreshFolder = new ToolStripMenuItem();
+            toolStripMenuItem1 = new ToolStripSeparator();
+            tsmiIndexFolder = new ToolStripMenuItem();
+            toolStripMenuItem3 = new ToolStripSeparator();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -95,7 +100,7 @@ namespace MyPageViewer
             // 
             // menuStrip1
             // 
-            menuStrip1.Items.AddRange(new ToolStripItem[] { 文件FToolStripMenuItem, 工具TToolStripMenuItem, 视图VToolStripMenuItem });
+            menuStrip1.Items.AddRange(new ToolStripItem[] { 文件FToolStripMenuItem, tsmiTools, 视图VToolStripMenuItem });
             menuStrip1.Location = new Point(0, 0);
             menuStrip1.Name = "menuStrip1";
             menuStrip1.Size = new Size(939, 25);
@@ -132,23 +137,23 @@ namespace MyPageViewer
             tsmiExit.Size = new Size(124, 22);
             tsmiExit.Text = "退出(&X)";
             // 
-            // 工具TToolStripMenuItem
+            // tsmiTools
             // 
-            工具TToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { tsmiPasteFromClipboard, tsmiOptions });
-            工具TToolStripMenuItem.Name = "工具TToolStripMenuItem";
-            工具TToolStripMenuItem.Size = new Size(59, 21);
-            工具TToolStripMenuItem.Text = "工具(&T)";
+            tsmiTools.DropDownItems.AddRange(new ToolStripItem[] { tsmiPasteFromClipboard, tsmiOptions });
+            tsmiTools.Name = "tsmiTools";
+            tsmiTools.Size = new Size(59, 21);
+            tsmiTools.Text = "工具(&T)";
             // 
             // tsmiPasteFromClipboard
             // 
             tsmiPasteFromClipboard.Name = "tsmiPasteFromClipboard";
-            tsmiPasteFromClipboard.Size = new Size(148, 22);
+            tsmiPasteFromClipboard.Size = new Size(180, 22);
             tsmiPasteFromClipboard.Text = "从剪贴板粘贴";
             // 
             // tsmiOptions
             // 
             tsmiOptions.Name = "tsmiOptions";
-            tsmiOptions.Size = new Size(148, 22);
+            tsmiOptions.Size = new Size(180, 22);
             tsmiOptions.Text = "选项(&O)";
             // 
             // 视图VToolStripMenuItem
@@ -437,9 +442,9 @@ namespace MyPageViewer
             // 
             // treeViewMenu
             // 
-            treeViewMenu.Items.AddRange(new ToolStripItem[] { tsmiOpenFolderPath, tsmiAddFolder, tsmiDeleteFolder, tsmiRenameFolder });
+            treeViewMenu.Items.AddRange(new ToolStripItem[] { tsmiAddFolder, tsmiDeleteFolder, tsmiRenameFolder, toolStripMenuItem1, tsmiRefreshFolder, tsmiOpenInNewWindow, tsmiOpenFolderPath, toolStripMenuItem3, tsmiIndexFolder });
             treeViewMenu.Name = "treeViewMenu";
-            treeViewMenu.Size = new Size(181, 114);
+            treeViewMenu.Size = new Size(181, 192);
             // 
             // tsmiOpenFolderPath
             // 
@@ -453,17 +458,45 @@ namespace MyPageViewer
             tsmiAddFolder.Size = new Size(180, 22);
             tsmiAddFolder.Text = "添加文件夹";
             // 
+            // tsmiDeleteFolder
+            // 
+            tsmiDeleteFolder.Name = "tsmiDeleteFolder";
+            tsmiDeleteFolder.Size = new Size(180, 22);
+            tsmiDeleteFolder.Text = "删除文件夹";
+            // 
             // tsmiRenameFolder
             // 
             tsmiRenameFolder.Name = "tsmiRenameFolder";
             tsmiRenameFolder.Size = new Size(180, 22);
             tsmiRenameFolder.Text = "重命名文件夹";
             // 
-            // tsmiDeleteFolder
+            // tsmiOpenInNewWindow
             // 
-            tsmiDeleteFolder.Name = "tsmiDeleteFolder";
-            tsmiDeleteFolder.Size = new Size(180, 22);
-            tsmiDeleteFolder.Text = "删除文件夹";
+            tsmiOpenInNewWindow.Name = "tsmiOpenInNewWindow";
+            tsmiOpenInNewWindow.Size = new Size(180, 22);
+            tsmiOpenInNewWindow.Text = "在新窗口中打开";
+            // 
+            // tsmiRefreshFolder
+            // 
+            tsmiRefreshFolder.Name = "tsmiRefreshFolder";
+            tsmiRefreshFolder.Size = new Size(180, 22);
+            tsmiRefreshFolder.Text = "刷新文件夹";
+            // 
+            // toolStripMenuItem1
+            // 
+            toolStripMenuItem1.Name = "toolStripMenuItem1";
+            toolStripMenuItem1.Size = new Size(177, 6);
+            // 
+            // tsmiIndexFolder
+            // 
+            tsmiIndexFolder.Name = "tsmiIndexFolder";
+            tsmiIndexFolder.Size = new Size(180, 22);
+            tsmiIndexFolder.Text = "索引文件夹";
+            // 
+            // toolStripMenuItem3
+            // 
+            toolStripMenuItem3.Name = "toolStripMenuItem3";
+            toolStripMenuItem3.Size = new Size(177, 6);
             // 
             // FormMain
             // 
@@ -510,7 +543,7 @@ namespace MyPageViewer
         private ToolStripMenuItem tsmiStartIndex;
         private NotifyIcon notifyIcon1;
         private ToolStripStatusLabel tsslInfo;
-        private ToolStripMenuItem 工具TToolStripMenuItem;
+        private ToolStripMenuItem tsmiTools;
         private ToolStripMenuItem tsmiPasteFromClipboard;
         private ToolStrip toolStrip1;
         private ToolStripButton tsbStartIndex;
@@ -548,5 +581,10 @@ namespace MyPageViewer
         private ToolStripMenuItem tsmiOpenFolderPath;
         private ToolStripMenuItem tsmiAddFolder;
         private ToolStripMenuItem tsmiDeleteFolder;
+        private ToolStripMenuItem tsmiOpenInNewWindow;
+        private ToolStripSeparator toolStripMenuItem1;
+        private ToolStripMenuItem tsmiRefreshFolder;
+        private ToolStripSeparator toolStripMenuItem3;
+        private ToolStripMenuItem tsmiIndexFolder;
     }
 }

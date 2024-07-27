@@ -1,4 +1,5 @@
-﻿using MyPageLib;
+﻿#nullable enable
+using MyPageLib;
 using MyPageViewer.Dlg;
 using mySharedLib;
 using System.Diagnostics;
@@ -12,23 +13,54 @@ namespace MyPageViewer
     public partial class FormMain : Form
     {
 
-        public static FormMain Instance { get; set; }
-        private readonly MyPageDocument _startDocument;
-        private static System.Threading.Timer _autoIndexTimer;
+        public static FormMain? Instance { get; set; }
+        private readonly MyPageDocument? _startDocument;
+        private static System.Threading.Timer? _autoIndexTimer;
+        public static int InstanceCounter { get; protected set; }
+        private readonly int _instanceIndex;
+        public bool IsMain => _instanceIndex == 0;
 
-        private PageDocumentPoCo _gotoDocumentPoCo;
+        private PageDocumentPoCo? _gotoDocumentPoCo;
 
-        public FormMain(MyPageDocument startDocument)
+
+        public static FormMain CreateForm(MyPageDocument? startDocument = null)
+        {
+            var form = new FormMain(InstanceCounter, startDocument);
+            InstanceCounter += 1;
+            return form;
+        }
+
+        protected FormMain(int instanceIndex, MyPageDocument? startDocument = null)
         {
             InitializeComponent();
+            _instanceIndex = instanceIndex;
             _startDocument = startDocument;
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            if (_instanceIndex > 0)
+                Text = string.Format(Resource.TextSubWindowTitle, _instanceIndex);
 
-            MyPageIndexer.Instance.IndexStopped += Instance_IndexStopped;
-            MyPageIndexer.Instance.IndexFileChanged += Instance_IndexFileChanged;
+            if (IsMain)
+            {
+                MyPageIndexer.Instance.IndexStopped += Instance_IndexStopped;
+                MyPageIndexer.Instance.IndexFileChanged += Instance_IndexFileChanged;
+
+                tsbStartIndex.Click += (_, _) => { StartIndex(); };
+                tsbCleanDb.Click += (_, _) => { StartClean(); };
+                tsbStop.Click += (_, _) => { StopAction(); };
+            }
+            else
+            {
+                tsbStartIndex.Visible = false;
+                tsbStop.Visible = false;
+                tsbCleanDb.Visible =false;
+
+                tsmiStartIndex.Visible = false;
+                tsmiStop.Visible =false;
+                tsmiTools.Visible =false;
+            }
 
             #region 主菜单
 
@@ -87,11 +119,12 @@ namespace MyPageViewer
             tsmiOpenFolderPath.Click += TsmiOpenFolderPath_Click;
             tsmiAddFolder.Click += TsmiAddFolder_Click;
             tsmiDeleteFolder.Click += TsmiDeleteFolder_Click;
+            tsmiOpenInNewWindow.Click += TsmiOpenInNewWindow_Click;
+            tsmiRefreshFolder.Click += TsmiRefreshFolder_Click;
+            tsmiIndexFolder.Click += TsmiIndexFolder_Click;
 
             //工具栏
-            tsbStartIndex.Click += (_, _) => { StartIndex(); };
-            tsbCleanDb.Click += (_, _) => { StartClean(); };
-            tsbStop.Click += (_, _) => { StopAction(); };
+
 
             tsbGotoDocFolder.Click += TsbGotoDocFolder_Click;
             tsmiPasteFromClipboard.Click += (_, _) => { PasteFromClipboard(); };
@@ -144,18 +177,60 @@ namespace MyPageViewer
             Closing += FormMain_Closing;
 
             //处理命令行
-            if (_startDocument == null) return;
-            (new FormPageViewer(_startDocument)).Show(this);
-            Hide();
+            if (IsMain)
+            {
+                if (_startDocument == null) return;
+                (new FormPageViewer(_startDocument)).Show(this);
+                Hide();
+            }
+            
 
 
         }
 
-   
+ 
 
 
+        #region 文件夹操作
 
-        #region Navigate tree and tree menu
+        /// <summary>
+        /// 刷新选定的文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsmiRefreshFolder_Click(object sender, EventArgs e)
+        {
+
+            if (naviTreeControl1.SelectedNode != null)
+                ReloadListView((string)naviTreeControl1.SelectedNode.Tag);
+
+        }
+
+        private void TsbGotoDocFolder_Click(object sender, EventArgs e)
+        {
+            if (listView.SelectedIndices.Count == 0) return;
+
+            var poCo = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
+            if (string.IsNullOrEmpty(poCo.FullFolderPath)) return;
+            _gotoDocumentPoCo = poCo;
+
+            GotoFolder(poCo.FullFolderPath);
+        }
+
+        public void GotoFolder(string folderFullPath)
+        {
+            naviTreeControl1.GotoPath(folderFullPath);
+
+        }
+
+
+        private void TsmiIndexFolder_Click(object sender, EventArgs e)
+        {
+            if(naviTreeControl1.SelectedNode == null)
+                return;
+            StartIndex((string)naviTreeControl1.SelectedNode.Tag);
+        }
+
 
         private void TreeViewMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
         {
@@ -163,11 +238,16 @@ namespace MyPageViewer
             {
                 tsmiRenameFolder.Enabled = false;
                 tsmiOpenFolderPath.Enabled =false;
+                tsmiDeleteFolder.Enabled = false;
+                tsmiOpenFolderPath.Enabled = false;
             }
             else
             {
                 tsmiRenameFolder.Enabled = true;
                 tsmiOpenFolderPath.Enabled = true;
+                tsmiDeleteFolder.Enabled = true;
+                tsmiOpenFolderPath.Enabled = true;
+
 
             }
         }
@@ -179,14 +259,9 @@ namespace MyPageViewer
         /// <param name="e"></param>
         private void NaviTreeControl1_NodeChanged(object sender, string e)
         {
-            listView.Items.Clear();
-
-            if (!Directory.Exists(e)) return;
-
-            var pocos = MyPageDb.Instance.FindFolderPath(e);
-            FillListView(pocos);
-            RefreshStatusInfo();
+            ReloadListView(e);
         }
+
 
         /// <summary>
         /// 添加文件夹
@@ -260,6 +335,7 @@ namespace MyPageViewer
             try
             {
                 var path = (string)naviTreeControl1.SelectedNode.Tag;
+                var parentNode = naviTreeControl1.SelectedNode.Parent;
                 if (MyPageDb.Instance.IsDocumentInFolder(path))
                 {
                     MessageBox.Show(Resource.TextDocumentInFolder, Resource.TextHint, MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -276,6 +352,10 @@ namespace MyPageViewer
 
                 naviTreeControl1.ReloadFolderTree();
 
+                if (parentNode != null)
+                    naviTreeControl1.GotoPath((string)parentNode.Tag);
+
+
             }
             catch (Exception exception)
             {
@@ -285,6 +365,20 @@ namespace MyPageViewer
 
         }
 
+        /// <summary>
+        /// 在新窗口中打开文件夹
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void TsmiOpenInNewWindow_Click(object sender, EventArgs e)
+        {
+            var node = naviTreeControl1.SelectedNode;
+            var form = CreateForm();
+            form.Show(Instance);
+            form.GotoFolder((string)node.Tag);
+        }
+
+
 
         #endregion
 
@@ -293,6 +387,10 @@ namespace MyPageViewer
 
         #region 索引
 
+
+        /// <summary>
+        /// 启动索引更新时钟
+        /// </summary>
         private void StartAutoIndexTimer()
         {
             if (MyPageSettings.Instance != null && !MyPageSettings.Instance.AutoIndex)
@@ -321,16 +419,6 @@ namespace MyPageViewer
 
         }
 
-        private void TsbGotoDocFolder_Click(object sender, EventArgs e)
-        {
-            if (listView.SelectedIndices.Count == 0) return;
-
-            var poCo = (PageDocumentPoCo)listView.SelectedItems[0].Tag;
-            if (string.IsNullOrEmpty(poCo.FullFolderPath)) return;
-            _gotoDocumentPoCo = poCo;
-            naviTreeControl1.GotoPath(poCo.FullFolderPath);
-        }
-
         private void Instance_IndexFileChanged(object sender, string e)
         {
             Invoke(() =>
@@ -342,10 +430,10 @@ namespace MyPageViewer
         /// <summary>
         /// 开始索引
         /// </summary>
-        private void StartIndex()
+        private void StartIndex(string? startFolder=null)
         {
             if (MyPageIndexer.Instance.IsRunning) return;
-            MyPageIndexer.Instance.StartIndex();
+            MyPageIndexer.Instance.StartIndex(startFolder);
             tslbIndexing.Image = Resources.Clock_history_frame24;
             tslbIndexing.Visible = true;
             tslbIndexing.DoubleClickEnabled = false;
@@ -439,7 +527,24 @@ namespace MyPageViewer
 
         }
 
-        #region List view动作
+        #region List view 操作
+
+        /// <summary>
+        /// 从路径重新装载基类
+        /// </summary>
+        /// <param name="folderFullPath"></param>
+        private void ReloadListView(string folderFullPath)
+        {
+            listView.Items.Clear();
+
+            if (!Directory.Exists(folderFullPath)) return;
+
+            var pocos = MyPageDb.Instance.FindFolderPath(folderFullPath);
+            FillListView(pocos);
+
+            RefreshStatusInfo();
+        }
+
         private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
         {
             var info = ((ListView)sender).HitTest(e.X, e.Y);
@@ -448,6 +553,7 @@ namespace MyPageViewer
             var poCo = (PageDocumentPoCo)info.Item.Tag;
             OpenDocumentFromFilePath(poCo.FilePath);
         }
+
         private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (listView.SelectedIndices.Count == 0) return;
@@ -455,7 +561,12 @@ namespace MyPageViewer
             listView.DoDragDrop(new DataObject(DataFormats.FileDrop,
                 (from ListViewItem item in listView.SelectedItems where item.Tag != null select ((PageDocumentPoCo)item.Tag).FilePath).ToArray()),
                 DragDropEffects.Move);
+
+            if(naviTreeControl1.SelectedNode!=null)
+                ReloadListView((string)naviTreeControl1.SelectedNode.Tag);
         }
+
+
         #endregion
 
         #region 搜索
@@ -592,6 +703,8 @@ namespace MyPageViewer
 
         private void FormMain_Resize(object sender, EventArgs e)
         {
+            if(!IsMain) return;
+
             if (WindowState == FormWindowState.Minimized)
             {
                 MinimizeToTray();

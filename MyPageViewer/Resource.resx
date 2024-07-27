@@ -141,4 +141,7 @@
   <data name="TextErrorSettings" xml:space="preserve">
 	  <value>不正确的配置!</value>
   </data>
+  <data name="TextSubWindowTitle" xml:space="preserve">
+	  <value>My pages [{0}]</value>
+  </data>
 </root>
