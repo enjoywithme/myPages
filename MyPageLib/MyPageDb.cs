@@ -419,7 +419,7 @@ namespace MyPageLib
             return await _db.Queryable<PageDocumentPoCo>().Where(conModels).ToListAsync(cancellationToken);
         }
 
-        public void ReplaceFolderPath(string topFolder, string folderPath, string newFolderPath)
+        public void ReplaceFolderPath(string topFolder, string folderPath, string newFolderPath,string? destTopFolder=null)
         {
 
             //更新目录下的文档
@@ -428,6 +428,8 @@ namespace MyPageLib
             foreach (var poCo in docs)
             {
                 poCo.FolderPath = newFolderPath;
+                if(destTopFolder!=null)
+                    poCo.TopFolder = destTopFolder;
 
             }
             _db.Updateable(docs)
@@ -445,6 +447,8 @@ namespace MyPageLib
                     continue;
                 poCo.FolderPath = poCo.FolderPath.Replace(folderPath, newFolderPath,
                     StringComparison.InvariantCultureIgnoreCase);
+                if (destTopFolder != null)
+                    poCo.TopFolder = destTopFolder;
             }
 
             _db.Updateable(docs)

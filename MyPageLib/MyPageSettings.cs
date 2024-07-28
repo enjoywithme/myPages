@@ -104,13 +104,11 @@ namespace MyPageLib
         /// <returns></returns>
         public (string?, string?,string?) ParsePath(string path)
         {
-            foreach (var topFolder in TopFolders)
+            foreach (var (key, topPath) in TopFolders)
             {
-                var topPath = topFolder.Value;
-
                 if (path.StartsWith(topPath, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    return (topFolder.Key,topPath, path.Substring(topPath.Length).ClearPathPrefix());
+                    return ( key,topPath, path[topPath.Length..].ClearPathPrefix());
                 }
 
             }

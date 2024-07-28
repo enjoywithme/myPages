@@ -61,6 +61,18 @@ namespace MyPageViewer {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to 确定要将
+        ///{0}
+        ///移动到
+        ///{1}.
+        /// </summary>
+        internal static string TextConfirmMoveFolderNode {
+            get {
+                return ResourceManager.GetString("TextConfirmMoveFolderNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to 文件夹下存在索引的文档！.
         /// </summary>
         internal static string TextDocumentInFolder {
@@ -102,6 +114,15 @@ namespace MyPageViewer {
         internal static string TextFileInFolder {
             get {
                 return ResourceManager.GetString("TextFileInFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to 节点路径：{0}.
+        /// </summary>
+        internal static string TextFormatNodePath {
+            get {
+                return ResourceManager.GetString("TextFormatNodePath", resourceCulture);
             }
         }
         

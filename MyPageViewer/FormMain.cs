@@ -37,7 +37,7 @@ namespace MyPageViewer
             _startDocument = startDocument;
         }
 
-        private void FormMain_Load(object sender, EventArgs e)
+        private void FormMain_Load(object? sender, EventArgs? e)
         {
             if (_instanceIndex > 0)
                 Text = string.Format(Resource.TextSubWindowTitle, _instanceIndex);
@@ -198,7 +198,7 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TsmiRefreshFolder_Click(object sender, EventArgs e)
+        private void TsmiRefreshFolder_Click(object? sender, EventArgs? e)
         {
 
             if (naviTreeControl1.SelectedNode != null)
@@ -206,7 +206,7 @@ namespace MyPageViewer
 
         }
 
-        private void TsbGotoDocFolder_Click(object sender, EventArgs e)
+        private void TsbGotoDocFolder_Click(object? sender, EventArgs? e)
         {
             if (listView.SelectedIndices.Count == 0) return;
 
@@ -224,7 +224,7 @@ namespace MyPageViewer
         }
 
 
-        private void TsmiIndexFolder_Click(object sender, EventArgs e)
+        private void TsmiIndexFolder_Click(object? sender, EventArgs? e)
         {
             if(naviTreeControl1.SelectedNode == null)
                 return;
@@ -232,7 +232,7 @@ namespace MyPageViewer
         }
 
 
-        private void TreeViewMenu_Opening(object sender, System.ComponentModel.CancelEventArgs e)
+        private void TreeViewMenu_Opening(object? sender, System.ComponentModel.CancelEventArgs? e)
         {
             if (naviTreeControl1.SelectedNode == null)
             {
@@ -240,6 +240,7 @@ namespace MyPageViewer
                 tsmiOpenFolderPath.Enabled =false;
                 tsmiDeleteFolder.Enabled = false;
                 tsmiOpenFolderPath.Enabled = false;
+                tsmiIndexFolder.Enabled = false;
             }
             else
             {
@@ -248,6 +249,7 @@ namespace MyPageViewer
                 tsmiDeleteFolder.Enabled = true;
                 tsmiOpenFolderPath.Enabled = true;
 
+                tsmiIndexFolder.Enabled = IsMain;
 
             }
         }
@@ -257,7 +259,7 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void NaviTreeControl1_NodeChanged(object sender, string e)
+        private void NaviTreeControl1_NodeChanged(object? sender, string? e)
         {
             ReloadListView(e);
         }
@@ -268,7 +270,7 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TsmiAddFolder_Click(object sender, EventArgs e)
+        private void TsmiAddFolder_Click(object? sender, EventArgs? e)
         {
             var dlg = new DlgFolderAdd(naviTreeControl1.SelectedNode);
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -282,7 +284,7 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TsmiOpenFolderPath_Click(object sender, EventArgs e)
+        private void TsmiOpenFolderPath_Click(object? sender, EventArgs? e)
         {
             var path = (string)naviTreeControl1.SelectedNode.Tag;
             try
@@ -307,7 +309,7 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TsmiRenameFolder_Click(object sender, EventArgs e)
+        private void TsmiRenameFolder_Click(object? sender, EventArgs? e)
         {
             var node = naviTreeControl1.SelectedNode;
             if (node.Parent == null)
@@ -319,8 +321,10 @@ namespace MyPageViewer
             var dlg = new DlgFolderRename(naviTreeControl1.SelectedNode);
             if(dlg.ShowDialog() != DialogResult.OK) return;
             
+            Cursor.Current = Cursors.WaitCursor;
             naviTreeControl1.ReloadFolderTree();
             naviTreeControl1.GotoPath(dlg.NewFullPath);
+            Cursor.Current = Cursors.Default;
         }
 
         /// <summary>
@@ -329,7 +333,7 @@ namespace MyPageViewer
         /// <param name="sender"></param>
         /// <param name="e"></param>
         /// <exception cref="NotImplementedException"></exception>
-        private void TsmiDeleteFolder_Click(object sender, EventArgs e)
+        private void TsmiDeleteFolder_Click(object? sender, EventArgs? e)
         {
             
             try
@@ -370,12 +374,14 @@ namespace MyPageViewer
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        private void TsmiOpenInNewWindow_Click(object sender, EventArgs e)
+        private void TsmiOpenInNewWindow_Click(object? sender, EventArgs? e)
         {
             var node = naviTreeControl1.SelectedNode;
+            Cursor.Current = Cursors.WaitCursor;
             var form = CreateForm();
             form.Show(Instance);
             form.GotoFolder((string)node.Tag);
+            Cursor.Current = Cursors.Default;
         }
 
 
@@ -403,11 +409,11 @@ namespace MyPageViewer
                 _autoIndexTimer.Change(MyPageSettings.Instance.AutoIndexIntervalSeconds, Timeout.Infinite);
         }
 
-        private void _autoIndexTimer_Elapsed(object sender)
+        private void _autoIndexTimer_Elapsed(object? sender)
         {
 
             if (MyPageIndexer.Instance.IsRunning) return;
-            _autoIndexTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            _autoIndexTimer?.Change(Timeout.Infinite, Timeout.Infinite);
 
             MyPageIndexer.Instance.StartIndex();
 
@@ -419,7 +425,7 @@ namespace MyPageViewer
 
         }
 
-        private void Instance_IndexFileChanged(object sender, string e)
+        private void Instance_IndexFileChanged(object? sender, string? e)
         {
             Invoke(() =>
             {
@@ -463,7 +469,7 @@ namespace MyPageViewer
 
         }
 
-        private void Instance_IndexStopped(object sender, EventArgs e)
+        private void Instance_IndexStopped(object? sender, EventArgs? e)
         {
             Invoke(() =>
             {
@@ -486,7 +492,7 @@ namespace MyPageViewer
             StartAutoIndexTimer();
         }
 
-        private void TslbIndexing_DoubleClick(object sender, EventArgs e)
+        private void TslbIndexing_DoubleClick(object? sender, EventArgs? e)
         {
             Program.ShowError(MyPageIndexer.Instance.Message);
             tslbIndexing.Visible = false;
@@ -495,7 +501,7 @@ namespace MyPageViewer
         #endregion
 
 
-        private void ListView_SelectedIndexChanged(object sender, EventArgs e)
+        private void ListView_SelectedIndexChanged(object? sender, EventArgs? e)
         {
             RefreshStatusInfo();
         }
@@ -515,7 +521,7 @@ namespace MyPageViewer
 
 
 
-        private void OpenDocumentFromFilePath(string filePath)
+        private void OpenDocumentFromFilePath(string? filePath)
         {
             if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath)) return;
             var doc = new MyPageDocument(filePath);
@@ -533,7 +539,7 @@ namespace MyPageViewer
         /// 从路径重新装载基类
         /// </summary>
         /// <param name="folderFullPath"></param>
-        private void ReloadListView(string folderFullPath)
+        private void ReloadListView(string? folderFullPath)
         {
             listView.Items.Clear();
 
@@ -545,7 +551,7 @@ namespace MyPageViewer
             RefreshStatusInfo();
         }
 
-        private void ListView_MouseDoubleClick(object sender, MouseEventArgs e)
+        private void ListView_MouseDoubleClick(object? sender, MouseEventArgs? e)
         {
             var info = ((ListView)sender).HitTest(e.X, e.Y);
             if (info.Item == null) return;
@@ -554,7 +560,7 @@ namespace MyPageViewer
             OpenDocumentFromFilePath(poCo.FilePath);
         }
 
-        private void ListView_ItemDrag(object sender, ItemDragEventArgs e)
+        private void ListView_ItemDrag(object? sender, ItemDragEventArgs? e)
         {
             if (listView.SelectedIndices.Count == 0) return;
 
@@ -570,7 +576,7 @@ namespace MyPageViewer
         #endregion
 
         #region 搜索
-        private void TbSearch_KeyDown(object sender, KeyEventArgs e)
+        private void TbSearch_KeyDown(object? sender, KeyEventArgs? e)
         {
             if (e.KeyCode == Keys.Return)
                 DoSearch();
@@ -578,7 +584,7 @@ namespace MyPageViewer
 
         private async void DoSearch()
         {
-            _searchCancellationTokenSource?.Cancel();
+            _searchCancellationTokenSource.Cancel();
 
             _searchCancellationTokenSource = new CancellationTokenSource();
             var items = await MyPageDb.Instance.Search(tbSearch.Text, _searchCancellationTokenSource.Token);
@@ -586,7 +592,7 @@ namespace MyPageViewer
             RefreshStatusInfo();
         }
 
-        private void FillListView(IList<PageDocumentPoCo> poCos)
+        private void FillListView(IList<PageDocumentPoCo>? poCos)
         {
             if (poCos == null || poCos.Count == 0)
             {
@@ -622,7 +628,7 @@ namespace MyPageViewer
 
 
         private CancellationTokenSource _searchCancellationTokenSource;
-        private async void TbSearch_TextChanged(object sender, EventArgs e)
+        private async void TbSearch_TextChanged(object? sender, EventArgs? e)
         {
 
             async Task<bool> UserKeepsTyping()
@@ -681,7 +687,7 @@ namespace MyPageViewer
         }
 
         #region 窗口控制
-        private void FormMain_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void FormMain_Closing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             if (!MyPageIndexer.Instance.IsRunning) return;
             Program.ShowWarning("索引服务正在运行，请停止后退出。");
@@ -701,7 +707,7 @@ namespace MyPageViewer
             Hide();
         }
 
-        private void FormMain_Resize(object sender, EventArgs e)
+        private void FormMain_Resize(object? sender, EventArgs? e)
         {
             if(!IsMain) return;
 
