@@ -553,6 +553,7 @@ namespace MyPageViewer
 
         private void ListView_MouseDoubleClick(object? sender, MouseEventArgs? e)
         {
+            if(e==null || sender == null) return;
             var info = ((ListView)sender).HitTest(e.X, e.Y);
             if (info.Item == null) return;
 
@@ -578,13 +579,13 @@ namespace MyPageViewer
         #region 搜索
         private void TbSearch_KeyDown(object? sender, KeyEventArgs? e)
         {
-            if (e.KeyCode == Keys.Return)
+            if (e is { KeyCode: Keys.Return })
                 DoSearch();
         }
 
         private async void DoSearch()
         {
-            _searchCancellationTokenSource.Cancel();
+            _searchCancellationTokenSource?.Cancel();
 
             _searchCancellationTokenSource = new CancellationTokenSource();
             var items = await MyPageDb.Instance.Search(tbSearch.Text, _searchCancellationTokenSource.Token);
@@ -627,7 +628,7 @@ namespace MyPageViewer
         }
 
 
-        private CancellationTokenSource _searchCancellationTokenSource;
+        private CancellationTokenSource? _searchCancellationTokenSource;
         private async void TbSearch_TextChanged(object? sender, EventArgs? e)
         {
 
