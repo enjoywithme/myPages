@@ -17,10 +17,20 @@ namespace MyPageViewer.Controls
         private const string TreeNodeTypeName = "System.Windows.Forms.TreeNode";
 
         public event EventHandler<string> NodeChanged;
-        private readonly TreeView _cacheTree = new();
+        private static readonly TreeView CacheTree = new();
         private string _nodeFilter;
 
         public TreeNode SelectedNode => treeView1.SelectedNode;
+
+        /// <summary>
+        /// 拖放后生成的新节点路径
+        /// </summary>
+        private string _dropNodeNewPath;
+        /// <summary>
+        /// 拖放原始树
+        /// </summary>
+        private TreeView _dragSourceTree;
+
 
         public ExploreTreeControl()
         {
@@ -58,10 +68,10 @@ namespace MyPageViewer.Controls
         /// </summary>
         /// <param name="folderPath">实际路径，包括根目录</param>
         /// <param name="topNode">开始搜索的顶级目录，默认节点的顶级目录</param>
-        public void GotoPath(string folderPath,TreeNode topNode=null)
+        public void GotoPath(string folderPath)
         {
             TreeNode tn = null;
-            var nodes = topNode == null ? treeView1.Nodes : topNode.Nodes;
+            var nodes = treeView1.Nodes;
             foreach (TreeNode node in nodes)
             {
                 tn = FindNodeByPath(node, folderPath);
@@ -93,7 +103,7 @@ namespace MyPageViewer.Controls
             return null;
         }
 
-        
+
         #region 数据拖放
 
         /// <summary>
@@ -104,22 +114,28 @@ namespace MyPageViewer.Controls
         private void TreeView1_ItemDrag(object sender, ItemDragEventArgs e)
         {
             if (e.Item is not TreeNode node) return;
-            
+
+            var origParentNode = node.Parent;
             node.ImageIndex = 2;
+
+            _dropNodeNewPath = null;
+            _dragSourceTree = treeView1;
+
             var ret = treeView1.DoDragDrop(node, DragDropEffects.Move);
             if (ret != DragDropEffects.Move)
             {
                 node.ImageIndex = 0;
+                _dragSourceTree = null;
                 return;
             }
 
-            //重新装载原节点的父节点
-            var origParentNode = node.Parent;
-            if (origParentNode == null) return;
-            ReloadNode(origParentNode);
+            //如果这是拖拉的原始树，重新装载原节点的父节点
+            if (_dragSourceTree == null || origParentNode == null) return;
 
-            //选中父节点
+            ReloadNode(origParentNode);
             treeView1.SelectedNode = origParentNode;
+            NodeChanged?.Invoke(treeView1, (string)origParentNode.Tag);
+            _dragSourceTree = null;
         }
 
         private void TreeView1_DragDrop(object sender, DragEventArgs e)
@@ -135,7 +151,7 @@ namespace MyPageViewer.Controls
             if (DoDragDropFile(e, destPath))
                 return;
 
-            DoDragDropNode(e,targetNode,destPath);
+            DoDragDropNode(e, targetNode, destPath);
 
         }
 
@@ -145,10 +161,10 @@ namespace MyPageViewer.Controls
         /// <param name="e"></param>
         /// <param name="destPath"></param>
         /// <returns></returns>
-        private bool DoDragDropFile(DragEventArgs e,string destPath)
+        private bool DoDragDropFile(DragEventArgs e, string destPath)
         {
 
-            if (e.Data==null || !e.Data.GetDataPresent(DataFormats.FileDrop)) return false;
+            if (e.Data == null || !e.Data.GetDataPresent(DataFormats.FileDrop)) return false;
 
 
             var fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
@@ -185,7 +201,7 @@ namespace MyPageViewer.Controls
 
             var itemNode = (TreeNode)e.Data.GetData(TreeNodeTypeName);
             var origFullPath = (string)itemNode?.Tag;
-            if(origFullPath == null) return;
+            if (origFullPath == null) return;
 
             var ret = MessageBox.Show(string.Format(Resource.TextConfirmMoveFolderNode, origFullPath, destFullPath), Resource.TextHint,
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -207,7 +223,7 @@ namespace MyPageViewer.Controls
                     throw new Exception($"不能正确解析目录:{destFullPath}");
 
                 var (topFolder, topFolderPath, folderPath) = MyPageSettings.Instance.ParsePath(origFullPath);
-                if (topFolder == null || topFolderPath==null||folderPath==null)
+                if (topFolder == null || topFolderPath == null || folderPath == null)
                     throw new Exception($"不能正确解析目录:{origFullPath}");
 
                 var newFolderPath = destFolderPath + "\\" + origFolderName;
@@ -221,11 +237,20 @@ namespace MyPageViewer.Controls
                 Directory.Move(origFullPath, newFullPath);
                 MyPageDb.Instance.ReplaceFolderPath(topFolder, folderPath, newFolderPath, destTopFolder);
 
+                if (_dragSourceTree == treeView1)
+                {
+                    //刷新原节点父节点
+                    ReloadNode(itemNode.Parent);
+
+                    _dragSourceTree = null;
+
+                }
                 //重新目标装载节点
                 ReloadNode(targetNode);
 
                 //选中新节点
-                GotoPath(newFullPath,targetNode);
+                GotoPath(newFullPath);
+
 
                 Cursor.Current = Cursors.Default;
 
@@ -242,13 +267,13 @@ namespace MyPageViewer.Controls
         {
             var targetPoint = treeView1.PointToClient(new Point(e.X, e.Y));
             var node = treeView1.GetNodeAt(targetPoint);
-            if(node==null) return;
+            if (node == null) return;
             treeView1.SelectedNode = node;
 
             if (CheckIfCanDropFile(e))
                 return;
 
-            CheckIfCanDropNode(e,node);
+            CheckIfCanDropNode(e, node);
 
         }
 
@@ -269,7 +294,7 @@ namespace MyPageViewer.Controls
         private bool CheckIfCanDropFile(DragEventArgs e)
         {
 
-            if (e.Data==null || !e.Data.GetDataPresent(DataFormats.FileDrop)) return false;
+            if (e.Data == null || !e.Data.GetDataPresent(DataFormats.FileDrop)) return false;
 
             var fileList = (string[])e.Data.GetData(DataFormats.FileDrop, false);
             if (fileList != null && fileList.Any(x => Path.GetExtension(x).ToLower() == ".piz"))
@@ -290,7 +315,7 @@ namespace MyPageViewer.Controls
         /// <returns></returns>
         private void CheckIfCanDropNode(DragEventArgs e, TreeNode targetNode)
         {
-            if (e.Data==null || !e.Data.GetDataPresent(TreeNodeTypeName, false)) return;
+            if (e.Data == null || !e.Data.GetDataPresent(TreeNodeTypeName, false)) return;
 
 
             var itemNode = (TreeNode)e.Data.GetData(TreeNodeTypeName);
@@ -369,7 +394,7 @@ namespace MyPageViewer.Controls
         public void ReloadFolderTree()
         {
             if (MyPageSettings.Instance?.TopFolders is not { Count: > 0 }) return;
-            _cacheTree.Nodes.Clear();
+            CacheTree.Nodes.Clear();
 
             foreach (var scanFolder in MyPageSettings.Instance.TopFolders)
             {
@@ -385,7 +410,7 @@ namespace MyPageViewer.Controls
         private void LoadDirectory(string dir)
         {
             var di = new DirectoryInfo(dir);
-            var tds = _cacheTree.Nodes.Add(di.Name);
+            var tds = CacheTree.Nodes.Add(di.Name);
             tds.Tag = di.FullName;
             tds.ImageIndex = 0;
             tds.StateImageIndex = 0;
@@ -405,19 +430,19 @@ namespace MyPageViewer.Controls
 
             TreeNode cacheNode = null;
             //在cache中搜索
-            foreach (TreeNode cachedTopNode in _cacheTree.Nodes)
+            foreach (TreeNode cachedTopNode in CacheTree.Nodes)
             {
-                cacheNode = FindNodeByPath(cachedTopNode,nodeFullPath);
-                if(cacheNode != null) break;
+                cacheNode = FindNodeByPath(cachedTopNode, nodeFullPath);
+                if (cacheNode != null) break;
             }
-            if(cacheNode == null) return;
+            if (cacheNode == null) return;
 
             cacheNode.Nodes.Clear();
-            LoadSubDirectories(nodeFullPath,cacheNode);
+            LoadSubDirectories(nodeFullPath, cacheNode);
 
-            //装载到实际节点
+            //装载到实际节点，如果是拖动的node，节点TreeView会是Null
             var treeView = node.TreeView;
-            treeView.BeginUpdate();
+            treeView?.BeginUpdate();
             node.Nodes.Clear();
 
             foreach (TreeNode nodeNode in cacheNode.Nodes)
@@ -425,7 +450,7 @@ namespace MyPageViewer.Controls
                 node.Nodes.Add((TreeNode)nodeNode.Clone());
             }
 
-            treeView.EndUpdate();
+            treeView?.EndUpdate();
         }
 
 
@@ -470,14 +495,14 @@ namespace MyPageViewer.Controls
             treeView1.Nodes.Clear();
             if (!string.IsNullOrEmpty(_nodeFilter))
             {
-                foreach (TreeNode parentNode in _cacheTree.Nodes)
+                foreach (TreeNode parentNode in CacheTree.Nodes)
                 {
                     LoadFilterNode(parentNode);
                 }
             }
             else
             {
-                foreach (TreeNode node in _cacheTree.Nodes)
+                foreach (TreeNode node in CacheTree.Nodes)
                 {
                     treeView1.Nodes.Add((TreeNode)node.Clone());
                 }
