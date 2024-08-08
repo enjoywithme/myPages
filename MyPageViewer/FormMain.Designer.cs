@@ -79,15 +79,15 @@ namespace MyPageViewer
             panelTree = new Panel();
             naviTreeControl1 = new ExploreTreeControl();
             treeViewMenu = new ContextMenuStrip(components);
-            tsmiOpenFolderPath = new ToolStripMenuItem();
             tsmiAddFolder = new ToolStripMenuItem();
             tsmiDeleteFolder = new ToolStripMenuItem();
             tsmiRenameFolder = new ToolStripMenuItem();
-            tsmiOpenInNewWindow = new ToolStripMenuItem();
-            tsmiRefreshFolder = new ToolStripMenuItem();
             toolStripMenuItem1 = new ToolStripSeparator();
-            tsmiIndexFolder = new ToolStripMenuItem();
+            tsmiRefreshFolder = new ToolStripMenuItem();
+            tsmiOpenInNewWindow = new ToolStripMenuItem();
+            tsmiOpenFolderPath = new ToolStripMenuItem();
             toolStripMenuItem3 = new ToolStripSeparator();
+            tsmiIndexFolder = new ToolStripMenuItem();
             menuStrip1.SuspendLayout();
             statusStrip1.SuspendLayout();
             toolStrip1.SuspendLayout();
@@ -147,13 +147,13 @@ namespace MyPageViewer
             // tsmiPasteFromClipboard
             // 
             tsmiPasteFromClipboard.Name = "tsmiPasteFromClipboard";
-            tsmiPasteFromClipboard.Size = new Size(180, 22);
+            tsmiPasteFromClipboard.Size = new Size(148, 22);
             tsmiPasteFromClipboard.Text = "从剪贴板粘贴";
             // 
             // tsmiOptions
             // 
             tsmiOptions.Name = "tsmiOptions";
-            tsmiOptions.Size = new Size(180, 22);
+            tsmiOptions.Size = new Size(148, 22);
             tsmiOptions.Text = "选项(&O)";
             // 
             // 视图VToolStripMenuItem
@@ -186,9 +186,9 @@ namespace MyPageViewer
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { tslbIndexing, tsslInfo });
-            statusStrip1.Location = new Point(0, 580);
+            statusStrip1.Location = new Point(0, 576);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(939, 22);
+            statusStrip1.Size = new Size(939, 26);
             statusStrip1.TabIndex = 3;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -206,7 +206,7 @@ namespace MyPageViewer
             // tsslInfo
             // 
             tsslInfo.Name = "tsslInfo";
-            tsslInfo.Size = new Size(924, 17);
+            tsslInfo.Size = new Size(815, 21);
             tsslInfo.Spring = true;
             tsslInfo.TextAlign = ContentAlignment.MiddleLeft;
             // 
@@ -238,7 +238,7 @@ namespace MyPageViewer
             // tsbCleanDb
             // 
             tsbCleanDb.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            tsbCleanDb.Image = Properties.Resources.Database_delete24;
+            tsbCleanDb.Image = Properties.Resources.Broom241;
             tsbCleanDb.ImageTransparentColor = Color.Magenta;
             tsbCleanDb.Name = "tsbCleanDb";
             tsbCleanDb.Size = new Size(28, 28);
@@ -347,7 +347,7 @@ namespace MyPageViewer
             panelMain.Dock = DockStyle.Fill;
             panelMain.Location = new Point(0, 84);
             panelMain.Name = "panelMain";
-            panelMain.Size = new Size(939, 496);
+            panelMain.Size = new Size(939, 492);
             panelMain.TabIndex = 6;
             // 
             // panelMiddle
@@ -356,7 +356,7 @@ namespace MyPageViewer
             panelMiddle.Dock = DockStyle.Fill;
             panelMiddle.Location = new Point(224, 0);
             panelMiddle.Name = "panelMiddle";
-            panelMiddle.Size = new Size(538, 496);
+            panelMiddle.Size = new Size(538, 492);
             panelMiddle.TabIndex = 12;
             // 
             // listView
@@ -366,7 +366,7 @@ namespace MyPageViewer
             listView.FullRowSelect = true;
             listView.Location = new Point(0, 4);
             listView.Name = "listView";
-            listView.Size = new Size(538, 489);
+            listView.Size = new Size(538, 485);
             listView.TabIndex = 3;
             listView.UseCompatibleStateImageBehavior = false;
             listView.View = View.Details;
@@ -400,7 +400,7 @@ namespace MyPageViewer
             splitterRight.Dock = DockStyle.Right;
             splitterRight.Location = new Point(762, 0);
             splitterRight.Name = "splitterRight";
-            splitterRight.Size = new Size(3, 496);
+            splitterRight.Size = new Size(3, 492);
             splitterRight.TabIndex = 11;
             splitterRight.TabStop = false;
             // 
@@ -409,7 +409,7 @@ namespace MyPageViewer
             panelPreview.Dock = DockStyle.Right;
             panelPreview.Location = new Point(765, 0);
             panelPreview.Name = "panelPreview";
-            panelPreview.Size = new Size(174, 496);
+            panelPreview.Size = new Size(174, 492);
             panelPreview.TabIndex = 10;
             panelPreview.Visible = false;
             // 
@@ -417,7 +417,7 @@ namespace MyPageViewer
             // 
             splitterLeft.Location = new Point(221, 0);
             splitterLeft.Name = "splitterLeft";
-            splitterLeft.Size = new Size(3, 496);
+            splitterLeft.Size = new Size(3, 492);
             splitterLeft.TabIndex = 9;
             splitterLeft.TabStop = false;
             // 
@@ -427,7 +427,7 @@ namespace MyPageViewer
             panelTree.Dock = DockStyle.Left;
             panelTree.Location = new Point(0, 0);
             panelTree.Name = "panelTree";
-            panelTree.Size = new Size(221, 496);
+            panelTree.Size = new Size(221, 492);
             panelTree.TabIndex = 8;
             panelTree.Visible = false;
             // 
@@ -437,66 +437,66 @@ namespace MyPageViewer
             naviTreeControl1.Dock = DockStyle.Fill;
             naviTreeControl1.Location = new Point(0, 0);
             naviTreeControl1.Name = "naviTreeControl1";
-            naviTreeControl1.Size = new Size(221, 496);
+            naviTreeControl1.Size = new Size(221, 492);
             naviTreeControl1.TabIndex = 0;
             // 
             // treeViewMenu
             // 
             treeViewMenu.Items.AddRange(new ToolStripItem[] { tsmiAddFolder, tsmiDeleteFolder, tsmiRenameFolder, toolStripMenuItem1, tsmiRefreshFolder, tsmiOpenInNewWindow, tsmiOpenFolderPath, toolStripMenuItem3, tsmiIndexFolder });
             treeViewMenu.Name = "treeViewMenu";
-            treeViewMenu.Size = new Size(181, 192);
-            // 
-            // tsmiOpenFolderPath
-            // 
-            tsmiOpenFolderPath.Name = "tsmiOpenFolderPath";
-            tsmiOpenFolderPath.Size = new Size(180, 22);
-            tsmiOpenFolderPath.Text = "打开文件夹路径";
+            treeViewMenu.Size = new Size(161, 170);
             // 
             // tsmiAddFolder
             // 
             tsmiAddFolder.Name = "tsmiAddFolder";
-            tsmiAddFolder.Size = new Size(180, 22);
+            tsmiAddFolder.Size = new Size(160, 22);
             tsmiAddFolder.Text = "添加文件夹";
             // 
             // tsmiDeleteFolder
             // 
             tsmiDeleteFolder.Name = "tsmiDeleteFolder";
-            tsmiDeleteFolder.Size = new Size(180, 22);
+            tsmiDeleteFolder.Size = new Size(160, 22);
             tsmiDeleteFolder.Text = "删除文件夹";
             // 
             // tsmiRenameFolder
             // 
             tsmiRenameFolder.Name = "tsmiRenameFolder";
-            tsmiRenameFolder.Size = new Size(180, 22);
+            tsmiRenameFolder.Size = new Size(160, 22);
             tsmiRenameFolder.Text = "重命名文件夹";
-            // 
-            // tsmiOpenInNewWindow
-            // 
-            tsmiOpenInNewWindow.Name = "tsmiOpenInNewWindow";
-            tsmiOpenInNewWindow.Size = new Size(180, 22);
-            tsmiOpenInNewWindow.Text = "在新窗口中打开";
-            // 
-            // tsmiRefreshFolder
-            // 
-            tsmiRefreshFolder.Name = "tsmiRefreshFolder";
-            tsmiRefreshFolder.Size = new Size(180, 22);
-            tsmiRefreshFolder.Text = "刷新文件夹";
             // 
             // toolStripMenuItem1
             // 
             toolStripMenuItem1.Name = "toolStripMenuItem1";
-            toolStripMenuItem1.Size = new Size(177, 6);
+            toolStripMenuItem1.Size = new Size(157, 6);
             // 
-            // tsmiIndexFolder
+            // tsmiRefreshFolder
             // 
-            tsmiIndexFolder.Name = "tsmiIndexFolder";
-            tsmiIndexFolder.Size = new Size(180, 22);
-            tsmiIndexFolder.Text = "索引文件夹";
+            tsmiRefreshFolder.Name = "tsmiRefreshFolder";
+            tsmiRefreshFolder.Size = new Size(160, 22);
+            tsmiRefreshFolder.Text = "刷新文件夹";
+            // 
+            // tsmiOpenInNewWindow
+            // 
+            tsmiOpenInNewWindow.Name = "tsmiOpenInNewWindow";
+            tsmiOpenInNewWindow.Size = new Size(160, 22);
+            tsmiOpenInNewWindow.Text = "在新窗口中打开";
+            // 
+            // tsmiOpenFolderPath
+            // 
+            tsmiOpenFolderPath.Name = "tsmiOpenFolderPath";
+            tsmiOpenFolderPath.Size = new Size(160, 22);
+            tsmiOpenFolderPath.Text = "打开文件夹路径";
             // 
             // toolStripMenuItem3
             // 
             toolStripMenuItem3.Name = "toolStripMenuItem3";
-            toolStripMenuItem3.Size = new Size(177, 6);
+            toolStripMenuItem3.Size = new Size(157, 6);
+            // 
+            // tsmiIndexFolder
+            // 
+            tsmiIndexFolder.Name = "tsmiIndexFolder";
+            tsmiIndexFolder.Size = new Size(160, 22);
+            tsmiIndexFolder.Text = "索引文件夹";
             // 
             // FormMain
             // 

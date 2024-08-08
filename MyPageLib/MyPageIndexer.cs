@@ -29,21 +29,19 @@ namespace MyPageLib
         //private bool _stopPending;
         private CancellationTokenSource? _cancellationTokenSource;
 
-        public event EventHandler? IndexStopped;
+        public event EventHandler<FuncResult>? IndexStopped;
         public event EventHandler<string>? IndexFileChanged;
 
         private Meilisearch.Index? _meiliSearchIndex;
 
         private FuncResult? _errorBuilder;
-        public bool IsError => _errorBuilder is { Success: false };
-        public string? Message => _errorBuilder?.Message;
 
         /// <summary>
         /// 开始索引的顶级目录
         /// </summary>
         private IList<string>? _indexStartTopFolder;
 
-        public void StartIndex(string? startFolder=null)
+        public void StartIndex(string? startFolder = null)
         {
             if (IsRunning) return;
 
@@ -283,7 +281,7 @@ namespace MyPageLib
             }
 
             IsRunning = false;
-            IndexStopped?.Invoke(this, EventArgs.Empty);
+            IndexStopped?.Invoke(this, _errorBuilder);
         }
 
         /// <summary>
@@ -297,41 +295,47 @@ namespace MyPageLib
 
             InitMeiliSearch();
 
-            var counter = 0;
-
-            MyPageDb.Instance.Db.Queryable<PageDocumentPoCo>().ForEach(poCo =>
+            try
             {
-                var file = poCo.FilePath;
-                counter++;
-                IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
 
-                if (_cancellationTokenSource.IsCancellationRequested) return;
+                var counter = 0;
 
-                if (string.IsNullOrEmpty(file) && File.Exists(file)) return;
-
-                try
+                MyPageDb.Instance.Db.Queryable<PageDocumentPoCo>().ForEach(poCo =>
                 {
-                    poCo.LocalPresent = 0;
-                    MyPageDb.Instance.UpdateDocumentAsync(poCo);
+                    var file = poCo.FilePath;
 
-                    _meiliSearchIndex?.DeleteOneDocumentAsync(poCo.Guid).Wait();
-                }
-                catch (Exception e)
-                {
-                    _errorBuilder.False(e.Message);
-                    if (_errorBuilder.ErrorCount > MaxErrorLimit)
+                    try
                     {
-                        _errorBuilder.False("发生错误太多，终止清除，请检查后重试。");
-                        _cancellationTokenSource?.Cancel();
+                        poCo.LocalPresent = !string.IsNullOrEmpty(file) && File.Exists(file)?1:0;
+                        MyPageDb.Instance.UpdateDocument(poCo);
+
+                        _meiliSearchIndex?.DeleteOneDocumentAsync(poCo.Guid).Wait();
                     }
-                }
+                    catch (Exception e)
+                    {
+                        _errorBuilder.False(e.Message);
+                        if (_errorBuilder.ErrorCount > MaxErrorLimit)
+                        {
+                            _errorBuilder.False("发生错误太多，终止清除，请检查后重试。");
+                            _cancellationTokenSource?.Cancel();
+                        }
+                    }
+
+                    counter++;
+                    if(counter % 5 == 0)
+                        IndexFileChanged?.Invoke(this, $"[{counter}]{file}");
+
+                }, 100, _cancellationTokenSource);//设置分页 
+            }
+            catch (Exception e)
+            {
+                _errorBuilder.False(e.Message);
+            }
 
 
-
-            }, 200, _cancellationTokenSource);//设置分页 
 
             IsRunning = false;
-            IndexStopped?.Invoke(this, EventArgs.Empty);
+            IndexStopped?.Invoke(this, _errorBuilder);
 
         }
 

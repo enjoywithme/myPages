@@ -21,7 +21,7 @@ namespace MyPageViewer
         public bool IsMain => _instanceIndex == 0;
 
         private PageDocumentPoCo? _gotoDocumentPoCo;
-
+        private string? _lastMessage;
 
         public static FormMain CreateForm(MyPageDocument? startDocument = null)
         {
@@ -429,7 +429,7 @@ namespace MyPageViewer
         {
             Invoke(() =>
             {
-                tslbIndexing.Text = e;
+                tsslInfo.Text = e;
             });
         }
 
@@ -441,6 +441,7 @@ namespace MyPageViewer
             if (MyPageIndexer.Instance.IsRunning) return;
             MyPageIndexer.Instance.StartIndex(startFolder);
             tslbIndexing.Image = Resources.Clock_history_frame24;
+            tslbIndexing.Text = "索引中";
             tslbIndexing.Visible = true;
             tslbIndexing.DoubleClickEnabled = false;
             tsbStartIndex.Enabled = false;
@@ -454,6 +455,7 @@ namespace MyPageViewer
             if (MyPageIndexer.Instance.IsRunning) return;
             MyPageIndexer.Instance.StartClean();
             tslbIndexing.Image = Resources.Clock_history_frame24;
+            tslbIndexing.Text = "清理中";
             tslbIndexing.Visible = true;
             tslbIndexing.DoubleClickEnabled = false;
             tsbStartIndex.Enabled = false;
@@ -469,24 +471,28 @@ namespace MyPageViewer
 
         }
 
-        private void Instance_IndexStopped(object? sender, EventArgs? e)
+        private void Instance_IndexStopped(object? sender, FuncResult? e)
         {
             Invoke(() =>
             {
                 tsbStartIndex.Enabled = true;
                 tsbCleanDb.Enabled = true;
                 tsbStop.Enabled = false;
-                if (MyPageIndexer.Instance.IsError)
+                if (e == null) return;
+
+                if (!e.Success)
                 {
                     tslbIndexing.Text = Resources.TextIndexErrorHappend;
                     tslbIndexing.Image = Resources.Exclamation24;
                     tslbIndexing.DoubleClickEnabled = true;
-
+                    _lastMessage = e.Message;
                 }
                 else
                 {
                     tslbIndexing.Visible = false;
+                    tsslInfo.Text = null;
                 }
+
             });
 
             StartAutoIndexTimer();
@@ -494,7 +500,9 @@ namespace MyPageViewer
 
         private void TslbIndexing_DoubleClick(object? sender, EventArgs? e)
         {
-            Program.ShowError(MyPageIndexer.Instance.Message);
+            if(string.IsNullOrEmpty(_lastMessage))
+                return;
+            Program.ShowError(_lastMessage);
             tslbIndexing.Visible = false;
 
         }
