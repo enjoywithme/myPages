@@ -176,6 +176,16 @@ namespace MyPageViewer
 
                 return;
             }
+
+
+            if (!PageDocument.CleanHelloGithub(out message))
+            {
+                if (!string.IsNullOrEmpty(message))
+                    MessageBox.Show(message, Properties.Resources.Text_Error, MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return;
+            }
+
             PageDocument?.SetModified();
             webView.CoreWebView2.Reload();
         }

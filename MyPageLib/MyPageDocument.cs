@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using Microsoft.VisualBasic.FileIO;
 using MyPageLib.PoCo;
 using Newtonsoft.Json;
@@ -277,6 +278,56 @@ namespace MyPageLib
             return true;
         }
 
+        /// <summary>
+        /// 针对hellogithub.com的网页清理
+        /// </summary>
+        /// <param name="message"></param>
+        /// <returns></returns>
+        public bool CleanHelloGithub(out string message)
+        {
+
+            message = string.Empty;
+            var modified = false;
+
+            if (string.IsNullOrEmpty(OriginalUrl) || !OriginalUrl.Contains("hellogithub"))
+                return false;
+            if (string.IsNullOrEmpty(TempIndexPath) 
+                || !File.Exists(TempIndexPath)
+                || string.IsNullOrEmpty(DocTempPath)) 
+                return false;
+
+            var content = File.ReadAllText(TempIndexPath);
+
+            //查找 src=data:, alt="oceanbase image" style=opacity:1;width:100%;height:auto;cursor:zoom-in data-sf-original-src=https://img.hellogithub.com/i/pqaboLVOZJRzshy_1698715468.jpg
+            var imagesPath = Path.Combine(DocTempPath, "images");
+            if (!Directory.Exists(imagesPath))
+                return false;
+
+            var imageFiles = Directory.GetFiles(imagesPath);
+            foreach (var imageFile in imageFiles)
+            {
+                var fileExt = Path.GetExtension(imageFile);
+                if(!fileExt.Equals(".png",StringComparison.InvariantCultureIgnoreCase)
+                   &&
+                   !fileExt.Equals(".webp", StringComparison.InvariantCultureIgnoreCase))
+                    continue;
+
+                var fileName = Path.GetFileNameWithoutExtension(imageFile);
+                var searchPattern = $"src=\"data:,\" alt=(.*?)data-sf-original-src=(.*?){fileName}.(\\bjpg\\b|\\bpng\\b)\"";
+
+                var match = Regex.Match(content, searchPattern);
+                if(!match.Success)
+                    continue;
+
+                content = Regex.Replace(content, searchPattern, $"src=\"images/{Path.GetFileName(imageFile)}\"",RegexOptions.IgnoreCase);
+                modified = true;
+            }
+
+            if (modified)
+                File.WriteAllText(TempIndexPath,content);
+
+            return modified;
+        }
 
         public bool AddTag(string tag)
         {
